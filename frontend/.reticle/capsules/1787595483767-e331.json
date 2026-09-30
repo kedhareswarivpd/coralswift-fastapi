@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "id": "1787595483767-e331",
+  "createdAt": 1787595483784,
+  "origin": "failed-assert",
+  "expected": "declared consequence",
+  "observed": "no element matched {\"name\":\"Software Development\"}",
+  "steps": [
+    {
+      "tool": "reticle_act",
+      "anchor": {
+        "kind": "testid",
+        "value": "e331",
+        "source": {
+          "file": "src/components/layout/NavbarDropdown.jsx",
+          "line": 86,
+          "column": 4
+        }
+      },
+      "action": "click"
+    }
+  ]
+}

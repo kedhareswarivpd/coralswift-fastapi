@@ -1,0 +1,347 @@
+/* Self-hosted Material Symbols Outlined (variable weight/fill). This was
+   previously pulled from fonts.googleapis.com in index.html — whenever that
+   CDN request failed (offline dev, blocked network), every icon rendered its
+   ligature name as literal text ("check_circle", "shield", ...) which also
+   blew out card layouts. The font file lives in public/fonts/, and the
+   .material-symbols-outlined class below replaces the one the Google
+   stylesheet used to provide (it carried the actual font-family binding).
+   Kept ahead of the @tailwind layers so per-element `text-*` size utilities
+   still override the 24px default, matching the old CDN behaviour. */
+@font-face {
+  font-family: 'Material Symbols Outlined';
+  font-style: normal;
+  font-weight: 100 700;
+  font-display: block;
+  src: url('/fonts/material-symbols-outlined.v2.woff2') format('woff2');
+}
+
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  vertical-align: middle;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  background-color: var(--background);
+  overflow-x: hidden;
+}
+
+body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+:root {
+  --font-size: 16px;
+  --background: #0B0F19;
+  --foreground: #F8FAFC;
+  --card: #111827;
+  --card-foreground: #F8FAFC;
+  --popover: #111827;
+  --popover-foreground: #F8FAFC;
+  --primary: #FF5500;
+  --primary-foreground: #ffffff;
+  --secondary: #1F2937;
+  --secondary-foreground: #F8FAFC;
+  --muted: #1F2937;
+  --muted-foreground: #94A3B8;
+  --accent: #FF7A00;
+  --accent-foreground: #0B0F19;
+  --destructive: #DC2626;
+  --destructive-foreground: #ffffff;
+  --border: rgba(255, 85, 0, 0.2);
+  --input: rgba(255, 85, 0, 0.1);
+  --input-background: #111827;
+  --switch-background: #1F2937;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --ring: #FF5500;
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: #030213;
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  color-scheme: dark;
+  --sidebar: #111827;
+  --sidebar-foreground: #F8FAFC;
+  --sidebar-primary: #FF5500;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #1F2937;
+  --sidebar-accent-foreground: #F8FAFC;
+  --sidebar-border: rgba(255, 85, 0, 0.2);
+  --sidebar-ring: #FF5500;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+}
+
+/* Frosted glass panels used in hero "live stats" cards */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.glass-panel-light {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 212, 255, 0.25);
+}
+
+.process-line {
+  background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+}
+
+.timeline-line {
+  position: relative;
+}
+.timeline-line::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 100%;
+  background: repeating-linear-gradient(to bottom, transparent, transparent 4px, var(--accent) 4px, var(--accent) 8px);
+  opacity: 0.3;
+}
+
+@keyframes map-pulse {
+  0% { transform: scale(1); opacity: 1; }
+  70% { transform: scale(3); opacity: 0; }
+  100% { transform: scale(1); opacity: 0; }
+}
+.map-pulse {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: var(--accent);
+  border-radius: 50%;
+}
+.map-pulse::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: map-pulse 2s infinite;
+}
+
+/* Scroll-reveal utility, toggled via the useScrollReveal hook */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1), transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal.reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-left {
+  opacity: 0;
+  transform: translateX(-24px);
+  transition: opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1), transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal-left.reveal-visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+.reveal-right {
+  opacity: 0;
+  transform: translateX(24px);
+  transition: opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1), transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal-right.reveal-visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+.reveal-zoom {
+  opacity: 0;
+  transform: scale(0.96);
+  transition: opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1), transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal-zoom.reveal-visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Hero entrance animations */
+@keyframes hero-fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes hero-fade-left {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-10px); }
+}
+@keyframes shimmer-bar {
+  0%   { width: 0%; }
+  100% { width: 75%; }
+}
+@keyframes count-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-hero-1 { animation: hero-fade-up 0.35s cubic-bezier(0.22,1,0.36,1) both; }
+.animate-hero-2 { animation: hero-fade-up 0.35s cubic-bezier(0.22,1,0.36,1) 0.06s both; }
+.animate-hero-3 { animation: hero-fade-up 0.35s cubic-bezier(0.22,1,0.36,1) 0.12s both; }
+.animate-hero-4 { animation: hero-fade-up 0.35s cubic-bezier(0.22,1,0.36,1) 0.18s both; }
+.animate-hero-panel { animation: hero-fade-left 0.35s cubic-bezier(0.22,1,0.36,1) 0.15s both; }
+.animate-float { animation: float 4s ease-in-out infinite; }
+.animate-float-slow { animation: float 6s ease-in-out infinite; }
+.animate-count-in { animation: count-in 0.3s cubic-bezier(0.22,1,0.36,1) 0.2s both; }
+.shimmer-bar { animation: shimmer-bar 0.8s cubic-bezier(0.22,1,0.36,1) 0.3s both; }
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 10px;
+}
+
+/* Hide scrollbars but keep scrolling (horizontal tab bars, etc.) */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ── Responsive table → mobile card layout ─────────────────────────────
+ * Tables inside `.responsive-table-container` or `.responsive-table` stack
+ * into labeled cards below 640px when their <td> elements carry
+ * `data-label` attributes.  Without data-label the table gracefully
+ * scrolls horizontally.
+ */
+@media (max-width: 640px) {
+  .responsive-table-container table,
+  .responsive-table table,
+  .responsive-table-container thead,
+  .responsive-table-container tbody,
+  .responsive-table-container th,
+  .responsive-table-container tr,
+  .responsive-table-container td {
+    display: block;
+  }
+  .responsive-table-container thead,
+  .responsive-table thead {
+    /* visually hidden but accessible to screen readers */
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  .responsive-table-container tr,
+  .responsive-table tr {
+    margin-bottom: 1rem;
+    border: 1px solid rgba(37, 99, 235, 0.12);
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: #fff;
+  }
+  .dark .responsive-table-container tr {
+    border-color: rgba(37, 99, 235, 0.15);
+    background: #1E293B;
+  }
+  .responsive-table-container td,
+  .responsive-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border: none;
+    text-align: right;
+  }
+  .responsive-table-container td::before,
+  .responsive-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-align: left;
+    flex: 0 0 40%;
+    color: var(--muted-foreground, #94A3B8);
+  }
+  .dark .responsive-table-container td::before {
+    color: #CBD5E1;
+  }
+  .responsive-table-container td:not([data-label]),
+  .responsive-table td:not([data-label]) {
+    justify-content: center;
+    text-align: center;
+  }
+}
+
+/* ── Reduced motion ─────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

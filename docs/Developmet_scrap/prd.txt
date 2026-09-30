@@ -1,0 +1,545 @@
+A Comprehensive Guide for the Internal Development Team
+CoralSwift Technologies
+Content Strategy
+WEBSITE MASTER CONTENT PACK
+CoralSwift Technologies Private Limited
+Version 1.0
+Confidential
+Prepared For Internal Development Team
+TABLE OF CONTENTS
+1. Company Profile
+2. Company Vision
+3. Company Mission
+4. Core Values
+5. Why Choose CoralSwift
+6. Business Statistics
+7. Company Timeline
+8. Leadership Team
+9. Office Locations
+10. Departments
+11. Technology Partners
+12. Brand Guidelines
+13. Logo Guidelines
+14. Color Palette
+15. Typography
+16. Iconography
+17. Photography Style
+18. Illustration Style
+19. UI Design System
+20. Website Structure
+21. Homepage
+22.
+About Us
+23.
+Services
+24.
+Solutions
+25.
+Industries
+26.
+Products
+27.
+Technologies
+28.
+Portfolio
+29.
+Case Studies
+30.
+Projects
+31.
+Careers
+32.
+Resources
+33.
+Blog
+34.
+Events
+35.
+Gallery
+36.
+Awards
+37.
+Downloads
+38.
+FAQ
+39.
+Contact
+40.
+Privacy Policy
+41.
+Terms & Conditions
+42.
+Cookie Policy
+43.
+Employee Portal
+44.
+Client Portal
+45.
+Partner Portal
+46.
+Admin Panel
+47.
+Dashboard
+48.
+User Roles
+49.
+Database
+50.
+APIs
+51.
+Security
+52.
+Performance
+53.
+Deployment
+54.
+Deliverables
+1 COMPANY PROFILE
+Company Name:
+CoralSwift Technologies Private Limited
+Brand Name:
+CoralSwift Technologies
+Website:
+www.coralswifttech.com
+Tagline:
+Transforming Businesses Through Intelligent Digital Solutions
+Company Type:
+Private Limited
+Founded:
+2020
+Industry:
+Digital Transformation
+Enterprise Software
+Artificial Intelligence
+Cloud Computing
+Cyber Security
+Business Automation
+Head Office:
+Connaught Place, New Delhi, India
+Branch Offices:
+Bangalore
+Hyderabad
+Pune
+Mumbai
+Dubai
+Singapore
+Employees:
+285+
+Clients:
+120+
+Countries:
+18+
+Projects:
+430+
+2 VISION
+To become one of Asia's most trusted Digital Transformation companies by building secure, scalable and intelligent enterprise software.
+3 MISSION
+Deliver world-class enterprise technology solutions through innovation, engineering excellence and customer-centric development.
+4 CORE VALUES
+Innovation
+Integrity
+Engineering Excellence
+Quality
+Customer Success
+Ownership
+Transparency
+Continuous Learning
+Security First
+Collaboration
+5 WHY CHOOSE US
+430+
+Projects Delivered
+285+
+Employees
+120+
+Enterprise Clients
+18+
+Countries Served
+99.8%
+Uptime
+24×7
+Support
+ISO 9001
+Certified
+ISO 27001
+Certified
+6 BUSINESS STATISTICS
+Statistic
+Value
+Employees
+285
+Projects
+430
+Clients
+120
+Partners
+35
+Countries
+18
+Years
+5
+Success Rate
+98%
+7 BRAND GUIDELINES
+Logo Concept:
+Modern Hexagon
+Letter C
+Connected Nodes
+Circuit Pattern
+Infinity Loop
+Meaning:
+Technology
+Innovation
+Connectivity
+Growth
+Digital Transformation
+Logo Variations
+Primary
+Dark
+Light
+Monochrome
+Icon
+Horizontal
+Vertical
+Favicon
+Logo Usage
+Minimum Size:
+120 px
+Clear Space:
+1X
+Never:
+Stretch
+Rotate
+Change Colors
+Add Effects
+COLORS
+Type
+Hex Code
+Primary
+#0A2540
+Secondary
+#2563EB
+Accent
+#00D4FF
+Background
+#F8FAFC
+Dark
+#0F172A
+Success
+#16A34A
+Warning
+#F59E0B
+Danger
+#DC2626
+Info
+#0EA5E9
+TYPOGRAPHY
+Heading:
+Poppins
+Body:
+Inter
+Numbers:
+Montserrat
+Code:
+JetBrains Mono
+ICON STYLE
+Outline
+SVG
+Minimal
+Rounded
+Blue Gradient
+WEBSITE STRUCTURE
+Home
+About
+Services
+Solutions
+Industries
+Products
+Projects
+Case Studies
+Portfolio
+Technologies
+Partners
+Resources
+Downloads
+Blog
+Events
+Gallery
+Awards
+Careers
+Contact
+Support
+FAQ
+Privacy
+Terms
+Cookies
+HOMEPAGE
+Hero Banner
+Statistics
+About
+Services
+Solutions
+Industries
+Products
+Technologies
+Portfolio
+Projects
+Testimonials
+Clients
+Partners
+Awards
+Blogs
+Newsletter
+Footer
+SERVICES
+Enterprise Software
+Custom Software
+ERP
+CRM
+Cloud Migration
+Cloud Infrastructure
+AI Solutions
+Machine Learning
+Data Analytics
+Business Intelligence
+Cyber Security
+DevOps
+Web Development
+Mobile Apps
+UI UX
+QA Testing
+API Development
+IT Consulting
+Annual Maintenance
+Support
+Every service contains:
+Overview
+Business Problems
+Solutions
+Features
+Benefits
+Process
+Technology Stack
+Deliverables
+Industries
+Gallery
+FAQs
+CTA
+INDUSTRIES
+Healthcare
+Finance
+Education
+Retail
+Manufacturing
+Logistics
+Construction
+Real Estate
+Hospitality
+Government
+Insurance
+Energy
+Telecom
+Pharma
+Automotive
+Media
+PROJECTS
+20 Sample Projects
+Each Contains:
+Client
+Overview
+Challenge
+Solution
+Technology
+Architecture
+Timeline
+Budget
+Deliverables
+Gallery
+Video
+Downloads
+CTA
+CASE STUDIES
+Problem
+Solution
+Implementation
+Result
+ROI
+Customer Feedback
+Downloads
+CAREERS
+Open Positions
+Life at CoralSwift
+Benefits
+Culture
+Application Form
+Internships
+BLOG
+Categories
+Articles
+Tags
+Search
+Comments
+Sharing
+Newsletter
+CONTACT
+Branches
+Map
+Form
+Departments
+Emails
+Phone Numbers
+Social Media
+Support
+CLIENT PORTAL
+Dashboard
+Projects
+Invoices
+Payments
+Support
+Files
+Meetings
+Reports
+EMPLOYEE PORTAL
+Dashboard
+Attendance
+Leaves
+Projects
+Tasks
+Timesheets
+Performance
+Training
+Payslips
+Documents
+ADMIN PANEL
+Dashboard
+CMS
+Employees
+Clients
+Projects
+Services
+Industries
+Blogs
+Downloads
+Gallery
+Awards
+Careers
+Users
+Roles
+Permissions
+SEO
+Settings
+Reports
+Analytics
+Logs
+Notifications
+Media
+Backups
+USER ROLES
+Super Admin
+Admin
+HR
+Sales
+Marketing
+Project Manager
+Developer
+QA
+Support
+Finance
+Client
+Employee
+Guest
+DATABASE
+75+ Tables
+Users
+Roles
+Permissions
+Employees
+Departments
+Clients
+Projects
+Tasks
+Invoices
+Payments
+Blogs
+Categories
+Gallery
+Downloads
+Tickets
+Meetings
+Notifications
+Audit Logs
+Settings
+Media
+Events
+Careers
+Applications
+Testimonials
+Partners
+SEO
+APIs
+Authentication
+Users
+Projects
+Tasks
+CRM
+Employees
+Blogs
+Gallery
+Downloads
+Notifications
+Invoices
+Payments
+Support
+Dashboard
+Analytics
+Media
+Search
+SECURITY
+JWT
+OAuth
+RBAC
+2FA
+CSRF
+XSS
+SQL Injection Protection
+Encryption
+Password Policy
+Audit Logs
+Rate Limiting
+PERFORMANCE
+Redis
+Caching
+Image Optimization
+CDN
+Compression
+Background Jobs
+Queue
+Lazy Loading
+Pagination
+DEPLOYMENT
+Docker
+Nginx
+Gunicorn
+PostgreSQL
+Redis
+GitHub Actions
+AWS
+Azure
+SSL
+Backups
+Monitoring
+DELIVERABLES
+Responsive Website
+Admin Panel
+Client Portal
+Employee Portal
+REST APIs
+Database
+Documentation
+Docker Deployment
+Testing
+SEO Ready
+Analytics
+Security
+Performance Optimization
+Production Deployment

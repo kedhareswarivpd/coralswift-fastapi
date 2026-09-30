@@ -1,0 +1,35 @@
+{
+  "cookies": [
+    {
+      "name": "cf_access_token",
+      "value": "rEl9LCqbWA-INjGXhHgtNH5s5lXSM4qgirJ5zf97CFo",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1787488232.977,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "cf_refresh_token",
+      "value": "FI7eTlNsHQjidhqnBkD3EuLwcAjMRNi-YFsyKMP-0-U",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1790079332.977,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "cf_csrf_token",
+      "value": "RC_5kjqG7uiNkNgFM87o0ArcRkAy5p0T4OxQx-GtEic",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1790079332.977,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": []
+}

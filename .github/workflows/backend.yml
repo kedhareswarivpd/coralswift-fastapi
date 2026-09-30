@@ -1,0 +1,136 @@
+name: Backend CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+    paths: ['backend/**', '.github/workflows/backend.yml']
+  pull_request:
+    branches: [main]
+    paths: ['backend/**']
+
+defaults:
+  run:
+    working-directory: backend
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: coralswift_test
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_pass
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U test_user"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Create minimal auth.users shim (CI only — Supabase provisions the real one)
+        env:
+          PGPASSWORD: test_pass
+        run: |
+          psql -h localhost -U test_user -d coralswift_test -c "CREATE SCHEMA IF NOT EXISTS auth;"
+          psql -h localhost -U test_user -d coralswift_test -c "CREATE TABLE IF NOT EXISTS auth.users (id uuid PRIMARY KEY DEFAULT gen_random_uuid());"
+
+      - name: Apply Alembic migrations to the real CI Postgres
+        # Previously this Postgres service was never actually migrated or
+        # connected to by the app — see status.md CF-BE-REAL-DB-01. This step
+        # is the regression guard for the enum-duplication migration bug
+        # found and fixed in that pass (DuplicateObjectError on a fresh DB).
+        env:
+          ENV: test
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_NAME: coralswift_test
+          DB_USER: test_user
+          DB_PASS: test_pass
+        run: alembic upgrade head
+
+      - name: Run pytest (mocked-persistence unit/API/security suite)
+        env:
+          ENV: test
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_NAME: coralswift_test
+          DB_USER: test_user
+          DB_PASS: test_pass
+          SUPABASE_URL: http://localhost:54321
+          SUPABASE_ANON_KEY: test_anon_key
+          SUPABASE_SERVICE_ROLE_KEY: test_service_role_key
+          SUPABASE_JWT_SECRET: test_jwt_secret
+        run: pytest -v
+
+      - name: Run real-Postgres verification (IDOR, tenant isolation, N+1 — not mocked)
+        # tests/conftest.py mocks the SQLAlchemy engine for the whole pytest
+        # session (see CF-AUD-008), so nothing above touches this database.
+        # This script runs standalone, outside that mock, against the
+        # already-migrated schema.
+        env:
+          ENV: test
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_NAME: coralswift_test
+          DB_USER: test_user
+          DB_PASS: test_pass
+          SUPABASE_URL: http://localhost:54321
+          SUPABASE_ANON_KEY: test_anon_key
+          SUPABASE_SERVICE_ROLE_KEY: test_service_role_key
+          SUPABASE_JWT_SECRET: test_jwt_secret
+        run: python -m tests.real_db_verification
+
+  build-and-push:
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push image
+        uses: docker/build-push-action@v5
+        with:
+          context: backend
+          file: backend/docker/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/coralswift-backend:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/coralswift-backend:${{ github.sha }}
+
+  deploy:
+    needs: build-and-push
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to server via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: |
+            cd /opt/coralswift-platform
+            docker compose pull backend
+            docker compose up -d backend
+            docker compose exec -T backend alembic upgrade head

@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+.env.local
+.DS_Store
+*.log
+/test-results/
+/playwright-report/
+/e2e/.auth/
+# Generated credential sheets/PDFs — contain demo passwords, never commit.
+CoralSwift_Portal_Credentials.pdf

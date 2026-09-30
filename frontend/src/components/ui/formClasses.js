@@ -1,0 +1,2 @@
+export const FORM_INPUT_CLASS =
+  'border border-outline-variant dark:border-dark-outline-variant rounded px-4 py-3 text-body-md dark:text-dark-ink bg-white dark:bg-dark-surface focus:outline-none focus:border-brand';
