@@ -1,60 +1,71 @@
 export const services = [
   {
     slug: 'cloud-architecture-modernization',
-    icon: 'cloud_sync',
+    icon: 'cloud',
+    category: 'Cloud & Infrastructure',
+    themeColor: 'orange',
     title: 'Cloud Architecture & Modernization',
     description:
-      'Multi-region AWS, GCP, and Azure deployments, Kubernetes orchestrations, automated zero-downtime canary rollouts, and infrastructure-as-code with Terraform and OpenTofu.',
+      'Architect, migrate, and modernize mission-critical systems onto highly resilient, cost-optimized multi-cloud environments.',
     features: ['Multi-Region Mesh', 'Zero-Downtime Canary Rollouts', 'Terraform & OpenTofu IaC'],
     benefit: 'Sub-second failover and up to 40% reduction in cloud infrastructure TCO.',
   },
   {
     slug: 'ai-applied-ml',
-    icon: 'psychology',
-    title: 'AI & Applied Machine Learning',
+    icon: 'memory',
+    category: 'Artificial Intelligence',
+    themeColor: 'rose',
+    title: 'AI & Applied Machine Learning Solutions',
     description:
-      'Custom LLM fine-tuning, deterministic RAG pipelines, distributed ML training architectures, and production-grade agentic workflow automation.',
+      'Turn proprietary enterprise data into competitive advantage with custom LLMs, RAG pipelines, and high-throughput inference architectures.',
     features: ['Deterministic RAG', 'Enterprise LLM Fine-Tuning', 'Agentic Workflows'],
     benefit: 'Production-ready AI systems with auditable safety and sub-50ms inference latency.',
   },
   {
     slug: 'enterprise-devsecops',
     icon: 'verified_user',
-    title: 'Enterprise DevSecOps & SRE',
+    category: 'DevOps & Security',
+    themeColor: 'emerald',
+    title: 'Enterprise DevSecOps & Platform Engineering',
     description:
-      '99.999% availability engineering, automated CI/CD security gating, GitOps workflows with ArgoCD, and comprehensive OpenTelemetry distributed tracing.',
+      'Accelerate engineering velocity and build internal developer platforms with automated compliance, security, and continuous delivery.',
     features: ['ArgoCD GitOps', 'OpenTelemetry Tracing', 'Automated Security Gating'],
     benefit: 'Eliminate deployment incidents and achieve 99.999% platform availability.',
   },
   {
     slug: 'distributed-systems',
-    icon: 'hub',
-    title: 'Distributed Systems & Microservices',
+    icon: 'layers',
+    category: 'Engineering',
+    themeColor: 'blue',
+    title: 'Distributed Systems & High-Throughput Microservices',
     description:
-      'Low-latency event-driven architectures with Apache Kafka, gRPC microservices, CQRS data patterns, and distributed consensus mechanisms.',
+      'High-concurrency, low-latency microservice architectures capable of processing millions of transactions per second.',
     features: ['Kafka Event Streams', 'gRPC & Protobuf', 'CQRS & Event Sourcing'],
     benefit: 'Handle 100k+ transactions per second with sub-10ms P99 latency profiles.',
   },
   {
     slug: 'enterprise-data-engineering',
-    icon: 'analytics',
-    title: 'Enterprise Data Engineering',
+    icon: 'storage',
+    category: 'Data & Analytics',
+    themeColor: 'amber',
+    title: 'Enterprise Data Engineering & Real-time Analytics',
     description:
-      'Real-time data lakehouses using Apache Iceberg, Snowflake, and ClickHouse; automated streaming ETL pipelines; governance and lineage frameworks.',
+      'Unified data lakes, real-time stream processing, and analytical warehouses for instantaneous business intelligence.',
     features: ['Apache Iceberg Lakehouses', 'ClickHouse Real-Time OLAP', 'Automated ETL Pipelines'],
     benefit: 'Instant analytics queries on petabyte-scale streaming datasets.',
   },
   {
     slug: 'cybersecurity-zero-trust',
-    icon: 'shield_lock',
-    title: 'Cybersecurity & Zero-Trust',
+    icon: 'lock',
+    category: 'Security & Governance',
+    themeColor: 'purple',
+    title: 'Cybersecurity & Zero-Trust Architecture',
     description:
-      'Zero-trust network access (ZTNA), automated SOC2/HIPAA compliance guardrails, cryptographic key management, and rigorous penetration testing.',
+      'Comprehensive enterprise defense, identity-first access control, and continuous security compliance guardrails.',
     features: ['Zero-Trust Architecture', 'SOC2 / HIPAA Guardrails', 'Automated SAST/DAST'],
     benefit: 'Enterprise-grade defensibility with continuous compliance assurance.',
   },
 ];
-
 
 export const engagementProcess = [
   { step: '01', title: 'Consulting', icon: 'architecture', description: 'Strategic mapping of technical requirements to goals.' },
