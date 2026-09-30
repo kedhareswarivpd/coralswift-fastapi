@@ -6,19 +6,20 @@ import Button from '../ui/Button.jsx';
 export default function Hero() {
  return (
   <section className="relative flex min-h-[600px] items-center overflow-hidden bg-brand-dark px-4 py-20 sm:px-6 md:min-h-[720px] md:px-10 md:py-section-padding">
-   {/* Background video */}
+   {/* Background video with reduced opacity */}
    <video
     autoPlay
     muted
     loop
     playsInline
     preload="metadata"
-    className="absolute inset-0 size-full object-cover"
+    className="absolute inset-0 size-full object-cover opacity-30"
     src="/Data_particles_flowing_no_audio_gwr_video_mvp.mp4"
    />
 
-   {/* Dark gradient overlay — stronger on mobile for readability */}
-   <div className="absolute inset-0 bg-gradient-to-r from-brand-dark/95 via-brand-dark/80 to-brand-dark/50 sm:from-brand-dark/90 sm:via-surface/75 sm:to-brand-dark/40" />
+   {/* Dark gradient overlay */}
+   <div className="absolute inset-0 bg-gradient-to-r from-brand-dark/95 via-brand-dark/85 to-brand-dark/70 sm:from-brand-dark/90 sm:via-brand-dark/75 sm:to-brand-dark/60" />
+
 
    {/* Decorative floating orbs */}
    <div className="animate-float-slow pointer-events-none absolute right-1/4 top-20 size-48 rounded-full bg-accent-cyan/10 blur-3xl sm:size-64" />
