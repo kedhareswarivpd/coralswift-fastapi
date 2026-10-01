@@ -132,7 +132,7 @@ export async function apiRequest(path, { method = 'GET', body, headers, signal, 
       errorBody = fallbackText || null;
     }
 
-    if (response.status === 401) {
+    if (response.status === 401 && path !== '/auth/me') {
       handleUnauthorizedState();
     }
 
