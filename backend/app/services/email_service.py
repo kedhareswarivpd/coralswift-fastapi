@@ -40,10 +40,13 @@ async def send_email(to: str, subject: str, html_body: str) -> None:
             response = await client.post(_BREVO_SEND_URL, json=payload, headers=headers)
         if response.status_code >= 400:
             logger.error("Brevo rejected email to %s (status %s): %s", to, response.status_code, response.text[:500])
+            print(f"\n================ [EMAIL FALLBACK PRINT - BREVO REJECTED {response.status_code}] ================\nTO: {to}\nSUBJECT: {subject}\nBODY:\n{html_body}\n=================================================================================\n")
             return
         logger.info("Email sent to %s: %s", to, subject)
     except Exception as exc:  # noqa: BLE001 — email delivery must never crash the caller's request
         logger.error("Failed to send email to %s via Brevo: %s", to, exc)
+        print(f"\n================ [EMAIL FALLBACK PRINT - EXCEPTION] ================\nTO: {to}\nSUBJECT: {subject}\nBODY:\n{html_body}\n====================================================================\n")
+
 
 
 def _esc(value: object) -> str:
@@ -149,3 +152,53 @@ async def send_contact_notification(name: str, email: str, message: str, subject
         f"<p><strong>Name:</strong> {_esc(name)}</p><p><strong>Email:</strong> {_esc(email)}</p>"
         f"<p><strong>Message:</strong> {_esc(message)}</p>",
     )
+
+
+async def send_project_confirmed_email(
+    name: str, email: str, project_title: str, budget: float = 0.0, currency: str = "USD", overview: str | None = None
+) -> None:
+    """Sent to the client when a project is confirmed/provisioned (via contract signature,
+    proposal acceptance, or manual project creation)."""
+    safe_name = _esc(name)
+    safe_title = _esc(project_title)
+    safe_overview = _esc(overview) if overview else ""
+    client_portal_url = f"{settings.client_url.rstrip('/')}/client"
+
+    overview_html = f"<p><strong>Project Overview:</strong> {safe_overview}</p>" if safe_overview else ""
+    budget_html = f"<p><strong>Budget:</strong> {_esc(currency)} {_esc(f'{budget:,.2f}')}</p>" if budget > 0 else ""
+
+    await send_email(
+        email,
+        f"Project Confirmed: {safe_title}",
+        f"<p>Hi {safe_name},</p>"
+        f"<p>Great news! Your project has been officially confirmed and setup in our system.</p>"
+        f"<p><strong>Project Title:</strong> {safe_title}</p>"
+        f"{overview_html}"
+        f"{budget_html}"
+        f"<p>You can monitor project progress, task updates, and deliverables in your Client Portal:</p>"
+        f'<p><a href="{_esc(client_portal_url)}">{_esc(client_portal_url)}</a></p>'
+        f"<p>Thank you for partnering with {settings.app_name}!</p>",
+    )
+
+
+async def send_contract_signing_email(
+    name: str, email: str, contract_id: object, scope_summary: str, price: float, currency: str
+) -> None:
+    """Sent to the client when a contract is generated, providing a direct link to review
+    and sign the contract online."""
+    safe_name = _esc(name)
+    signing_url = f"{settings.client_url.rstrip('/')}/sign-contract/{contract_id}"
+
+    await send_email(
+        email,
+        f"Contract Ready for Digital Signature — {settings.app_name}",
+        f"<p>Hi {safe_name},</p>"
+        f"<p>Your contract has been prepared and is ready for your review and digital signature.</p>"
+        f"<p><strong>Scope Summary:</strong> {_esc(scope_summary)}</p>"
+        f"<p><strong>Total Value:</strong> {_esc(currency)} {_esc(f'{price:,.2f}')}</p>"
+        f"<p>Please click the link below to review and sign your contract online:</p>"
+        f'<p><a href="{_esc(signing_url)}" style="display:inline-block;padding:10px 20px;background-color:#2563EB;color:#ffffff;text-decoration:none;border-radius:6px;font-weight:bold;">Review & Sign Contract Online</a></p>'
+        f'<p>Or open this link: <a href="{_esc(signing_url)}">{_esc(signing_url)}</a></p>',
+    )
+
+

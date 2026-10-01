@@ -1,12 +1,11 @@
 import os
 
-from upstash_redis.asyncio import Redis
 from app.core.config import settings
 
-_redis_client: Redis | None = None
+_redis_client = None
 
 
-def get_upstash_redis_client() -> Redis | None:
+def get_upstash_redis_client():
     """Create one shared Upstash Redis REST client per worker/process."""
     global _redis_client
 
@@ -16,5 +15,10 @@ def get_upstash_redis_client() -> Redis | None:
         return None
 
     if _redis_client is None:
-        _redis_client = Redis(url=url, token=token)
+        try:
+            from upstash_redis.asyncio import Redis
+            _redis_client = Redis(url=url, token=token)
+        except ImportError:
+            return None
     return _redis_client
+

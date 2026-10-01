@@ -33,13 +33,13 @@ export default function Solutions() {
  return (
   <>
    <SolutionsHero />
-   <div className="bg-brand-dark">
+   <div className="border-y border-slate-100 bg-white dark:border-slate-800/80 dark:bg-[#070B14]">
     <SectionHeading
      eyebrow="Our Capabilities"
      title="Comprehensive Solution Portfolio"
      description="End-to-end enterprise solutions designed to address your most complex business and technology challenges."
      align="center"
-     className="mx-auto max-w-container px-4 py-section-padding sm:px-6 lg:px-10 xl:px-12 [&_h2]:!text-white [&_p]:!text-white [&_span]:!text-accent-cyan"
+     className="mx-auto max-w-container px-4 py-section-padding sm:px-6 lg:px-10 xl:px-12 [&_h2]:text-slate-900 dark:[&_h2]:text-white [&_p]:text-slate-600 dark:[&_p]:text-slate-300 [&_span]:text-[#FF5500]"
     />
    </div>
    <SolutionsGrid solutions={solutions} />

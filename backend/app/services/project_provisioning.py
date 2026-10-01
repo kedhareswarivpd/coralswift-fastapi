@@ -18,6 +18,8 @@ from app.models.enums import NotificationType, ProjectStatus
 from app.models.lead import Lead
 from app.models.project import Project
 from app.models.proposal import Proposal
+from app.models.user import User
+from app.services.email_service import send_project_confirmed_email
 from app.services.notification_service import notify_roles
 
 
@@ -58,10 +60,16 @@ async def provision_project_for_accepted_proposal(db: AsyncSession, proposal: Pr
 
     try:
         client = (await db.execute(select(Client).where(Client.id == lead.converted_client_id))).scalar_one_or_none()
-        client_name = (client.company_name if client else None) or lead.company or lead.contact_name
+        client_user = None
+        if client and client.user_id:
+            client_user = (await db.execute(select(User).where(User.id == client.user_id))).scalar_one_or_none()
+
+        client_name = (client_user.name if client_user else None) or (client.company_name if client else None) or lead.contact_name or "Valued Client"
+        client_email = (client_user.email if client_user else None) or lead.email
+
         details = (
             f"'{title}' was auto-created from accepted proposal v{proposal.version}.\n"
-            f"Client: {client_name} ({lead.email})\n"
+            f"Client: {client_name} ({client_email})\n"
             f"Budget: {proposal.currency} {float(proposal.price):,.2f}\n"
             f"Scope: {proposal.scope_summary[:200]}"
         )
@@ -75,7 +83,18 @@ async def provision_project_for_accepted_proposal(db: AsyncSession, proposal: Pr
             db, ["project_manager"], "New project needs a PM assigned", details,
             NotificationType.success, f"/project-manager?tab=projects&project={project.id}",
         )
+
+        if client_email:
+            await send_project_confirmed_email(
+                name=client_name,
+                email=client_email,
+                project_title=project.title,
+                budget=float(proposal.price) if proposal.price else 0.0,
+                currency=proposal.currency or "USD",
+                overview=proposal.scope_summary,
+            )
     except Exception as exc:  # noqa: BLE001 — the project itself is already committed; a notify failure must not undo it
-        logger.warning("Failed to notify staff of auto-created project %s: %s", project.id, exc)
+        logger.warning("Failed to notify staff/client of auto-created project %s: %s", project.id, exc)
 
     return project
+

@@ -12,6 +12,7 @@ from app.core.errors import ApiError
 from app.core.logger import logger
 from app.crud.base import CRUDBase
 from app.models.associations import project_members
+from app.models.client import Client
 from app.models.enums import NotificationType, ProjectStatus
 from app.models.lead import Lead
 from app.models.project import Project
@@ -30,9 +31,11 @@ from app.schemas.project_milestone import (
     ProjectMilestoneUpdate,
 )
 from app.schemas.project_update import ProjectUpdateCreate, ProjectUpdateOut, ProjectUpdateVisibility
+from app.services.email_service import send_project_confirmed_email
 from app.services.notification_service import notify_user
 from app.utils.pagination import PageParams, apply_sort, page_params
 from app.utils.responses import build_pagination_meta, success_response
+
 
 router = APIRouter(prefix="/projects", tags=["Projects"])
 
@@ -112,16 +115,11 @@ async def list_projects(
 
 
     if filters.get("project_manager_id"):
-        # A PM's "My Projects" dashboard must only ever show real
-        # business-driven projects — ones that trace back to an accepted
-        # proposal (see provision_project_for_accepted_proposal). CMS demo
-        # content (app/seeders/cms_seed.py's seed_projects, used purely as
-        # source material for the public portfolio/case-studies pages) also
-        # assigns a project_manager_id to a seeded PM account so those pages
-        # have a plausible-looking team, which otherwise leaks that showcase
-        # content straight into the PM's actual work queue.
-        query = select(Project).where(Project.project_manager_id == filters["project_manager_id"], Project.proposal_id.isnot(None))
-        count_query = select(func.count()).select_from(Project).where(Project.project_manager_id == filters["project_manager_id"], Project.proposal_id.isnot(None))
+        # Include projects assigned to this PM OR newly auto-created projects awaiting a PM (project_manager_id is NULL)
+        pm_id = filters["project_manager_id"]
+        cond = (Project.project_manager_id == pm_id) | (Project.project_manager_id.is_(None))
+        query = select(Project).where(cond, Project.proposal_id.isnot(None))
+        count_query = select(func.count()).select_from(Project).where(cond, Project.proposal_id.isnot(None))
         query = crud._with_relationships(query)
         query = apply_sort(query, Project, page.sort, allowed_fields={"title", "status", "created_at", "updated_at", "start_date", "end_date", "budget", "progress_percent", "industry"})
         query = query.limit(page.limit).offset(page.offset)
@@ -129,6 +127,7 @@ async def list_projects(
         total = (await db.execute(count_query)).scalar_one()
         meta = build_pagination_meta(total, page.page, page.limit)
         return success_response(data=[ProjectOut.model_validate(p) for p in result.scalars().unique().all()], message="Projects fetched", meta=meta)
+
 
     items, total = await crud.list(db, page, filters)
     meta = build_pagination_meta(total, page.page, page.limit)
@@ -196,19 +195,32 @@ async def create_project(payload: ProjectCreate, response: Response, db: AsyncSe
     project = await crud.create(db, data)
     res = await db.execute(select(Project).options(selectinload(Project.team)).where(Project.id == project.id))
     loaded = res.scalar_one()
+
+    if loaded.client_id:
+        try:
+            client = (await db.execute(select(Client).where(Client.id == loaded.client_id))).scalar_one_or_none()
+            if client and client.user_id:
+                client_user = (await db.execute(select(User).where(User.id == client.user_id))).scalar_one_or_none()
+                if client_user and client_user.email:
+                    await send_project_confirmed_email(
+                        name=client_user.name or client.company_name or "Valued Client",
+                        email=client_user.email,
+                        project_title=loaded.title,
+                        budget=float(loaded.budget) if loaded.budget else 0.0,
+                        currency="USD",
+                        overview=loaded.overview,
+                    )
+        except Exception as exc:  # noqa: BLE001 — email delivery failure must not undo project creation
+            logger.warning("Failed to send project confirmation email for project %s: %s", loaded.id, exc)
+
     return success_response(data=ProjectOut.model_validate(loaded), message="Project created successfully", status_code=201)
 
 
+
 def _require_own_project_or_admin(current_user: User, project: Project) -> None:
-    """Real gap found during a security audit: any `project_manager` could
-    edit or reassign the team of ANY project, not just the ones they
-    actually manage — a horizontal privilege escalation within the
-    project_manager role, the same class of issue already fixed for
-    clients/partners (account_manager_id) and leaves/timesheets
-    (reporting_manager_id)."""
     if current_user.role in ("admin", "super_admin"):
         return
-    if project.project_manager_id != current_user.id:
+    if project.project_manager_id is not None and project.project_manager_id != current_user.id:
         raise ApiError.forbidden("You can only manage projects you are assigned as the project manager for")
 
 
@@ -217,7 +229,12 @@ async def update_project(project_id: uuid.UUID, payload: ProjectUpdate, db: Asyn
     from sqlalchemy.orm import selectinload
     existing = await crud.get(db, project_id)
     _require_own_project_or_admin(current_user, existing)
-    project = await crud.update(db, project_id, payload.model_dump(exclude_unset=True))
+    if existing.project_manager_id is None and current_user.role == "project_manager":
+        payload_data = payload.model_dump(exclude_unset=True)
+        payload_data["project_manager_id"] = current_user.id
+        project = await crud.update(db, project_id, payload_data)
+    else:
+        project = await crud.update(db, project_id, payload.model_dump(exclude_unset=True))
     res = await db.execute(select(Project).options(selectinload(Project.team)).where(Project.id == project.id))
     loaded = res.scalar_one()
     return success_response(data=ProjectOut.model_validate(loaded), message="Project updated successfully")
@@ -235,6 +252,9 @@ async def assign_team(project_id: uuid.UUID, payload: AssignTeamRequest, db: Asy
         raise ApiError.not_found("Project not found")
     _require_own_project_or_admin(current_user, project)
 
+    if project.project_manager_id is None and current_user.role == "project_manager":
+        project.project_manager_id = current_user.id
+
     employees = (await db.execute(
         select(Employee).where((Employee.id.in_(payload.employee_ids)) | (Employee.user_id.in_(payload.employee_ids)))
     )).scalars().all()
@@ -242,6 +262,7 @@ async def assign_team(project_id: uuid.UUID, payload: AssignTeamRequest, db: Asy
     newly_added = [employee for employee in employees if employee.id not in previous_team_ids]
     project.team = list(employees)
     await db.commit()
+
 
     for employee in newly_added:
         if employee.user_id:

@@ -2466,9 +2466,6 @@ export default function AdminPanel() {
       </div>
      </div>
      <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-      <Button as={Link} to="/super-admin/login" variant="primary" size="md" aria-label="Super Admin verification" icon={<Icon name="shield_person" />}>
-       <span className="hidden md:inline">Super Admin</span>
-      </Button>
       <Button variant="primary" size="md" onClick={() => { logout(); navigate('/login', { replace: true }); }} icon={<Icon name="logout" />}>
        Sign Out
       </Button>

@@ -59,15 +59,15 @@ export default function LeadershipGrid() {
     </Reveal>
     <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
      {leadership.map((leader, i) => (
-      <Reveal key={leader.name} from="zoom" delay={i * 60} className="group">
-       <div className="relative mb-6 aspect-[4/5] overflow-hidden rounded-lg bg-surface-container dark:bg-dark-surface-container">
+      <Reveal key={leader.name} from="zoom" delay={i * 60} className="group rounded-xl border border-slate-200/80 bg-white p-4 shadow-sm transition-all duration-300 hover:-translate-y-2.5 hover:border-brand/40 hover:shadow-xl dark:border-slate-800 dark:bg-dark-surface dark:hover:border-brand/40 dark:hover:shadow-black/50">
+       <div className="relative mb-5 aspect-[4/5] overflow-hidden rounded-lg bg-surface-container dark:bg-dark-surface-container">
         <LeaderAvatar name={leader.name} image={leader.image} />
-        <div className="absolute inset-0 bg-brand/10 transition-colors group-hover:bg-transparent" />
+        <div className="absolute inset-0 bg-brand/10 transition-colors duration-300 group-hover:bg-transparent" />
        </div>
-       <h4 className="font-display text-headline-sm text-brand-dark dark:text-dark-brand">{leader.name}</h4>
+       <h4 className="font-display text-headline-sm font-bold text-brand-dark transition-colors duration-200 group-hover:text-brand dark:text-dark-brand">{leader.name}</h4>
        <p className="mb-4 font-label-caps text-label-caps uppercase text-ink-muted dark:text-dark-ink-muted">{leader.title}</p>
        <div className="flex gap-3">
-        <a href={leader.linkedin} target="_blank" rel="noopener noreferrer" className="flex size-8 cursor-pointer items-center justify-center rounded bg-surface-container text-brand transition-colors hover:bg-brand hover:text-white dark:bg-dark-surface-container">
+        <a href={leader.linkedin} target="_blank" rel="noopener noreferrer" className="flex size-9 cursor-pointer items-center justify-center rounded-lg bg-surface-container text-brand transition-all duration-300 hover:scale-110 hover:bg-brand hover:text-white dark:bg-dark-surface-container">
          <LinkedInIcon />
         </a>
        </div>

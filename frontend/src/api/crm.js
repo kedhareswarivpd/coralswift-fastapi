@@ -71,6 +71,15 @@ export function signContract(contractId, payload = {}) {
   return apiRequest(`/contracts/${contractId}/sign`, { method: 'POST', body: payload });
 }
 
+export function fetchPublicContract(contractId) {
+  return apiRequest(`/contracts/public-view/${contractId}`, {});
+}
+
+export function publicSignContract(contractId, payload = {}) {
+  return apiRequest(`/contracts/public-sign/${contractId}`, { method: 'POST', body: payload });
+}
+
+
 // ---------- Meetings ----------
 export function fetchMeetings(params = {}) {
   return apiRequest(`/meetings${toQueryString(params)}`, {});

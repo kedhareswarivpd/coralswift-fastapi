@@ -52,6 +52,8 @@ const ResetPassword = lazy(() => import('./pages/ResetPassword.jsx'));
 const VerifyMfa = lazy(() => import('./pages/VerifyMfa.jsx'));
 const BrochurePage = lazy(() => import('./pages/BrochurePage.jsx'));
 const DownloadDetail = lazy(() => import('./pages/DownloadDetail.jsx'));
+const SignContractPage = lazy(() => import('./pages/SignContractPage.jsx'));
+
 
 function PageFallback() {
  return (
@@ -113,6 +115,8 @@ export default function App() {
       <Route path="verify-mfa" element={<VerifyMfa />} />
       <Route path="brochure" element={<BrochurePage />} />
       <Route path="download/:slug" element={<ErrorBoundary pageName="Download"><DownloadDetail /></ErrorBoundary>} />
+      <Route path="sign-contract/:contractId" element={<ErrorBoundary pageName="Sign Contract"><SignContractPage /></ErrorBoundary>} />
+
       <Route path="*" element={<NotFound />} />
      </Route>
     </Routes>

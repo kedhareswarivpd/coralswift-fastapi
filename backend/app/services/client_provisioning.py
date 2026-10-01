@@ -104,12 +104,11 @@ async def get_or_create_client_record(db: AsyncSession, user: User, lead: Lead) 
 
 async def provision_client_account(db: AsyncSession, lead: Lead) -> Client | None:
     """Orchestrates client provisioning for a newly-won lead: find-or-create
-    the local User account (sending the welcome/password-set email only
-    when that account is actually new), then find-or-create the linked
-    Client profile."""
+    the local User account, send welcome/password-set email, and find-or-create
+    the linked Client profile."""
     user, created = await get_or_create_client_user(db, lead)
     if user is None:
         return None
-    if created:
-        await send_client_welcome(db, user, lead)
+    await send_client_welcome(db, user, lead)
     return await get_or_create_client_record(db, user, lead)
+

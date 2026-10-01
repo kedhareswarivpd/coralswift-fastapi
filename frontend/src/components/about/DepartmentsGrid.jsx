@@ -24,11 +24,11 @@ export default function DepartmentsGrid() {
     </div>
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-gutter lg:grid-cols-5">
      {DEPARTMENTS.map((dept, i) => (
-      <Reveal key={dept.name} from="zoom" delay={i * 60} className="flex flex-col items-center gap-3 rounded-lg border border-outline-variant bg-white p-6 text-center dark:border-dark-outline-variant dark:bg-dark-surface">
-       <div className="flex size-11 items-center justify-center rounded-lg bg-accent-cyan-pale">
-        <Icon name={dept.icon} className="text-2xl text-brand" />
+      <Reveal key={dept.name} from="zoom" delay={i * 60} className="group flex flex-col items-center gap-3 rounded-xl border border-outline-variant bg-white p-6 text-center shadow-sm transition-all duration-300 hover:-translate-y-2 hover:border-brand/50 hover:shadow-xl dark:border-dark-outline-variant dark:bg-dark-surface dark:hover:border-brand/40 dark:hover:shadow-black/50">
+       <div className="flex size-12 items-center justify-center rounded-xl bg-accent-cyan-pale transition-transform duration-300 group-hover:scale-110 group-hover:bg-brand group-hover:text-white">
+        <Icon name={dept.icon} className="text-2xl text-brand transition-colors duration-300 group-hover:text-white" />
        </div>
-       <h3 className="mb-3 flex min-h-16 items-center justify-center text-center font-display text-headline-sm text-brand-dark dark:text-dark-brand">{dept.name}</h3>
+       <h3 className="mb-2 flex min-h-14 items-center justify-center text-center font-display text-headline-sm font-bold text-brand-dark transition-colors duration-200 group-hover:text-brand dark:text-dark-brand">{dept.name}</h3>
        <p className="text-body-sm text-ink-muted dark:text-dark-ink-muted">{dept.description}</p>
       </Reveal>
      ))}

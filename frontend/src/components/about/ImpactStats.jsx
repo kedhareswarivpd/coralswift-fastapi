@@ -27,13 +27,13 @@ export default function ImpactStats() {
     <div className="grid gap-gutter sm:grid-cols-2 lg:grid-cols-3">
      {IMPACTS.map((item, i) => (
       <Reveal key={item.label} from="zoom" delay={i * 80}>
-       <div className="flex flex-col gap-4 rounded-xl bg-white p-6 shadow-card transition-shadow hover:shadow-card-hover dark:bg-dark-surface sm:p-8">
-        <div className="flex size-12 items-center justify-center rounded-lg bg-accent-cyan-pale">
-          <Icon name={item.icon} className="text-2xl text-brand" />
+       <div className="group flex flex-col gap-4 rounded-xl border border-slate-200/80 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-2.5 hover:border-brand/40 hover:shadow-xl dark:border-slate-800 dark:bg-dark-surface dark:hover:border-brand/40 dark:hover:shadow-black/50 sm:p-8">
+        <div className="flex size-12 items-center justify-center rounded-xl bg-accent-cyan-pale transition-transform duration-300 group-hover:scale-110 group-hover:bg-brand group-hover:text-white">
+          <Icon name={item.icon} className="text-2xl text-brand transition-colors duration-300 group-hover:text-white" />
         </div>
-        <div className="font-stat text-4xl font-bold text-brand-dark dark:text-dark-brand">{item.value}</div>
+        <div className="font-stat text-4xl font-extrabold text-brand-dark transition-colors duration-300 group-hover:text-brand dark:text-dark-brand">{item.value}</div>
         <div>
-         <p className="mb-1 font-display text-headline-sm font-semibold text-brand-dark dark:text-dark-brand">{item.label}</p>
+         <p className="mb-1 font-display text-headline-sm font-bold text-brand-dark dark:text-dark-brand">{item.label}</p>
          <p className="text-body-sm text-ink-muted dark:text-dark-ink-muted">{item.desc}</p>
         </div>
        </div>

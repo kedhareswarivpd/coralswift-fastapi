@@ -287,6 +287,18 @@ export default function LeadFlowPage({ leadId, onBack, onRefresh }) {
          )}
         </div>
        </div>
+       <div className="mt-3 flex items-center justify-between rounded-lg border border-blue-200 bg-blue-50/50 p-3 dark:border-blue-900/40 dark:bg-blue-950/20">
+        <div className="text-xs text-blue-900 dark:text-blue-300">
+         <strong>Direct Client Digital Signing Link:</strong>
+         <span className="block font-mono text-[11px] text-blue-700 dark:text-blue-400 truncate max-w-xs">{`${window.location.origin}/sign-contract/${contract.id}`}</span>
+        </div>
+        <Button type="button" variant="outline" size="sm" onClick={() => {
+         navigator.clipboard.writeText(`${window.location.origin}/sign-contract/${contract.id}`);
+         alert('Direct client digital signing link copied to clipboard!');
+        }}>
+         Copy Signing Link
+        </Button>
+       </div>
       </div>
      )}
 

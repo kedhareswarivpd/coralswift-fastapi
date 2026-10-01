@@ -19,6 +19,7 @@ from app.services.email_service import (
     send_contact_notification,
     send_email,
     send_password_reset_email,
+    send_project_confirmed_email,
     send_welcome_email,
 )
 from app.services.notification_service import notify_roles, notify_user
@@ -195,4 +196,26 @@ class TestNotifyRoles:
 
         mock_db.add.assert_not_called()
         mock_db.commit.assert_not_called()
+
+
+class TestSendProjectConfirmedEmail:
+    @pytest.mark.asyncio
+    async def test_sends_project_confirmed_email(self):
+        with patch("app.services.email_service.send_email") as mock_send:
+            await send_project_confirmed_email(
+                name="Acme Corp",
+                email="client@example.com",
+                project_title="E-Commerce Redesign",
+                budget=25000.0,
+                currency="USD",
+                overview="Full web app overhaul",
+            )
+            mock_send.assert_called_once()
+            args, kwargs = mock_send.call_args
+            assert args[0] == "client@example.com"
+            assert "Project Confirmed: E-Commerce Redesign" in args[1]
+            assert "Acme Corp" in args[2]
+            assert "USD 25,000.00" in args[2]
+            assert "Full web app overhaul" in args[2]
+
 
