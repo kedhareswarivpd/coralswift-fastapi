@@ -27,6 +27,7 @@ const Industries = lazy(() => import('./pages/Industries.jsx'));
 const CaseStudies = lazy(() => import('./pages/CaseStudies.jsx'));
 const CaseStudyDetail = lazy(() => import('./pages/CaseStudyDetail.jsx'));
 const Careers = lazy(() => import('./pages/Careers.jsx'));
+const JobDetail = lazy(() => import('./pages/JobDetail.jsx'));
 const Blog = lazy(() => import('./pages/Blog.jsx'));
 const BlogDetail = lazy(() => import('./pages/BlogDetail.jsx'));
 const Events = lazy(() => import('./pages/Events.jsx'));
@@ -85,6 +86,7 @@ export default function App() {
       <Route path="case-studies" element={<ErrorBoundary pageName="Case Studies"><CaseStudies /></ErrorBoundary>} />
       <Route path="case-studies/:slug" element={<ErrorBoundary pageName="Case Study"><CaseStudyDetail /></ErrorBoundary>} />
       <Route path="careers" element={<Careers />} />
+      <Route path="careers/:slug" element={<ErrorBoundary pageName="Job Detail"><JobDetail /></ErrorBoundary>} />
       <Route path="blog" element={<ErrorBoundary pageName="Blog"><Blog /></ErrorBoundary>} />
       <Route path="blog/:slug" element={<ErrorBoundary pageName="Blog Post"><BlogDetail /></ErrorBoundary>} />
       <Route path="events" element={<ErrorBoundary pageName="Events"><Events /></ErrorBoundary>} />
