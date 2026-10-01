@@ -29,7 +29,7 @@ const CAREER_BENEFITS = [
 
 export default function CareersHero() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-orange-50/40 via-white to-surface-container/20 py-16 sm:py-20 lg:py-24 dark:from-dark-surface-container dark:via-dark-surface dark:to-dark-surface">
+    <section className="relative overflow-hidden bg-gradient-to-b from-orange-50/40 via-white to-surface-container/20 pt-28 pb-16 sm:pt-32 sm:pb-20 lg:pt-36 lg:pb-24 dark:from-dark-surface-container dark:via-dark-surface dark:to-dark-surface">
       <div className="mx-auto max-w-container px-4 sm:px-6 lg:px-10 xl:px-12">
         {/* Header content matching screenshot */}
         <div className="max-w-4xl">

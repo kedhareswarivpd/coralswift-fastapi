@@ -44,7 +44,7 @@ export default function Modal({
 
  return (
   <div
-   className="fixed inset-0 z-[70] flex items-center justify-center bg-black/50 p-4"
+   className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/70 p-4 pt-20 pb-8 backdrop-blur-xs"
    onMouseDown={(e) => {
     if (closeOnBackdrop && e.target === e.currentTarget) onClose?.();
    }}
@@ -54,7 +54,7 @@ export default function Modal({
     role="dialog"
     aria-modal="true"
     aria-labelledby={title ? 'modal-title' : undefined}
-    className={`max-h-[90vh] w-full ${sizeClass} overflow-y-auto rounded-lg bg-white p-stack-lg text-ink shadow-card-hover dark:bg-dark-surface dark:text-dark-ink`}
+    className={`max-h-[80vh] w-full ${sizeClass} overflow-y-auto rounded-3xl bg-white p-6 shadow-2xl border border-slate-200/80 dark:border-slate-800 dark:bg-dark-surface dark:text-dark-ink sm:p-8`}
    >
     {title && (
      <div className="mb-4 flex items-start justify-between gap-4">
