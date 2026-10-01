@@ -15,7 +15,7 @@ export default function DesktopNavigation() {
 
  return (
   <nav
-   className="hidden items-center gap-0.5 lg:flex lg:gap-1"
+   className="flex items-center justify-center gap-2 lg:gap-4 xl:gap-6"
    aria-label="Main navigation"
   >
    {navigationConfig.map((item, index) => {
@@ -38,7 +38,7 @@ export default function DesktopNavigation() {
       to={item.to}
       end={item.to === '/'}
       className={({ isActive }) =>
-       `px-2 lg:px-2.5 py-2 text-label-caps uppercase transition-colors duration-200 ${
+       `px-3 py-2 text-label-caps uppercase font-medium tracking-wide transition-colors duration-200 ${
         isActive
          ? 'text-brand border-b-2 border-brand dark:text-dark-brand dark:border-dark-brand'
          : 'text-ink-muted border-b-2 border-transparent hover:text-brand dark:text-white dark:hover:text-dark-brand'

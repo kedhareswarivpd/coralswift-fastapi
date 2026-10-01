@@ -35,13 +35,6 @@ export default function CaseStudies() {
  return (
   <>
    <CaseStudiesHero />
-   <SectionHeading
-    eyebrow="Proven Results"
-    title="Success Stories Across Industries"
-    description="Real-world impact delivered through technical excellence and deep domain expertise."
-    align="center"
-    className="mx-auto max-w-container px-4 sm:px-6 lg:px-10 xl:px-12 [&_h2]:!text-white [&_p]:!text-white"
-   />
    <CaseStudiesGrid studies={caseStudies} />
    <CtaBanner />
   </>

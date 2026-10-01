@@ -1,71 +1,63 @@
-import { useEffect, useState } from 'react';
-import { aboutStats as staticAboutStats } from '../../data/about.js';
-import { fetchAboutContent } from '../../api/cms.js';
+import Icon from '../ui/Icon.jsx';
 
-export default function AboutHero({ stats }) {
- const [aboutStats, setAboutStats] = useState(staticAboutStats);
+export default function AboutHero() {
+  return (
+    <section className="relative overflow-hidden bg-gradient-to-b from-orange-50/40 via-white to-surface-container/20 py-12 sm:py-16 lg:py-20 dark:from-dark-surface-container dark:via-dark-surface dark:to-dark-surface">
+      <div className="mx-auto max-w-container px-4 sm:px-6 lg:px-10 xl:px-12">
+        {/* Header content matching Image 1 */}
+        <div className="mb-12 max-w-4xl">
+          <div className="mb-5 inline-flex items-center rounded-full bg-orange-100/80 px-4 py-1.5 text-xs font-semibold tracking-wide text-orange-600 dark:bg-orange-950/50 dark:text-orange-400">
+            About CoralSwift Technologies
+          </div>
 
- useEffect(() => {
-  fetchAboutContent()
-   .then((res) => {
-    const items = res?.data?.aboutStats;
-    if (Array.isArray(items) && items.length) setAboutStats(items);
-   })
-   .catch(() => {});
- }, []);
+          <h1 className="mb-6 font-display text-4xl font-extrabold tracking-tight text-ink dark:text-dark-ink sm:text-5xl lg:text-6xl">
+            Engineering Mission-Critical Systems for the{' '}
+            <span className="bg-gradient-to-r from-orange-500 via-brand to-purple-600 bg-clip-text text-transparent">
+              Global Economy
+            </span>
+          </h1>
 
- const items = stats
-  ? [
-    { value: `${stats.total_clients}+`, label: 'Global Clients' },
-    { value: `${stats.total_employees}+`, label: 'Engineers & Specialists' },
-    { value: `${stats.total_projects}+`, label: 'Projects Delivered' },
-    { value: `${stats.countries}+`, label: 'Countries Served' },
-   ]
-  : aboutStats;
- return (
-  <section className="relative flex min-h-[500px] items-center overflow-hidden bg-white dark:bg-dark-surface md:min-h-[620px]">
-   <div className="animate-float-slow pointer-events-none absolute right-10 top-10 size-72 rounded-full bg-white/5 blur-3xl" />
-   <div className="animate-float pointer-events-none absolute bottom-0 left-1/4 size-48 rounded-full bg-accent-cyan/10 blur-2xl" />
-   <div className="relative z-10 mx-auto grid max-w-container items-center gap-stack-lg px-4 py-20 sm:px-6 md:grid-cols-2 lg:px-10 xl:px-12 ">
-    <div>
-     <span className="animate-hero-1 mb-4 block font-label-caps text-label-caps uppercase text-accent-cyan">
-      Engineering the Future
-     </span>
-     <h1 className="animate-hero-2 mb-6 font-display text-display-lg-mobile text-brand-dark dark:text-dark-brand md:text-display-lg">
-      Innovating at the Core of <span className="text-brand">Global Scale</span>
-     </h1>
-     <p className="animate-hero-3 mb-stack-lg max-w-xl font-body text-body-lg text-ink-muted dark:text-dark-ink-muted">
-      CoralSwift Technologies is a global engineering powerhouse focused on driving digital
-      transformation through precise technical excellence and strategic innovation.
-     </p>
-     <div className="animate-hero-4 flex flex-wrap gap-3 sm:gap-4">
-      <button
-       onClick={() => document.getElementById('our-impact')?.scrollIntoView({ behavior: 'smooth' })}
-       className="flex h-11 items-center rounded bg-brand px-8 font-label-caps text-label-caps uppercase text-white transition-colors hover:opacity-90"
-      >
-       Our Impact
-      </button>
-      <button
-       onClick={() => document.getElementById('global-offices')?.scrollIntoView({ behavior: 'smooth' })}
-       className="flex h-11 items-center rounded border border-brand px-8 font-label-caps text-label-caps uppercase text-brand transition-colors hover:bg-brand hover:text-white"
-      >
-       View Global Offices
-      </button>
-     </div>
-    </div>
-    <div className="animate-hero-panel hidden md:block">
-     <div className="glass-panel animate-float rounded-lg p-8">
-      <div className="grid grid-cols-2 gap-8">
-       {items.map((stat) => (
-        <div key={stat.label} className="animate-count-in">
-         <div className="font-stat text-stat-lg text-brand-dark dark:text-dark-brand">{stat.value}</div>
-         <div className="font-label-caps text-label-caps uppercase text-ink-muted dark:text-white/60">{stat.label}</div>
+          <p className="font-body text-body-lg leading-relaxed text-ink-muted dark:text-dark-ink-muted sm:text-xl">
+            CoralSwift is an enterprise software services consultancy specializing in high-concurrency distributed systems, multi-cloud modernization, and applied generative AI pipelines. We bridge theoretical computer science with resilient, production-grade reality.
+          </p>
         </div>
-       ))}
+
+        {/* Mission & Vision Cards matching Image 1 */}
+        <div className="grid gap-6 md:grid-cols-2">
+          {/* Our Mission */}
+          <div className="group relative overflow-hidden rounded-3xl border border-outline-variant/70 bg-white p-8 shadow-sm transition-all duration-300 hover:-translate-y-3 hover:border-orange-400/80 hover:shadow-2xl hover:shadow-orange-500/15 dark:border-dark-outline-variant/80 dark:bg-dark-surface dark:hover:border-orange-600/80 sm:p-10">
+            {/* Top Border Gradient Accent Line */}
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-orange-500 via-brand to-amber-500 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+            
+            <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-100 text-brand transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6 dark:bg-orange-950/50">
+              <Icon name="track_changes" className="text-2xl" />
+            </div>
+            <h2 className="mb-4 font-display text-headline-md font-bold text-ink transition-colors duration-300 group-hover:text-brand dark:text-dark-ink dark:group-hover:text-orange-400">
+              Our Mission
+            </h2>
+            <p className="font-body text-body-md leading-relaxed text-ink-muted dark:text-dark-ink-muted">
+              To empower forward-thinking global enterprises to out-innovate their competitors by designing, delivering, and operating ultra-resilient, deterministic software systems that never fail under pressure.
+            </p>
+          </div>
+
+          {/* Our Vision */}
+          <div className="group relative overflow-hidden rounded-3xl border border-outline-variant/70 bg-white p-8 shadow-sm transition-all duration-300 hover:-translate-y-3 hover:border-rose-400/80 hover:shadow-2xl hover:shadow-rose-500/15 dark:border-dark-outline-variant/80 dark:bg-dark-surface dark:hover:border-rose-600/80 sm:p-10">
+            {/* Top Border Gradient Accent Line */}
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-rose-500 via-pink-500 to-purple-500 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+            
+            <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-rose-100 text-rose-500 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6 dark:bg-rose-950/50">
+              <Icon name="public" className="text-2xl" />
+            </div>
+            <h2 className="mb-4 font-display text-headline-md font-bold text-ink transition-colors duration-300 group-hover:text-rose-500 dark:text-dark-ink dark:group-hover:text-rose-400">
+              Our Vision
+            </h2>
+            <p className="font-body text-body-md leading-relaxed text-ink-muted dark:text-dark-ink-muted">
+              To be the world&apos;s most trusted technical authority for mission-critical enterprise platforms, setting the global benchmark for architectural discipline, zero-downtime operations, and ethical AI engineering.
+            </p>
+          </div>
+        </div>
       </div>
-     </div>
-    </div>
-   </div>
-  </section>
- );
+    </section>
+  );
 }
+

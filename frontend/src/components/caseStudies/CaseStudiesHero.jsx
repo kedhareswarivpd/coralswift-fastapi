@@ -1,19 +1,26 @@
+import Reveal from '../ui/Reveal.jsx';
+
 export default function CaseStudiesHero() {
- return (
-  <section className="relative overflow-hidden bg-brand-dark pb-section-padding pt-32 text-white">
-   <div className="animate-float-slow pointer-events-none absolute right-10 top-10 size-64 rounded-full bg-white/5 blur-3xl" />
-   <div className="mx-auto max-w-container px-4 sm:px-6 lg:px-10 xl:px-12">
-    <div className="max-w-3xl">
-     <span className="animate-hero-1 block font-label-caps text-label-caps uppercase tracking-widest text-accent-cyan">Case Studies</span>
-     <h1 className="animate-hero-2 mb-6 mt-4 font-display text-headline-lg text-white md:text-display-lg">
-      Real Impact. Real Results.
-     </h1>
-     <p className="animate-hero-3 max-w-2xl text-body-lg text-white/80">
-      Explore how we have helped enterprises across industries transform their technology
-      infrastructure, reduce costs, and accelerate innovation.
-     </p>
-    </div>
-   </div>
-  </section>
- );
+  return (
+    <section className="relative overflow-hidden bg-white py-16 sm:py-20 lg:py-24 dark:bg-dark-surface">
+      <div className="mx-auto max-w-container px-4 sm:px-6 lg:px-10 xl:px-12">
+        <Reveal from="up" className="max-w-3xl">
+          <div className="mb-4 inline-flex items-center rounded-full border border-orange-200/80 bg-orange-50/80 px-4 py-1.5 font-display text-xs font-semibold tracking-wide text-orange-600 dark:border-orange-900/60 dark:bg-orange-950/40 dark:text-orange-400">
+            Verified Production Results
+          </div>
+
+          <h1 className="font-display text-4xl font-extrabold tracking-tight text-ink dark:text-dark-ink sm:text-5xl lg:text-6xl leading-[1.12]">
+            Engineering Case Studies &amp;{' '}
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-amber-500 to-rose-500">
+              Enterprise Impact
+            </span>
+          </h1>
+
+          <p className="mt-6 max-w-2xl font-body text-base leading-relaxed text-ink-muted dark:text-dark-ink-muted sm:text-lg">
+            Explore how CoralSwift solves complex architectural bottlenecks, eliminates downtime, and builds ultra-resilient distributed platforms for global industry leaders.
+          </p>
+        </Reveal>
+      </div>
+    </section>
+  );
 }

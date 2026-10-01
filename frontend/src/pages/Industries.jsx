@@ -33,15 +33,6 @@ export default function Industries() {
  return (
   <>
    <IndustriesHero />
-   <div className="bg-brand-dark">
-    <SectionHeading
-     eyebrow="Who We Serve"
-     title="Industries Transformed by Technology"
-     description="Domain expertise combined with technical excellence to address sector-specific challenges."
-     align="center"
-     className="mx-auto max-w-container px-4 py-section-padding sm:px-6 lg:px-10 xl:px-12 [&_h2]:!text-white [&_p]:!text-white [&_span]:!text-accent-cyan"
-    />
-   </div>
    <IndustriesGrid industries={industries} />
    <CtaBanner />
   </>

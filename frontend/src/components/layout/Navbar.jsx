@@ -26,15 +26,19 @@ export default function Navbar() {
       : 'h-20 border-outline-variant bg-white dark:border-dark-outline-variant dark:bg-dark-surface'
     }`}
    >
-    <div className="mx-auto flex h-full max-w-container items-center justify-between px-4 sm:px-6 lg:px-10 xl:px-12">
-     {/* Left: Logo + Desktop Nav */}
-     <div className="flex items-center gap-6 lg:gap-8 xl:gap-10">
+    <div className="mx-auto flex h-full max-w-container items-center justify-between gap-4 px-4 sm:px-6 lg:px-10 xl:px-12">
+     {/* Left: Logo */}
+     <div className="flex shrink-0 items-center">
       <NavbarLogo compact={scrolled} />
+     </div>
+
+     {/* Center: Equally Spaced Desktop Navigation */}
+     <div className="hidden flex-1 items-center justify-center lg:flex">
       <DesktopNavigation />
      </div>
 
      {/* Right: Actions */}
-     <div className="flex items-center gap-3">
+     <div className="flex shrink-0 items-center gap-3">
       <Link
        to="/login"
        className="hidden rounded-md bg-brand px-5 py-2 text-label-caps font-semibold uppercase text-white transition-colors hover:bg-brand-dark dark:bg-dark-brand dark:hover:bg-brand lg:inline-block"

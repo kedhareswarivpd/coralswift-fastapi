@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
 import CareersHero from '../components/careers/CareersHero.jsx';
 import JobListings from '../components/careers/JobListings.jsx';
-import CultureSection from '../components/careers/CultureSection.jsx';
 import CtaBanner from '../components/home/CtaBanner.jsx';
 import SectionHeading from '../components/ui/SectionHeading.jsx';
 import useDocumentTitle from '../hooks/useDocumentTitle.js';
 import { apiRequest } from '../api/client.js';
-import { jobs as fallbackJobs, benefits, cultureValues } from '../data/careers.js';
+import { jobs as fallbackJobs } from '../data/careers.js';
 
 function adaptJobs(apiJobs) {
  return apiJobs.map((j) => ({
@@ -38,13 +37,13 @@ export default function Careers() {
  return (
   <>
    <CareersHero />
-   <div className="bg-brand-dark">
+   <div className="bg-surface-container/40 py-12 sm:py-16 dark:bg-dark-surface-container/40">
     <SectionHeading
      eyebrow="Open Positions"
      title="Join Our Team"
      description="Explore opportunities to work on cutting-edge technology with talented teams across the globe."
      align="center"
-     className="mx-auto max-w-container px-4 pb-section-padding sm:px-6 lg:px-10 xl:px-12 [&_h2]:!text-white [&_p]:!text-white [&_span]:!text-accent-cyan"
+     className="mx-auto max-w-container px-4 sm:px-6 lg:px-10 xl:px-12"
     />
    </div>
    {loading ? (
@@ -52,7 +51,6 @@ export default function Careers() {
    ) : (
     <JobListings jobs={jobs} />
    )}
-   <CultureSection values={cultureValues} benefits={benefits} />
    <CtaBanner />
   </>
  );

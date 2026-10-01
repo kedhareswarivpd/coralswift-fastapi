@@ -352,6 +352,46 @@ summary:focus-visible {
   }
 }
 
+/* ── Continuous Marquee Animation ──────────────────────────────────── */
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 35s linear infinite;
+}
+
+.animate-marquee:hover,
+.animate-marquee.paused {
+  animation-play-state: paused;
+}
+
+.animate-marquee-fast {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 25s linear infinite;
+}
+
+.animate-marquee-fast:hover,
+.animate-marquee-fast.paused {
+  animation-play-state: paused;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 /* ── Reduced motion ─────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -362,3 +402,4 @@ summary:focus-visible {
     transition-duration: 0.01ms !important;
   }
 }
+

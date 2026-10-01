@@ -75,7 +75,8 @@ export default function NavbarDropdown({
     ref={triggerRef}
     onClick={() => (isOpen ? onClose() : onOpen())}
     aria-expanded={isOpen}
-    aria-controls={menuId}     className={`flex items-center gap-1.5 p-2 text-label-caps uppercase transition-colors duration-200 lg:px-2.5 ${
+    aria-controls={menuId}
+    className={`flex items-center gap-1.5 px-3 py-2 text-label-caps uppercase font-medium tracking-wide transition-colors duration-200 ${
      isOpen
       ? 'text-brand dark:text-dark-brand'
       : 'text-ink-muted hover:text-brand dark:text-white dark:hover:text-dark-brand'

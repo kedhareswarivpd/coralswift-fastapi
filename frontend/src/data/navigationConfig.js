@@ -14,47 +14,17 @@ export const navigationConfig = [
   {
     label: 'Services',
     children: [
-      // Slugs must match real service records (backend cms_seed.py seeds +
-      // data/services.js demo fallback). Invented slugs here previously sent
-      // ServiceDetail's slug lookup to its NotFound state — a user-facing
-      // "404" for three of five items.
       { label: 'All Services', to: '/services', end: true },
-      { label: 'Software Development', to: '/services/custom-software' },
-      { label: 'Cloud & Infrastructure', to: '/services/cloud-infrastructure' },
-      { label: 'AI & Automation', to: '/services/ai-solutions' },
-      { label: 'Cybersecurity', to: '/services/cyber-security' },
-      { label: 'Data & Analytics', to: '/services/data-analytics' },
+      { label: 'Software Development', to: '/services?category=software-development' },
+      { label: 'Cloud & Infrastructure', to: '/services?category=cloud-infrastructure' },
+      { label: 'AI & Automation', to: '/services?category=ai-solutions' },
+      { label: 'Cybersecurity', to: '/services?category=cyber-security' },
+      { label: 'Data & Analytics', to: '/services?category=data-analytics' },
     ],
   },
-  {
-    label: 'Solutions',
-    children: [
-      { label: 'All Solutions', to: '/solutions', end: true },
-      { label: 'Products', to: '/products' },
-      { label: 'Technologies', to: '/technologies' },
-    ],
-  },
-  // Plain link (no dropdown) — Industries is a single page; both desktop and
-  // mobile navigation render items without `children` as a direct NavLink.
   { label: 'Industries', to: '/industries' },
-  { label: 'Portfolio', to: '/portfolio' },
-  {
-    label: 'Resources',
-    children: [
-      { label: 'Case Studies', to: '/case-studies' },
-      { label: 'Blog', to: '/blog' },
-      { label: 'Events', to: '/events' },
-      { label: 'Downloads', to: '/downloads' },
-      { label: 'FAQ', to: '/faq' },
-    ],
-  },
-  {
-    label: 'Company',
-    children: [
-      { label: 'Awards', to: '/awards' },
-      { label: 'Gallery', to: '/gallery' },
-      { label: 'Careers', to: '/careers' },
-    ],
-  },
+  { label: 'Case Studies', to: '/case-studies' },
+  { label: 'Careers', to: '/careers' },
   { label: 'Contact', to: '/contact' },
 ];
+
