@@ -55,7 +55,7 @@ export default function SuperAdminLogin() {
      </div>
     </div>
 
-    <form onSubmit={handleSubmit} className="flex flex-col gap-stack-md">
+    <form onSubmit={handleSubmit} autoComplete="off" className="flex flex-col gap-stack-md">
      <label className="flex flex-col gap-1.5">
       <span className="font-label-caps text-label-caps uppercase text-ink-muted dark:text-dark-ink-muted">Email</span>
       <input
@@ -64,7 +64,7 @@ export default function SuperAdminLogin() {
        value={email}
        onChange={(e) => setEmail(e.target.value)}
        placeholder="superadmin@coralswifttech.com"
-       autoComplete="username"
+       autoComplete="off"
        className={inputClass}
       />
      </label>
@@ -74,11 +74,15 @@ export default function SuperAdminLogin() {
       <div className="relative">
        <input
         required
-        type={showPassword ? 'text' : 'password'}
+        type="text"
+        name="auth_code"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         placeholder="••••••••"
-        autoComplete="current-password"
+        autoComplete="off"
+        data-lpignore="true"
+        data-form-type="other"
+        style={{ WebkitTextSecurity: showPassword ? 'none' : 'disc' }}
         className={inputClass}
        />
        <button

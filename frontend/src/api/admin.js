@@ -3,6 +3,7 @@ import { apiRequest, toQueryString, API_URL } from './client.js';
 // ── Dashboard ──────────────────────────────────────────────────────────────
 export const fetchDashboardOverview      = ()         => apiRequest('/dashboard/overview', {});
 export const fetchProjectStatusBreakdown = ()         => apiRequest('/dashboard/projects/status-breakdown', {});
+export const fetchDashboardStatistics   = ()         => apiRequest('/dashboard/statistics', {});
 
 // ── Users ──────────────────────────────────────────────────────────────────
 export const fetchUsers  = (p = {}) => apiRequest(`/users${toQueryString(p)}`, {});
@@ -78,6 +79,8 @@ export const deleteRole       = (id)     => apiRequest(`/access-control/roles/${
 export const fetchPermissions = (p = {}) => apiRequest(`/access-control/permissions${toQueryString(p)}`, {});
 export const createPermission = (body)   => apiRequest('/access-control/permissions', { method: 'POST', body });
 export const deletePermission = (id)     => apiRequest(`/access-control/permissions/${id}`, { method: 'DELETE' });
+export const assignRolePermissions = (roleId, permissionIds) =>
+  apiRequest(`/access-control/roles/${roleId}/permissions`, { method: 'PUT', body: { permission_ids: permissionIds } });
 
 // ── Analytics ──────────────────────────────────────────────────────────────
 export const fetchAnalyticsSummary = () => apiRequest('/analytics/summary', {});

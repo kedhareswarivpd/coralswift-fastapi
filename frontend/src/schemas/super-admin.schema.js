@@ -4,8 +4,10 @@ import { parseWithSchema } from './auth.schema.js';
 // Matches backend DepartmentCreate (backend/app/schemas/department.py):
 // only `name` is required there; description is optional.
 export const createDepartmentSchema = z.object({
- name: z.string().trim().min(1, 'Department name is required.'),
- description: z.string().trim().optional(),
+  name: z.string().trim().min(1, 'Department name is required.'),
+  code: z.string().trim().min(1, 'Department code is required.'),
+  head_employee_id: z.string().optional(),
+  description: z.string().trim().optional(),
 });
 
 export function validateCreateDepartment(form) {

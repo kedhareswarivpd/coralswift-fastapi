@@ -9,6 +9,7 @@ from app.models.blog import Blog
 from app.models.client import Client
 from app.models.contact_submission import ContactSubmission
 from app.models.employee import Employee
+from app.models.invoice import Invoice
 from app.models.payment import Payment
 from app.models.project import Project
 from app.models.task import Task
@@ -59,3 +60,44 @@ async def project_status_breakdown(db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Project.status, func.count(Project.id)).group_by(Project.status))
     data = [{"status": status, "count": cnt} for status, cnt in result.all()]
     return success_response(data=data)
+
+
+@router.get("/statistics", response_model=dict)
+async def dashboard_statistics(db: AsyncSession = Depends(get_db)):
+    # 1. Projects Breakdown
+    proj_result = await db.execute(select(Project.status, func.count(Project.id)).group_by(Project.status))
+    projects_data = []
+    for status, cnt in proj_result.all():
+        val = status.value if hasattr(status, "value") else str(status)
+        name = val.replace("_", " ").title()
+        projects_data.append({"name": name, "status": val, "value": cnt})
+
+    # 2. Clients Breakdown by Industry
+    client_result = await db.execute(
+        select(func.coalesce(Client.industry, "Other"), func.count(Client.id)).group_by(Client.industry)
+    )
+    clients_data = [{"name": ind or "General Enterprise", "value": cnt} for ind, cnt in client_result.all()]
+
+    # 3. Revenue Breakdown
+    rev_result = await db.execute(
+        select(
+            func.coalesce(Project.industry, "Core Solutions"),
+            func.coalesce(func.sum(Payment.amount), 0),
+        )
+        .select_from(Payment)
+        .join(Invoice, Payment.invoice_id == Invoice.id)
+        .outerjoin(Project, Invoice.project_id == Project.id)
+        .where(Payment.status == "completed")
+        .group_by(Project.industry)
+    )
+    revenue_data = [{"name": ind or "Core Solutions", "value": float(amt)} for ind, amt in rev_result.all() if float(amt) > 0]
+
+    return success_response(
+        data={
+            "projects": projects_data,
+            "clients": clients_data,
+            "revenue": revenue_data,
+        },
+        message="Dashboard statistics fetched",
+    )
+

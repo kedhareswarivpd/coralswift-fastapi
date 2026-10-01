@@ -221,31 +221,33 @@ export default function PartnerPortal() {
  // useRoleGuard already redirects both the unauthenticated case (to
  // /login?returnTo=..., preserving destination) and the wrong-role case —
  // this gate just withholds rendering while that redirect is in flight.
- if (initializing || !user || denied) return <div className="bg-surface-container py-section-padding dark:bg-dark-surface-container"><LoadingSpinner /></div>;
- if (loading) return <div className="bg-surface-container py-section-padding dark:bg-dark-surface-container"><SkeletonTable rows={6} columns={4} /></div>;
+ if (initializing || !user || denied) return <div className="bg-surface py-section-padding dark:bg-dark-surface"><LoadingSpinner /></div>;
+ if (loading) return <div className="bg-surface py-section-padding dark:bg-dark-surface"><SkeletonTable rows={6} columns={4} /></div>;
 
   return (
-   <div className="flex h-dvh flex-col bg-surface-container dark:bg-dark-surface-container">
-    <div className="sticky top-0 z-20 flex items-center justify-between gap-2 border-b border-outline-variant bg-brand-dark px-4 py-3 sm:gap-4 sm:px-6 lg:px-10 xl:px-12 ">
-     <div className="flex min-w-0 items-center gap-2 sm:gap-4">
-      <Avatar name={profile.contact_name || 'Partner'} size="lg" />
+   <div className="flex h-dvh flex-col bg-surface dark:bg-dark-surface">
+    <div className="sticky top-0 z-20 flex items-center justify-between gap-2 border-b border-outline-variant bg-white px-4 py-3 shadow-sm dark:border-dark-outline-variant dark:bg-dark-surface sm:gap-4 sm:px-6 lg:px-10 xl:px-12">
+     <div className="flex min-w-0 items-center gap-3 sm:gap-4">
+      <img src="/logo-icon.png" alt="CoralSwift Emblem" className="h-9 w-auto shrink-0 object-contain" />
+      <div className="hidden h-7 w-px bg-outline-variant sm:block dark:bg-dark-outline-variant" />
+      <Avatar name={profile.contact_name || 'Partner'} size="md" />
       <div className="min-w-0">
-       <h1 className="max-w-[40vw] truncate font-display text-headline-md font-bold text-white sm:max-w-none">{profile.contact_name || 'Partner'}</h1>
-       <p className="hidden truncate text-body-sm text-white/70 sm:block">{profile.email || ''} &middot; {profile.company_name}</p>
+       <h1 className="max-w-[40vw] truncate font-display text-headline-sm font-bold text-brand-dark sm:max-w-none dark:text-white">{profile.contact_name || 'Partner'}</h1>
+       <p className="hidden truncate text-body-sm text-ink-muted sm:block dark:text-dark-ink-muted">{profile.email || ''} &middot; <span className="font-semibold text-brand">{profile.company_name}</span></p>
       </div>
      </div>
-     <Button variant="outline-light" size="md" onClick={() => { logout(); navigate('/login', { replace: true }); }} icon={<Icon name="logout" />}>
+     <Button variant="primary" size="md" onClick={() => { logout(); navigate('/login', { replace: true }); }} icon={<Icon name="logout" />}>
       Sign Out
      </Button>
     </div>
 
    <div className="flex min-h-0 flex-1">
-    <aside className="hidden w-56 shrink-0 overflow-y-auto border-r border-outline-variant bg-brand-dark md:block">
-     <nav aria-label="Portal navigation" className="flex flex-col gap-1 p-3">
+    <aside className="hidden w-56 shrink-0 overflow-y-auto border-r border-outline-variant bg-white md:block dark:border-dark-outline-variant dark:bg-dark-surface">
+     <nav aria-label="Portal navigation" className="flex flex-col gap-1.5 p-3">
       {partnerPortalTabs.map((tab) => (
        <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-        className={`flex items-center gap-3 rounded-lg px-4 py-3 text-left font-label-caps text-label-caps uppercase transition-colors ${
-         activeTab === tab.id ? 'bg-brand/20 font-bold text-white' : 'text-white/70 hover:bg-white/15 hover:text-white'
+        className={`flex items-center gap-3 rounded-lg px-4 py-3 text-left font-label-caps text-label-caps uppercase transition-all ${
+         activeTab === tab.id ? 'bg-brand font-bold text-white shadow-sm' : 'font-semibold text-ink-muted hover:bg-brand/10 hover:text-brand dark:text-dark-ink-muted dark:hover:bg-dark-surface-container dark:hover:text-dark-brand'
         }`}>
         <Icon name={tab.icon} className="text-lg" />{tab.label}
        </button>
@@ -262,13 +264,13 @@ export default function PartnerPortal() {
       ariaLabel="Portal navigation"
       tabClassName={(selected) =>
        `flex items-center gap-2 whitespace-nowrap border-b-2 px-4 py-3 font-label-caps text-label-caps uppercase transition-colors ${
-        selected ? 'border-white font-bold text-white' : 'border-transparent font-semibold text-white/70 hover:border-white/40 hover:text-white'
+        selected ? 'border-brand font-bold text-brand' : 'border-transparent font-semibold text-ink-muted hover:border-brand/40 hover:text-ink dark:text-dark-ink-muted dark:hover:text-white'
        }`
       }
-      className="scrollbar-hide mb-stack-lg flex gap-1 overflow-x-auto border-b border-outline-variant bg-brand-dark px-4 py-2 sm:px-6 md:hidden lg:px-10 xl:px-12"
+      className="scrollbar-hide mb-stack-lg flex gap-1 overflow-x-auto border-b border-outline-variant bg-white px-4 py-2 sm:px-6 md:hidden lg:px-10 xl:px-12 dark:border-dark-outline-variant dark:bg-dark-surface"
      />
 
-     <div className="min-w-0 flex-1 overflow-y-auto px-4 py-stack-lg sm:px-6 lg:px-10 xl:px-12 ">
+     <div className="min-w-0 flex-1 overflow-y-auto bg-surface px-4 py-stack-lg sm:px-6 lg:px-10 xl:px-12 dark:bg-dark-surface">
       {activeTab === 'overview' && <Overview profile={profile} files={files} tickets={tickets} />}
       {activeTab === 'files' && <Files files={files} />}
       {activeTab === 'tickets' && <Tickets tickets={tickets} onNewTicket={handleNewTicket} />}

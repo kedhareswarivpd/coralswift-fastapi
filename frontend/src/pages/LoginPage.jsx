@@ -89,7 +89,7 @@ export default function LoginPage() {
      </div>
     </div>
 
-    <form onSubmit={handleSubmit} className="flex flex-col gap-stack-md">
+    <form onSubmit={handleSubmit} autoComplete="off" className="flex flex-col gap-stack-md">
      <label className="flex flex-col gap-1.5">
       <span className="font-label-caps text-label-caps uppercase text-ink-muted dark:text-dark-ink-muted">Email</span>
       <input
@@ -98,24 +98,25 @@ export default function LoginPage() {
        value={email}
        onChange={(e) => setEmail(e.target.value)}
        placeholder="you@coralswifttech.com"
-       autoComplete="username"
+       autoComplete="off"
        className={inputClass}
       />
      </label>
 
      <label className="flex flex-col gap-1.5">
-      <div className="flex items-center justify-between">
-       <span className="font-label-caps text-label-caps uppercase text-ink-muted dark:text-dark-ink-muted">Password</span>
-       <Link to="/forgot-password" className="text-body-sm text-brand hover:underline">Forgot password?</Link>
-      </div>
+      <span className="font-label-caps text-label-caps uppercase text-ink-muted dark:text-dark-ink-muted">Password</span>
       <div className="relative">
        <input
         required
-        type={showPassword ? 'text' : 'password'}
+        type="text"
+        name="auth_code"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         placeholder="••••••••"
-        autoComplete="current-password"
+        autoComplete="off"
+        data-lpignore="true"
+        data-form-type="other"
+        style={{ WebkitTextSecurity: showPassword ? 'none' : 'disc' }}
         className={inputClass}
        />
        <button

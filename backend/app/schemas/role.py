@@ -1,24 +1,7 @@
+import uuid
 from pydantic import BaseModel
 
 from app.schemas.common import TimestampedRead
-
-
-class RoleCreate(BaseModel):
-    name: str
-    slug: str
-    description: str | None = None
-
-
-class RoleUpdate(BaseModel):
-    name: str | None = None
-    description: str | None = None
-
-
-class RoleOut(TimestampedRead):
-    name: str
-    slug: str
-    description: str | None = None
-    is_system: bool
 
 
 class PermissionCreate(BaseModel):
@@ -39,3 +22,27 @@ class PermissionOut(TimestampedRead):
     module: str
     action: str
     description: str | None = None
+
+
+class RoleCreate(BaseModel):
+    name: str
+    slug: str
+    description: str | None = None
+
+
+class RoleUpdate(BaseModel):
+    name: str | None = None
+    description: str | None = None
+
+
+class RoleOut(TimestampedRead):
+    name: str
+    slug: str
+    description: str | None = None
+    is_system: bool
+    permissions: list[PermissionOut] = []
+
+
+class RolePermissionsPayload(BaseModel):
+    permission_ids: list[uuid.UUID] = []
+

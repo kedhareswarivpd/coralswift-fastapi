@@ -2456,13 +2456,15 @@ export default function AdminPanel() {
  }
 
   return (
-   <div className="flex h-dvh flex-col bg-surface-container dark:bg-dark-surface-container">
-    <div className="sticky top-0 z-20 flex items-center justify-between gap-2 border-b border-outline-variant bg-brand-dark px-4 py-3 sm:gap-4 sm:px-6 lg:px-10 xl:px-12 ">
-     <div className="flex min-w-0 items-center gap-2 sm:gap-4">
-      <Avatar name={currentUser?.name || 'Admin'} size="lg" />
+   <div className="flex h-dvh flex-col bg-surface dark:bg-dark-surface">
+    <div className="sticky top-0 z-20 flex items-center justify-between gap-2 border-b border-outline-variant bg-white px-4 py-3 shadow-sm dark:border-dark-outline-variant dark:bg-dark-surface sm:gap-4 sm:px-6 lg:px-10 xl:px-12">
+     <div className="flex min-w-0 items-center gap-3 sm:gap-4">
+      <img src="/logo-icon.png" alt="CoralSwift Emblem" className="h-9 w-auto shrink-0 object-contain" />
+      <div className="hidden h-7 w-px bg-outline-variant sm:block dark:bg-dark-outline-variant" />
+      <Avatar name={currentUser?.name || 'Admin'} size="md" />
       <div className="min-w-0">
-       <h1 className="max-w-[40vw] truncate font-display text-headline-md font-bold text-white sm:max-w-none">{currentUser?.name || 'Admin'}</h1>
-       <p className="hidden text-body-sm text-white/70 sm:block">{currentUser?.email || ''} &middot; {(currentUser?.role || currentRole || 'admin').replace('_', ' ')}</p>
+       <h1 className="max-w-[40vw] truncate font-display text-headline-sm font-bold text-brand-dark sm:max-w-none dark:text-white">{currentUser?.name || 'Admin'}</h1>
+       <p className="hidden text-body-sm text-ink-muted sm:block dark:text-dark-ink-muted">{currentUser?.email || ''} &middot; <span className="font-semibold text-brand">{(currentUser?.role || currentRole || 'admin').replace('_', ' ')}</span></p>
       </div>
      </div>
      <div className="flex shrink-0 items-center gap-2 sm:gap-3">
@@ -2473,12 +2475,12 @@ export default function AdminPanel() {
     </div>
 
    <div className="flex min-h-0 flex-1">
-    <aside className="hidden w-56 shrink-0 overflow-y-auto border-r border-outline-variant bg-brand-dark md:block">
-     <nav aria-label="Portal navigation" className="flex flex-col gap-1 p-3">
+    <aside className="hidden w-56 shrink-0 overflow-y-auto border-r border-outline-variant bg-white md:block dark:border-dark-outline-variant dark:bg-dark-surface">
+     <nav aria-label="Portal navigation" className="flex flex-col gap-1.5 p-3">
       {adminPanelTabs.map((tab) => (
        <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-        className={`flex items-center gap-3 rounded-lg px-4 py-3 text-left font-label-caps text-label-caps uppercase transition-colors ${
-         activeTab === tab.id ? 'bg-white/15 font-bold text-white' : 'text-white/70 hover:bg-white/10 hover:text-white'
+        className={`flex items-center gap-3 rounded-lg px-4 py-3 text-left font-label-caps text-label-caps uppercase transition-all ${
+         activeTab === tab.id ? 'bg-brand font-bold text-white shadow-sm' : 'font-semibold text-ink-muted hover:bg-brand/10 hover:text-brand dark:text-dark-ink-muted dark:hover:bg-dark-surface-container dark:hover:text-dark-brand'
         }`}>
         <Icon name={tab.icon} className="text-lg" />{tab.label}
        </button>
@@ -2495,13 +2497,13 @@ export default function AdminPanel() {
       ariaLabel="Portal navigation"
       tabClassName={(selected) =>
        `flex items-center gap-2 whitespace-nowrap border-b-2 px-4 py-3 font-label-caps text-label-caps uppercase transition-colors ${
-        selected ? 'border-brand font-bold text-brand' : 'border-transparent font-semibold text-ink-muted hover:border-brand/40 hover:text-ink'
+        selected ? 'border-brand font-bold text-brand' : 'border-transparent font-semibold text-ink-muted hover:border-brand/40 hover:text-ink dark:text-dark-ink-muted dark:hover:text-white'
        }`
       }
-      className="scrollbar-hide mb-stack-lg flex gap-1 overflow-x-auto border-b border-outline-variant bg-brand-dark px-4 py-2 sm:px-6 md:hidden lg:px-10 xl:px-12"
+      className="scrollbar-hide mb-stack-lg flex gap-1 overflow-x-auto border-b border-outline-variant bg-white px-4 py-2 sm:px-6 md:hidden lg:px-10 xl:px-12 dark:border-dark-outline-variant dark:bg-dark-surface"
      />
 
-     <div className="min-w-0 flex-1 overflow-auto px-4 py-stack-lg sm:px-6 lg:px-10 xl:px-12 ">
+     <div className="min-w-0 flex-1 overflow-auto bg-surface px-4 py-stack-lg sm:px-6 lg:px-10 xl:px-12 dark:bg-dark-surface">
       {activeTab === 'overview' && <Dashboard kpis={kpis} statusBreakdown={statusBreakdown} setActiveTab={setActiveTab} />}
       {activeTab === 'content' && <ContentManagement />}
       {activeTab === 'contacts' && <ContactsManagement />}
