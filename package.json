@@ -4,6 +4,8 @@
   "private": true,
   "description": "CoralSwift Technologies Enterprise Platform",
   "scripts": {
+    "build": "npm --prefix frontend run build",
+    "dev": "npm --prefix frontend run dev",
     "docker:up": "docker compose up -d --build",
     "docker:down": "docker compose down",
     "docker:build": "docker compose build --no-cache",

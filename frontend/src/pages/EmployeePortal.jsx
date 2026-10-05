@@ -18,8 +18,7 @@ import {
 import {
  fetchMyProfile, applyLeave as applyLeaveApi, submitTimesheet, fetchMyDocuments,
  checkIn as checkInApi, checkOut as checkOutApi,
- fetchMyPayslips, fetchMyPerformanceReviews, fetchMyTrainingEnrollments,
- fetchTrainingCatalog, enrollInCourse,
+ fetchMyPayslips, fetchMyPerformanceReviews,
 } from '../api/employees.js';
 import { apiRequest } from '../api/client.js';
 import { fetchProposals, fetchContracts, fetchLeads, fetchMeetings } from '../api/crm.js';
@@ -811,83 +810,6 @@ function Performance({ reviews }) {
  );
 }
 
-function Training({ courses, catalog, onEnroll, enrollingId }) {
- const statusColor = { completed: 'success', in_progress: 'info', pending: 'neutral', enrolled: 'info' };
- const enrolledIds = new Set(courses.map((c) => c.courseId ?? c.id));
- const available = (catalog || []).filter((c) => !enrolledIds.has(c.id));
- const [page, setPage] = useState(1);
- const totalPages = Math.max(1, Math.ceil(courses.length / CLIENT_PAGE_SIZE));
- const pagedCourses = courses.slice((page - 1) * CLIENT_PAGE_SIZE, page * CLIENT_PAGE_SIZE);
- useEffect(() => { if (page > totalPages) setPage(totalPages); }, [totalPages, page]);
-
- return (
-  <div className="space-y-stack-lg">
-   <section>
-    <h3 className="mb-4 font-display text-headline-sm text-brand-dark dark:text-dark-brand">Available Courses</h3>
-    {available.length > 0 ? (
-     <div className="grid gap-gutter sm:grid-cols-2 lg:grid-cols-3">
-      {available.map((c) => (
-       <div key={c.id} className="flex flex-col rounded-xl border border-outline-variant bg-white dark:bg-dark-surface p-6 shadow-sm transition-all hover:shadow-md dark:border-dark-outline-variant">
-        <p className="font-display text-body-md font-semibold text-brand-dark dark:text-white">{c.title}</p>
-        <p className="mt-1 font-label-caps text-body-xs uppercase tracking-wide text-brand">{c.category}</p>
-        <p className="mt-2 flex-1 text-body-sm text-ink-muted dark:text-dark-ink-muted">{c.description || 'No description available.'}</p>
-        <div className="mt-4 flex items-center justify-between border-t border-outline-variant/50 pt-3 dark:border-dark-outline-variant/50">
-         <span className="text-body-sm font-medium text-ink-muted dark:text-dark-ink-muted">
-          {c.duration_hours ? `${c.duration_hours} hrs` : 'Self-paced'}
-         </span>
-         <button
-          type="button"
-          onClick={() => onEnroll(c.id)}
-          disabled={enrollingId === c.id}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-brand px-4 py-2 font-label-caps text-label-caps uppercase text-white transition-colors hover:bg-brand-dark disabled:opacity-60"
-         >
-          <Icon name="school" className="text-base leading-none" />
-          {enrollingId === c.id ? 'Enrolling...' : 'Enroll'}
-         </button>
-        </div>
-       </div>
-      ))}
-     </div>
-    ) : (
-     <div className="rounded-xl border border-outline-variant bg-white dark:bg-dark-surface p-8 text-center text-body-sm text-ink-muted shadow-sm dark:border-dark-outline-variant dark:text-dark-ink-muted">
-      You are enrolled in all available courses, or no new courses are listed.
-     </div>
-    )}
-   </section>
-
-   <section>
-    <h3 className="mb-4 font-display text-headline-sm text-brand-dark dark:text-dark-brand">My Enrollments</h3>
-    <div className="responsive-table overflow-x-auto rounded-xl border border-outline-variant bg-white dark:bg-dark-surface shadow-sm dark:border-dark-outline-variant">
-     <table className="w-full text-left">
-      <thead className="border-b border-outline-variant bg-surface-container font-label-caps text-label-caps uppercase text-ink-muted dark:border-dark-outline-variant dark:bg-dark-surface-container dark:text-dark-ink-muted">
-       <tr>
-        <th className="px-6 py-4">Course</th>
-        <th className="px-6 py-4">Category</th>
-        <th className="px-6 py-4">Status</th>
-        <th className="px-6 py-4">Completed On</th>
-        <th className="px-6 py-4">Score</th>
-       </tr>
-      </thead>
-      <tbody className="divide-y divide-outline-variant dark:divide-dark-outline-variant">
-       {pagedCourses.length === 0 ? (
-        <tr><td data-label="Course" colSpan={5} className="px-6 py-8 text-center text-body-sm text-ink-muted dark:text-dark-ink-muted">No enrollments yet. Browse available courses above and click Enroll!</td></tr>
-       ) : pagedCourses.map((c) => (
-        <tr key={c.id} className="transition-colors hover:bg-surface-container dark:bg-dark-surface-container">
-         <td data-label="Course" className="px-6 py-4 font-medium text-brand-dark dark:text-white">{c.title}</td>
-         <td data-label="Category" className="px-6 py-4 text-body-sm text-ink-muted dark:text-dark-ink-muted">{c.category}</td>
-         <td data-label="Status" className="px-6 py-4"><StatusBadge variant={statusColor[c.status] || 'neutral'}>{c.status?.replace('_', ' ')}</StatusBadge></td>
-         <td data-label="Completed On" className="px-6 py-4 text-body-sm text-ink-muted dark:text-dark-ink-muted">{c.completedOn || '—'}</td>
-         <td data-label="Score" className="px-6 py-4 text-body-sm font-semibold text-brand-dark dark:text-white">{c.score || '—'}</td>
-        </tr>
-       ))}
-      </tbody>
-     </table>
-    </div>
-    <Pagination page={page} totalPages={totalPages} onChange={setPage} />
-   </section>
-  </div>
- );
-}
 
 function Documents({ docs }) {
  const typeIcon = { contract: 'gavel', id_proof: 'badge', certificate: 'workspace_premium', other: 'description', resume: 'person' };
@@ -1023,19 +945,6 @@ const normalizePerformance = (arr) => (arr || []).map((r) => ({
  achieved: r.goals_achieved ?? r.achieved ?? 0, feedback: r.feedback ?? r.comments ?? '',
 }));
 
-const normalizeTraining = (arr) => (arr || []).map((t) => ({
- id: t.id, courseId: t.course_id ?? t.courseId ?? t.training?.id,
- title: t.training?.title ?? t.title,
- category: t.training?.category ?? t.category ?? '—',
- status: t.status, completedOn: t.completed_at?.slice(0, 10) ?? t.completedOn ?? null,
- score: t.score ?? null,
-}));
-
-const normalizeCatalog = (arr) => (arr || []).map((c) => ({
- id: c.id, title: c.title, category: c.category || 'General',
- description: c.description, duration_hours: c.duration_hours,
-}));
-
 const normalizeDocs = (arr) => (arr || []).map((d) => ({
  id: d.id, name: d.title ?? d.name, type: d.type,
  uploadedOn: d.created_at?.slice(0, 10) ?? d.uploadedOn, file_url: d.file_url,
@@ -1076,9 +985,6 @@ export default function EmployeePortal() {
  const [projectsPage, setProjectsPage] = useState(1);
  const [projectsTotalPages, setProjectsTotalPages] = useState(1);
  const [performance, setPerformance] = useState([]);
- const [training, setTraining] = useState([]);
- const [catalog, setCatalog] = useState([]);
- const [enrollingId, setEnrollingId] = useState(null);
  const [documents, setDocuments] = useState([]);
  const [leadsData, setLeadsData] = useState([]);
  const [proposalsData, setProposalsData] = useState([]);
@@ -1112,21 +1018,6 @@ export default function EmployeePortal() {
    if (cl.status === 'fulfilled') setClientsData(cl.value?.data || []);
   });
  }, []);
-
- const { run: runEnroll } = useAsyncAction();
-
- const handleEnroll = (courseId) => runEnroll(async () => {
-  setEnrollingId(courseId);
-  try {
-   await enrollInCourse(courseId);
-   const res = await fetchMyTrainingEnrollments();
-   setTraining(normalizeTraining(res?.data));
-  } catch {
-   // Non-critical: enrollment list simply won't reflect the failed attempt.
-  } finally {
-   setEnrollingId(null);
-  }
- });
 
  useEffect(() => {
   if (!user) { setLoading(false); return; }
@@ -1169,14 +1060,10 @@ export default function EmployeePortal() {
    }),
    fetchMyPayslips(),
    fetchMyPerformanceReviews(),
-   fetchMyTrainingEnrollments(),
    fetchMyDocuments(),
-   fetchTrainingCatalog(),
-  ]).then(([, psRes, perfRes, trainRes, docsRes, catRes]) => {
+  ]).then(([, psRes, perfRes, docsRes]) => {
    if (psRes.status === 'fulfilled') setPayslips(normalizePayslips(psRes.value?.data));
    if (perfRes.status === 'fulfilled') setPerformance(normalizePerformance(perfRes.value?.data));
-   if (trainRes.status === 'fulfilled') setTraining(normalizeTraining(trainRes.value?.data));
-   if (catRes.status === 'fulfilled') setCatalog(normalizeCatalog(catRes.value?.data));
    if (docsRes.status === 'fulfilled') setDocuments(normalizeDocs(docsRes.value?.data));
   }).finally(() => { initialLoadDone.current = true; setLoading(false); });
  }, [user]);
@@ -1314,7 +1201,6 @@ export default function EmployeePortal() {
       )}
       {activeTab === 'projects' && <Projects projects={projects} page={projectsPage} totalPages={projectsTotalPages} onPageChange={setProjectsPage} />}
       {activeTab === 'performance' && <Performance reviews={performance} />}
-      {activeTab === 'training' && <Training courses={training} catalog={catalog} onEnroll={handleEnroll} enrollingId={enrollingId} />}
       {activeTab === 'documents' && <Documents docs={documents} />}
 
      </div>

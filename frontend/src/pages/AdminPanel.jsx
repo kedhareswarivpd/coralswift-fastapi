@@ -32,7 +32,6 @@ import {
  createNotification,
  fetchComments, moderateComment, deleteComment,
  fetchNewsletterSubscribers,
- fetchCourses, createCourse,
  fetchApplications, updateApplicationStatus,
 } from '../api/admin.js';
 import { careersApi } from '../api/cms.js';
@@ -44,7 +43,7 @@ import {
  validateAddRole, validateAddPermission, validateMediaUpload,
  validateSendNotification, validateGenerateReport, validateNewSetting,
 } from '../schemas/admin-misc.schema.js';
-import { validateNewCourse, validateNewCareer } from '../schemas/admin-content.schema.js';
+import { validateNewCareer } from '../schemas/admin-content.schema.js';
 
 import { useRoleGuard } from '../hooks/useRoleGuard.js';
 import ContentManager from '../components/admin/ContentManager.jsx';
@@ -1932,117 +1931,6 @@ function SettingsManagement() {
  );
 }
 
-// ── Training Courses ─────────────────────────────────────────────────────────
-// List + create only — the backend (backend/app/routers/training.py) has no
-// update/delete endpoint for courses at all, so this deliberately doesn't
-// offer edit/delete controls the API can't back.
-function NewCourseForm({ onCreated, onCancel }) {
- const [form, setForm] = useState({ title: '', category: '', duration_hours: '', description: '', is_published: true });
- const [error, setError] = useState('');
- const [fieldErrors, setFieldErrors] = useState({});
- const { run, isPending: submitting } = useAsyncAction();
- const inputClass = 'border border-outline-variant dark:border-dark-outline-variant rounded px-4 py-3 text-body-md dark:text-dark-ink bg-white dark:bg-dark-surface focus:outline-none focus:border-brand';
-
- const handleSubmit = async (e) => {
-  e.preventDefault();
-  setError('');
-  const clientErrors = validateNewCourse(form);
-  if (Object.keys(clientErrors).length > 0) {
-   setFieldErrors(clientErrors);
-   setError('Please fix the errors below.');
-   return;
-  }
-  setFieldErrors({});
-  try {
-   await run(async () => {
-    await createCourse({
-     title: form.title,
-     category: form.category || undefined,
-     duration_hours: form.duration_hours ? Number(form.duration_hours) : undefined,
-     description: form.description || undefined,
-     is_published: form.is_published,
-    });
-    onCreated();
-   });
-  } catch (err) {
-   setError(err.message || 'Could not create the course.');
-  }
- };
-
- return (
-  <form onSubmit={handleSubmit} className="space-y-4 rounded-lg border border-outline-variant bg-white p-stack-lg dark:border-dark-outline-variant dark:bg-dark-surface">
-   <div className="grid gap-4 sm:grid-cols-3">
-    <div>
-     <input required type="text" placeholder="Title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className={inputClass + ' w-full'} />
-     {fieldErrors.title && <p className="mt-1 flex items-center gap-1 text-body-xs font-semibold text-status-error-text">{fieldErrors.title}</p>}
-    </div>
-    <div>
-     <input type="text" placeholder="Category (e.g. Cloud)" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className={inputClass + ' w-full'} />
-     {fieldErrors.category && <p className="mt-1 flex items-center gap-1 text-body-xs font-semibold text-status-error-text">{fieldErrors.category}</p>}
-    </div>
-    <div>
-     <input type="number" min="0" placeholder="Duration (hours)" value={form.duration_hours} onChange={(e) => setForm({ ...form, duration_hours: e.target.value })} className={inputClass + ' w-full'} />
-     {fieldErrors.duration_hours && <p className="mt-1 flex items-center gap-1 text-body-xs font-semibold text-status-error-text">{fieldErrors.duration_hours}</p>}
-    </div>
-   </div>
-   <textarea placeholder="Description (optional)" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className={`${inputClass} w-full`} rows={2} />
-   <label className="flex items-center gap-2 text-body-sm text-ink-muted dark:text-dark-ink-muted">
-    <input type="checkbox" checked={form.is_published} onChange={(e) => setForm({ ...form, is_published: e.target.checked })} />Published (visible to employees)
-   </label>
-   {error && <p className="flex items-center gap-1 text-body-sm text-status-error-text"><Icon name="error" className="text-base" />{error}</p>}
-   <div className="flex gap-2">
-    <Button type="submit" variant="primary" size="md" disabled={submitting}>{submitting ? 'Creating...' : 'Create Course'}</Button>
-    <Button type="button" variant="outline" size="md" onClick={onCancel}>Cancel</Button>
-   </div>
-  </form>
- );
-}
-
-function TrainingManagement() {
- const [courses, setCourses] = useState([]);
- const [loading, setLoading] = useState(true);
- const [showNew, setShowNew] = useState(false);
- const [page, setPage] = useState(1);
- const [totalPages, setTotalPages] = useState(1);
-
- const load = useCallback(() => {
-  setLoading(true);
-  fetchCourses({ page, limit: 20 })
-   .then((res) => { setCourses(res?.data || []); setTotalPages(res?.meta?.total_pages || 1); })
-   .catch(() => {})
-   .finally(() => setLoading(false));
- }, [page]);
-
- useEffect(() => { load(); }, [load]);
-
- return (
-  <div className="space-y-stack-lg">
-   <div className="flex justify-end">
-    <Button onClick={() => setShowNew((v) => !v)} variant="primary" size="md" icon={<Icon name="add" />}>New Course</Button>
-   </div>
-   {showNew && <NewCourseForm onCreated={() => { setShowNew(false); load(); }} onCancel={() => setShowNew(false)} />}
-   <div className="responsive-table overflow-hidden rounded-lg border border-outline-variant bg-white dark:border-dark-outline-variant dark:bg-dark-surface">
-    {loading ? <div className="p-stack-lg"><SkeletonTable rows={6} columns={4} /></div> : (
-     <>
-      <PortalTable
-       emptyMessage="No courses yet."
-       rows={courses}
-       columns={[
-        { key: 'title', label: 'Title', className: 'text-body-md text-brand-dark dark:text-dark-brand' },
-        { key: 'category', label: 'Category', render: (v) => <Badge className="text-label-caps">{v || '—'}</Badge> },
-        { key: 'duration_hours', label: 'Duration', className: 'text-body-md text-ink-muted dark:text-white', render: (v) => (v ? `${v}h` : '—') },
-        { key: 'is_published', label: 'Status', render: (v) => <StatusBadge variant={v ? 'success' : 'neutral'}>{v ? 'published' : 'draft'}</StatusBadge> },
-       ]}
-      />
-      <div className="border-t border-outline-variant p-stack-lg dark:border-dark-outline-variant">
-       <Pagination page={page} totalPages={totalPages} onChange={setPage} />
-      </div>
-     </>
-    )}
-   </div>
-  </div>
- );
-}
 
 // ── Careers: job postings + application review ──────────────────────────────
 function NewCareerForm({ onCreated, onCancel }) {
@@ -2516,7 +2404,6 @@ export default function AdminPanel() {
       {activeTab === 'media' && <MediaManagement />}
       {activeTab === 'notifications' && <NotificationsManagement />}
       {activeTab === 'reports' && <ReportsManagement />}
-      {activeTab === 'training' && <TrainingManagement />}
       {activeTab === 'careers' && <CareersManagement />}
       {activeTab === 'comments' && <CommentsManagement />}
       {activeTab === 'newsletter' && <NewsletterManagement />}
