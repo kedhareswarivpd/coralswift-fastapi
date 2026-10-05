@@ -9,3 +9,8 @@ dist/
 /e2e/.auth/
 # Generated credential sheets/PDFs — contain demo passwords, never commit.
 CoralSwift_Portal_Credentials.pdf
+
+# Vite / temporary build artifacts
+vite.config.js.timestamp-*
+*.tmp.mjs
+

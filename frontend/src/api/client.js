@@ -29,26 +29,34 @@ function readCookie(name) {
 function handleUnauthorizedState() {
   if (typeof window === 'undefined') return;
   window.dispatchEvent(new CustomEvent('coralswift:unauthorized'));
-  const path = window.location.pathname || '/';
-  if (!path.startsWith('/login')) {
-    try {
-      window.location.href = '/login';
-    } catch {
-      // jsdom can reject navigation attempts in unit tests; real browsers
-      // still perform the redirect and the auth state is already cleared.
-    }
-  }
 }
 
 async function parseResponseBody(response) {
   if (!response) return null;
-  const bodyText = typeof response.text === 'function' ? await response.text().catch(() => '') : '';
-  if (!bodyText || !bodyText.trim()) return null;
-  try {
-    return JSON.parse(bodyText);
-  } catch {
-    return bodyText;
+
+  if (typeof response.text === 'function') {
+    try {
+      const bodyText = await response.text();
+      if (!bodyText || !bodyText.trim()) return null;
+      try {
+        return JSON.parse(bodyText);
+      } catch {
+        return bodyText;
+      }
+    } catch {
+      // If reading text fails or stream was already consumed, try fallback
+    }
   }
+
+  if (typeof response.json === 'function') {
+    try {
+      return await response.json();
+    } catch {
+      return null;
+    }
+  }
+
+  return null;
 }
 
 // A 401 from many in-flight requests must trigger exactly one refresh call,
