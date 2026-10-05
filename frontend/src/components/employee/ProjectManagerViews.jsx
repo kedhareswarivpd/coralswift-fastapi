@@ -255,10 +255,61 @@ function TaskBoard({ userId }) {
  const [historyTask, setHistoryTask] = useState(null);
  const [historyItems, setHistoryItems] = useState([]);
  const [historyLoading, setHistoryLoading] = useState(false);
+ const [reviewModalTask, setReviewModalTask] = useState(null);
+ const [reviewActionType, setReviewActionType] = useState('request_changes');
+ const [reviewNotes, setReviewNotes] = useState('');
+ const [reassignUserId, setReassignUserId] = useState('');
  const { run: runCreate, isPending: creating } = useAsyncAction();
  const { run: runChangeStatus, isPending: changingStatus } = useAsyncAction();
  const { run: runEdit, isPending: saving } = useAsyncAction();
  const { run: runDelete, isPending: deleting } = useAsyncAction();
+ const { run: runReviewAction, isPending: reviewActionPending } = useAsyncAction();
+
+ const handleApproveTask = (task) => runChangeStatus(async () => {
+  try {
+   await updateTaskStatus(task.id, 'done');
+   showToast(`Task "${task.title}" approved and marked DONE!`);
+   loadTasks();
+  } catch (err) {
+   showToast(err?.message || 'Failed to approve task', 'error');
+  }
+ });
+
+ const openRequestChanges = (task) => {
+  setReviewModalTask(task);
+  setReviewActionType('request_changes');
+  setReviewNotes('');
+ };
+
+ const openReassign = (task) => {
+  setReviewModalTask(task);
+  setReviewActionType('reassign');
+  setReassignUserId(task.assigned_to || '');
+ };
+
+ const submitReviewAction = (e) => {
+  e.preventDefault();
+  if (!reviewModalTask) return;
+  runReviewAction(async () => {
+   try {
+    if (reviewActionType === 'request_changes') {
+     const updatedDesc = reviewNotes.trim()
+      ? `${reviewModalTask.description ? `${reviewModalTask.description}\n` : ''}[Change Requested]: ${reviewNotes}`
+      : reviewModalTask.description;
+     await updateTask(reviewModalTask.id, { description: updatedDesc });
+     await updateTaskStatus(reviewModalTask.id, 'in_progress');
+     showToast('Change request sent to assignee. Task moved to IN PROGRESS.');
+    } else if (reviewActionType === 'reassign') {
+     await updateTask(reviewModalTask.id, { assigned_to: reassignUserId || null });
+     showToast('Task reassigned successfully.');
+    }
+    setReviewModalTask(null);
+    loadTasks();
+   } catch (err) {
+    showToast(err?.message || 'Action failed', 'error');
+   }
+  });
+ };
 
  const showToast = (msg, type = 'success') => {
   setToast({ msg, type });
@@ -496,14 +547,34 @@ function TaskBoard({ userId }) {
              <span>Due: {t.due_date}</span>
             </p>
            )}
-           <div className="pt-1">
-            <select value={t.status} disabled={changingStatus} onChange={(e) => changeStatus(t.id, e.target.value)}
-             className="w-full rounded border border-outline-variant bg-white dark:bg-dark-surface px-2 py-1 text-body-xs font-medium text-ink focus:border-brand focus:outline-none dark:border-dark-outline-variant dark:text-white">
-             {TASK_STATUS_COLUMNS.filter((c) => c !== 'blocked').map((s) => (
-              <option key={s} value={s}>Move to: {s.replace('_', ' ').toUpperCase()}</option>
-             ))}
-            </select>
-           </div>
+           {col === 'in_review' ? (
+            <div className="space-y-1.5 pt-2 border-t border-outline-variant dark:border-dark-outline-variant">
+             <p className="text-body-xs font-semibold text-brand dark:text-white">Manager Review Actions:</p>
+             <div className="flex flex-wrap gap-1">
+              <button type="button" disabled={changingStatus} onClick={() => handleApproveTask(t)}
+               className="rounded bg-green-500/10 px-2 py-1 text-body-xs font-bold text-green-700 dark:text-green-400 hover:bg-green-600 hover:text-white transition-colors">
+               ✓ Approve
+              </button>
+              <button type="button" disabled={changingStatus} onClick={() => openRequestChanges(t)}
+               className="rounded bg-amber-500/10 px-2 py-1 text-body-xs font-bold text-amber-700 dark:text-amber-400 hover:bg-amber-600 hover:text-white transition-colors">
+               ↺ Request Changes
+              </button>
+              <button type="button" disabled={changingStatus} onClick={() => openReassign(t)}
+               className="rounded bg-blue-500/10 px-2 py-1 text-body-xs font-bold text-blue-700 dark:text-blue-400 hover:bg-blue-600 hover:text-white transition-colors">
+               👤 Reassign
+              </button>
+             </div>
+            </div>
+           ) : (
+            <div className="pt-1">
+             <select value={t.status} disabled={changingStatus} onChange={(e) => changeStatus(t.id, e.target.value)}
+              className="w-full rounded border border-outline-variant bg-white dark:bg-dark-surface px-2 py-1 text-body-xs font-medium text-ink focus:border-brand focus:outline-none dark:border-dark-outline-variant dark:text-white">
+              {TASK_STATUS_COLUMNS.filter((c) => c !== 'blocked').map((s) => (
+               <option key={s} value={s}>Move to: {s.replace('_', ' ').toUpperCase()}</option>
+              ))}
+             </select>
+            </div>
+           )}
           </div>
          ))}
          {!colTasks.length && (
@@ -576,6 +647,38 @@ function TaskBoard({ userId }) {
      </ul>
     ) : (
      <p className="text-body-sm text-ink-muted dark:text-dark-ink-muted">No activity recorded yet.</p>
+    )}
+   </Modal>
+
+   <Modal open={!!reviewModalTask} onClose={() => setReviewModalTask(null)}
+    title={reviewActionType === 'request_changes' ? `Request Changes — ${reviewModalTask?.title || ''}` : `Reassign Task — ${reviewModalTask?.title || ''}`} size="md">
+    {reviewModalTask && (
+     <form onSubmit={submitReviewAction} className="space-y-4">
+      {reviewActionType === 'request_changes' ? (
+       <div>
+        <label className="mb-1 block text-body-sm font-medium text-ink dark:text-white">Feedback / Change Request Notes *</label>
+        <textarea rows={3} required placeholder="Detail what needs to be updated or revised by the assignee..." value={reviewNotes}
+         onChange={(e) => setReviewNotes(e.target.value)} className={`${FORM_INPUT_CLASS} w-full`} />
+        <p className="mt-1 text-body-xs text-ink-muted dark:text-dark-ink-muted">This note will be logged to the task history and moved back to IN PROGRESS for the assigned employee.</p>
+       </div>
+      ) : (
+       <div>
+        <label className="mb-1 block text-body-sm font-medium text-ink dark:text-white">Select New Assignee *</label>
+        <select value={reassignUserId} onChange={(e) => setReassignUserId(e.target.value)} className={`${FORM_INPUT_CLASS} w-full`}>
+         <option value="">Unassigned</option>
+         {employees.filter((e) => e.user_id).map((e) => (
+          <option key={e.id} value={e.user_id}>{e.employee_code} — {e.designation || 'Team Member'}</option>
+         ))}
+        </select>
+       </div>
+      )}
+      <div className="flex gap-2 pt-2">
+       <Button type="submit" variant="primary" size="md" disabled={reviewActionPending}>
+        {reviewActionPending ? 'Processing...' : reviewActionType === 'request_changes' ? 'Send Request & Move to In Progress' : 'Reassign Task'}
+       </Button>
+       <Button type="button" variant="outline" size="md" onClick={() => setReviewModalTask(null)}>Cancel</Button>
+      </div>
+     </form>
     )}
    </Modal>
   </div>
@@ -662,16 +765,16 @@ function Approvals() {
 
    <div className="flex flex-wrap items-center justify-between gap-3">
     <div className="flex items-center gap-3">
-     <span className="font-label-caps text-label-caps uppercase text-brand-dark dark:text-white">Filter:</span>
+     <span className="font-label-caps text-label-caps font-bold uppercase text-brand-dark dark:text-white">Filter:</span>
      {['submitted', 'approved', 'rejected', 'all'].map((s) => (
       <button key={s} onClick={() => setFilter(s)}
-       className={`rounded border px-3 py-1.5 font-label-caps text-label-caps uppercase transition-colors ${
-        filter === s ? 'border-brand bg-brand text-white' : 'border-outline-variant text-ink-muted hover:border-brand hover:text-brand dark:border-dark-outline-variant dark:text-dark-ink-muted'
+       className={`rounded-lg border px-3 py-1.5 font-label-caps text-label-caps font-bold uppercase transition-all ${
+        filter === s ? 'border-brand bg-brand text-white shadow-sm' : 'border-outline-variant bg-white dark:bg-dark-surface text-ink hover:border-brand hover:text-brand dark:border-dark-outline-variant dark:text-white'
        }`}>{s}
       </button>
      ))}
     </div>
-    <button onClick={load} className="flex items-center gap-1 font-label-caps text-body-sm uppercase text-brand hover:text-brand-dark dark:text-white">
+    <button onClick={load} className="flex items-center gap-1.5 rounded-lg border border-brand/30 bg-brand/10 px-3 py-1.5 font-label-caps text-body-sm font-bold uppercase text-brand hover:bg-brand hover:text-white dark:border-blue-400/40 dark:bg-blue-900/30 dark:text-cyan-300 dark:hover:bg-brand dark:hover:text-white transition-all">
      <Icon name="refresh" className="text-base" /> Refresh
     </button>
    </div>

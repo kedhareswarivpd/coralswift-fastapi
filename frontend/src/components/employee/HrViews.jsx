@@ -71,16 +71,16 @@ function LeaveApprovals() {
   <div className="space-y-stack-md">
    <div className="flex flex-wrap items-center justify-between gap-3">
     <div className="flex items-center gap-3">
-     <span className="font-label-caps text-label-caps uppercase text-brand-dark dark:text-white">Filter:</span>
+     <span className="font-label-caps text-label-caps font-bold uppercase text-brand-dark dark:text-white">Filter:</span>
      {['pending', 'approved', 'rejected', 'all'].map((s) => (
       <button key={s} onClick={() => setFilter(s)}
-       className={`rounded border px-3 py-1.5 font-label-caps text-label-caps uppercase transition-colors ${
-        filter === s ? 'border-brand bg-brand text-white' : 'border-outline-variant text-ink-muted hover:border-brand hover:text-brand dark:border-dark-outline-variant dark:text-dark-ink-muted'
+       className={`rounded-lg border px-3 py-1.5 font-label-caps text-label-caps font-bold uppercase transition-all ${
+        filter === s ? 'border-brand bg-brand text-white shadow-sm' : 'border-outline-variant bg-white dark:bg-dark-surface text-ink hover:border-brand hover:text-brand dark:border-dark-outline-variant dark:text-white'
        }`}>{s}
       </button>
      ))}
     </div>
-    <button onClick={load} className="flex items-center gap-1 font-label-caps text-body-sm uppercase text-brand hover:text-brand-dark dark:text-white">
+    <button onClick={load} className="flex items-center gap-1.5 rounded-lg border border-brand/30 bg-brand/10 px-3 py-1.5 font-label-caps text-body-sm font-bold uppercase text-brand hover:bg-brand hover:text-white dark:border-blue-400/40 dark:bg-blue-900/30 dark:text-cyan-300 dark:hover:bg-brand dark:hover:text-white transition-all">
      <Icon name="refresh" className="text-base" /> Refresh
     </button>
    </div>
@@ -268,11 +268,11 @@ function Recruitment() {
 
    <div className="flex flex-wrap items-center justify-between gap-3">
     <div className="flex items-center gap-3">
-     <span className="font-label-caps text-label-caps uppercase text-brand-dark dark:text-white">Filter:</span>
+     <span className="font-label-caps text-label-caps font-bold uppercase text-brand-dark dark:text-white">Filter:</span>
      {['all', ...APPLICATION_STATUS_OPTIONS].map((s) => (
       <button key={s} onClick={() => setStatusFilter(s)}
-       className={`rounded border px-3 py-1.5 font-label-caps text-label-caps uppercase transition-colors ${
-        statusFilter === s ? 'border-brand bg-brand text-white' : 'border-outline-variant text-ink-muted hover:border-brand hover:text-brand dark:border-dark-outline-variant dark:text-dark-ink-muted'
+       className={`rounded-lg border px-3 py-1.5 font-label-caps text-label-caps font-bold uppercase transition-all ${
+        statusFilter === s ? 'border-brand bg-brand text-white shadow-sm' : 'border-outline-variant bg-white dark:bg-dark-surface text-ink hover:border-brand hover:text-brand dark:border-dark-outline-variant dark:text-white'
        }`}>{s}
       </button>
      ))}

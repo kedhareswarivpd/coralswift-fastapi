@@ -12,40 +12,67 @@ import html
 
 import httpx
 
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
 from app.core.config import settings
 from app.core.logger import logger
 
 _BREVO_SEND_URL = "https://api.brevo.com/v3/smtp/email"
 
 
+def _send_via_smtp(to: str, subject: str, html_body: str) -> bool:
+    if not settings.smtp_host or not settings.smtp_user or not settings.smtp_pass:
+        return False
+    try:
+        msg = MIMEMultipart()
+        msg["From"] = f"{settings.brevo_sender_name} <{settings.brevo_sender_email}>"
+        msg["To"] = to
+        msg["Subject"] = subject
+        msg.attach(MIMEText(html_body, "html"))
+
+        with smtplib.SMTP(settings.smtp_host, settings.smtp_port, timeout=10) as server:
+            server.starttls()
+            server.login(settings.smtp_user, settings.smtp_pass)
+            server.send_message(msg)
+        logger.info("Email sent via SMTP fallback to %s: %s", to, subject)
+        return True
+    except Exception as exc:
+        logger.error("SMTP fallback failed to %s: %s", to, exc)
+        return False
+
+
 async def send_email(to: str, subject: str, html_body: str) -> None:
-    if not settings.brevo_api_key:
-        logger.info("[email:skipped, no BREVO_API_KEY configured] to=%s subject=%s", to, subject)
+    if settings.brevo_api_key:
+        payload = {
+            "sender": {"email": settings.brevo_sender_email, "name": settings.brevo_sender_name},
+            "to": [{"email": to}],
+            "subject": subject,
+            "htmlContent": html_body,
+        }
+        headers = {
+            "api-key": settings.brevo_api_key,
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        }
+
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                response = await client.post(_BREVO_SEND_URL, json=payload, headers=headers)
+            if response.status_code < 400:
+                logger.info("Email sent via Brevo HTTP API to %s: %s", to, subject)
+                return
+            logger.error("Brevo API rejected email to %s (status %s): %s", to, response.status_code, response.text[:500])
+        except Exception as exc:  # noqa: BLE001
+            logger.error("Brevo HTTP API call failed to %s: %s", to, exc)
+
+    # Fallback to SMTP if HTTP API failed or wasn't configured
+    if _send_via_smtp(to, subject, html_body):
         return
 
-    payload = {
-        "sender": {"email": settings.brevo_sender_email, "name": settings.brevo_sender_name},
-        "to": [{"email": to}],
-        "subject": subject,
-        "htmlContent": html_body,
-    }
-    headers = {
-        "api-key": settings.brevo_api_key,
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-    }
-
-    try:
-        async with httpx.AsyncClient(timeout=10.0) as client:
-            response = await client.post(_BREVO_SEND_URL, json=payload, headers=headers)
-        if response.status_code >= 400:
-            logger.error("Brevo rejected email to %s (status %s): %s", to, response.status_code, response.text[:500])
-            print(f"\n================ [EMAIL FALLBACK PRINT - BREVO REJECTED {response.status_code}] ================\nTO: {to}\nSUBJECT: {subject}\nBODY:\n{html_body}\n=================================================================================\n")
-            return
-        logger.info("Email sent to %s: %s", to, subject)
-    except Exception as exc:  # noqa: BLE001 — email delivery must never crash the caller's request
-        logger.error("Failed to send email to %s via Brevo: %s", to, exc)
-        print(f"\n================ [EMAIL FALLBACK PRINT - EXCEPTION] ================\nTO: {to}\nSUBJECT: {subject}\nBODY:\n{html_body}\n====================================================================\n")
+    # Console Fallback Print if both failed
+    print(f"\n================ [EMAIL FALLBACK PRINT] ================\nTO: {to}\nSUBJECT: {subject}\nBODY:\n{html_body}\n========================================================\n")
 
 
 

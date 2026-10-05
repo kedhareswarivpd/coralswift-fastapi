@@ -1225,13 +1225,13 @@ export default function EmployeePortal() {
 
   return (
    <div className="flex h-dvh flex-col bg-dark-surface">
-    <div className="sticky top-0 z-20 flex items-center justify-between gap-2 border-b border-brand-dark/30 bg-brand-dark px-4 py-3 sm:gap-4 sm:px-6 lg:px-10 xl:px-12 ">
+    <div className="sticky top-0 z-20 flex items-center justify-between gap-2 border-b border-brand-dark/30 bg-brand-dark px-4 py-3 sm:gap-4 sm:px-6 lg:px-10 xl:px-12">
      <div className="flex min-w-0 items-center gap-2 sm:gap-4">
       <Avatar name={profile.name} size="lg" />
       <div className="min-w-0">
-       <p className="mb-1 hidden font-label-caps text-body-xs uppercase tracking-widest text-white/60 sm:block">{portalTitle}</p>
-       <h1 className="max-w-[40vw] truncate font-display text-headline-md font-bold text-brand-dark dark:text-white sm:max-w-none">{profile.name}</h1>
-       <p className="hidden truncate text-body-sm text-white/70 sm:block">{profile.email} &middot; {profile.designation} &middot; {profile.department}</p>
+       <p className="mb-0.5 font-label-caps text-body-xs uppercase tracking-widest text-cyan-300 font-bold">{portalTitle}</p>
+       <h1 className="max-w-[50vw] truncate font-display text-headline-md font-bold text-white sm:max-w-none">{profile.name}</h1>
+       <p className="truncate text-body-sm text-white/80">{profile.email}{profile.designation ? ` · ${profile.designation}` : ''}{profile.department ? ` · ${profile.department}` : ''}</p>
       </div>
      </div>
      <div className="flex shrink-0 items-center gap-2 sm:gap-3">
