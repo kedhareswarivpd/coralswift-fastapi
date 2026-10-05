@@ -8,8 +8,8 @@ export const faqCategories = [
         answer: 'CoralSwift Technologies is a global technology consulting and engineering firm specializing in digital transformation, cloud infrastructure, AI/ML solutions, cybersecurity, and enterprise application development. Founded in 2020, we serve 200+ enterprise clients across 18+ countries.',
       },
       {
-        question: 'Where are your offices located?',
-        answer: 'We have offices in Bangalore (HQ), Mumbai, Hyderabad, Pune (India), Dubai (UAE), and Singapore. Our teams operate across 6 countries with delivery capabilities spanning 4 continents.',
+        question: 'Where is your corporate office located?',
+        answer: 'Our corporate office is located at 30 N Gould St Ste #62633, Sheridan, WY 82801, United States. You can reach our team via email at info@coralswift.com or by phone at +1 (307) 216-5154.',
       },
       {
         question: 'What industries do you serve?',

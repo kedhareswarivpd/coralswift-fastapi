@@ -152,9 +152,9 @@ export const benefits = [
   { icon: 'medical_services', title: 'Comprehensive Healthcare', description: 'Medical, dental, and vision coverage for you and your family from day one.' },
   { icon: 'account_balance', title: 'Equity & Retirement', description: 'Stock options and 401(k)/provident fund matching to build your future.' },
   { icon: 'school', title: 'Learning & Development', description: 'Annual learning budget of 2,00,000 INR for conferences, courses, and certifications.' },
-  { icon: 'flight_takeoff', title: 'Flexible Travel', description: 'Work from any of our 6 global offices with relocation support available.' },
+  { icon: 'flight_takeoff', title: 'Flexible Work', description: 'Work remotely or collaborate with our global team with flexible arrangements.' },
   { icon: 'pets', title: 'Pet-Friendly Workplace', description: 'Bring your furry friends to the office — we have dedicated pet zones.' },
-  { icon: 'restaurant', title: 'Daily Meals & Snacks', description: 'Fresh breakfast, lunch, and unlimited snacks at all office locations.' },
+  { icon: 'restaurant', title: 'Daily Meals & Snacks', description: 'Fresh breakfast, lunch, and unlimited snacks at our corporate office.' },
 ];
 
 export const cultureValues = [

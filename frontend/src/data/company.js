@@ -8,7 +8,5 @@ export const COMPANY = {
   partner: 'Officially Partnered by VPD Technologies',
   founded: 2020,
   hq: '30 N Gould St Ste #62633, Sheridan, WY 82801, United States',
-  offices: ['Bangalore', 'Hyderabad', 'Pune', 'Mumbai', 'Dubai', 'Singapore'],
+  offices: ['30 N Gould St Ste #62633, Sheridan, WY 82801, United States'],
 };
-
-
