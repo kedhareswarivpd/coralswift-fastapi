@@ -43,7 +43,7 @@ describe('apiRequest', () => {
   it('returns payload on successful request', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ success: true, data: { id: 1 } }),
+      text: async () => JSON.stringify({ success: true, data: { id: 1 } }),
     });
 
     const result = await apiRequest('/test');
@@ -53,7 +53,7 @@ describe('apiRequest', () => {
   it('sends GET request by default', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => ({}),
+      text: async () => JSON.stringify({}),
     });
 
     await apiRequest('/test');
@@ -66,7 +66,7 @@ describe('apiRequest', () => {
   it('sends POST request when specified', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => ({}),
+      text: async () => JSON.stringify({}),
     });
 
     await apiRequest('/test', { method: 'POST', body: { name: 'test' } });
@@ -79,7 +79,7 @@ describe('apiRequest', () => {
   it('never sends an Authorization header — auth is cookie-based, a passed `token` is ignored', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => ({}),
+      text: async () => JSON.stringify({}),
     });
 
     await apiRequest('/test', { token: 'legacy-prop-should-be-ignored' });
@@ -90,7 +90,7 @@ describe('apiRequest', () => {
   it('always sends credentials: "include" so the httpOnly session cookies are attached', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => ({}),
+      text: async () => JSON.stringify({}),
     });
 
     await apiRequest('/test');
@@ -102,7 +102,7 @@ describe('apiRequest', () => {
 
   it('attaches X-CSRF-Token (read from the cf_csrf_token cookie) on mutating requests', async () => {
     document.cookie = 'cf_csrf_token=my-csrf-value; path=/;';
-    mockFetch.mockResolvedValueOnce({ ok: true, json: async () => ({}) });
+    mockFetch.mockResolvedValueOnce({ ok: true, text: async () => JSON.stringify({}) });
 
     await apiRequest('/test', { method: 'POST', body: { a: 1 } });
     expect(mockFetch).toHaveBeenCalledWith(
@@ -115,7 +115,7 @@ describe('apiRequest', () => {
 
   it('does not attach X-CSRF-Token on a plain GET', async () => {
     document.cookie = 'cf_csrf_token=my-csrf-value; path=/;';
-    mockFetch.mockResolvedValueOnce({ ok: true, json: async () => ({}) });
+    mockFetch.mockResolvedValueOnce({ ok: true, text: async () => JSON.stringify({}) });
 
     await apiRequest('/test');
     const callArgs = mockFetch.mock.calls[0][1];
@@ -124,9 +124,9 @@ describe('apiRequest', () => {
 
   it('on a 401, calls POST /auth/refresh once and retries the original request', async () => {
     mockFetch
-      .mockResolvedValueOnce({ ok: false, status: 401, json: async () => ({ message: 'expired' }) })
+      .mockResolvedValueOnce({ ok: false, status: 401, text: async () => JSON.stringify({ message: 'expired' }) })
       .mockResolvedValueOnce({ ok: true, status: 200 }) // POST /auth/refresh
-      .mockResolvedValueOnce({ ok: true, json: async () => ({ success: true, data: { id: 1 } }) }); // retried request
+      .mockResolvedValueOnce({ ok: true, text: async () => JSON.stringify({ success: true, data: { id: 1 } }) }); // retried request
 
     const result = await apiRequest('/protected');
 
@@ -147,9 +147,9 @@ describe('apiRequest', () => {
       // same path succeeds.
       if (!seenPaths.has(url)) {
         seenPaths.add(url);
-        return Promise.resolve({ ok: false, status: 401, json: async () => ({}) });
+        return Promise.resolve({ ok: false, status: 401, text: async () => JSON.stringify({}) });
       }
-      return Promise.resolve({ ok: true, json: async () => ({ success: true }) });
+      return Promise.resolve({ ok: true, text: async () => JSON.stringify({ success: true }) });
     });
 
     await Promise.all([apiRequest('/a'), apiRequest('/b'), apiRequest('/c')]);
@@ -160,8 +160,8 @@ describe('apiRequest', () => {
     const handler = vi.fn();
     window.addEventListener('coralswift:unauthorized', handler);
     mockFetch
-      .mockResolvedValueOnce({ ok: false, status: 401, json: async () => ({ message: 'expired' }) })
-      .mockResolvedValueOnce({ ok: false, status: 401, json: async () => ({}) }); // refresh also 401s
+      .mockResolvedValueOnce({ ok: false, status: 401, text: async () => JSON.stringify({ message: 'expired' }) })
+      .mockResolvedValueOnce({ ok: false, status: 401, text: async () => JSON.stringify({}) }); // refresh also 401s
 
     await apiRequest('/protected').catch(() => {});
     expect(handler).toHaveBeenCalledTimes(1);
@@ -169,7 +169,7 @@ describe('apiRequest', () => {
   });
 
   it('does not attempt a refresh loop for /auth/login itself', async () => {
-    mockFetch.mockResolvedValueOnce({ ok: false, status: 401, json: async () => ({ message: 'bad credentials' }) });
+    mockFetch.mockResolvedValueOnce({ ok: false, status: 401, text: async () => JSON.stringify({ message: 'bad credentials' }) });
 
     const error = await apiRequest('/auth/login', { method: 'POST', body: {} }).catch((e) => e);
     expect(mockFetch).toHaveBeenCalledTimes(1);
@@ -181,7 +181,7 @@ describe('apiRequest', () => {
       ok: false,
       status: 404,
       statusText: 'Not Found',
-      json: async () => ({ message: 'Resource not found' }),
+      text: async () => JSON.stringify({ message: 'Resource not found' }),
     });
 
     const error = await apiRequest('/missing').catch((e) => e);
@@ -195,7 +195,7 @@ describe('apiRequest', () => {
       ok: false,
       status: 500,
       statusText: 'Internal Server Error',
-      json: async () => { throw new Error('No JSON'); },
+      text: async () => { throw new Error('No text'); },
     });
 
     await expect(apiRequest('/error')).rejects.toThrow(ApiRequestError);
@@ -212,7 +212,7 @@ describe('apiRequest', () => {
   it('handles empty response body', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => null,
+      text: async () => '',
     });
 
     const result = await apiRequest('/test');
@@ -222,7 +222,7 @@ describe('apiRequest', () => {
   it('stringifies body when provided', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => ({}),
+      text: async () => JSON.stringify({}),
     });
 
     await apiRequest('/test', { method: 'POST', body: { key: 'value' } });
@@ -233,7 +233,7 @@ describe('apiRequest', () => {
   it('does not stringify body when undefined', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => ({}),
+      text: async () => JSON.stringify({}),
     });
 
     await apiRequest('/test');
@@ -244,7 +244,7 @@ describe('apiRequest', () => {
   it('sends FormData as-is without forcing Content-Type', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ success: true }),
+      text: async () => JSON.stringify({ success: true }),
     });
 
     const formData = new FormData();
