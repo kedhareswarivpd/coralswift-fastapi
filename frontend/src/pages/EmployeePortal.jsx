@@ -697,7 +697,7 @@ function Projects({ projects, page, totalPages, onPageChange }) {
     ))}
    </div>
    <section>
-    <h3 className="mb-4 font-display text-headline-sm text-white">Assigned Projects</h3>
+    <h3 className="mb-4 font-display text-headline-sm text-brand-dark dark:text-dark-brand">Assigned Projects</h3>
     {projects.length === 0 && <p className="py-8 text-center text-body-sm text-ink-muted dark:text-dark-ink-muted">No projects assigned yet.</p>}
     <div className="grid gap-gutter sm:grid-cols-2 lg:grid-cols-3">
      {projects.map((p) => (
@@ -786,7 +786,7 @@ function Performance({ reviews }) {
     ))}
    </div>
    <section>
-    <h3 className="mb-4 font-display text-headline-sm text-white">Performance Reviews</h3>
+    <h3 className="mb-4 font-display text-headline-sm text-brand-dark dark:text-dark-brand">Performance Reviews</h3>
     {reviews.length === 0 && <p className="py-8 text-center text-body-sm text-ink-muted dark:text-dark-ink-muted">No performance reviews yet.</p>}
     <div className="grid gap-gutter sm:grid-cols-2 lg:grid-cols-3">
      {pagedReviews.map((r) => (
@@ -822,7 +822,7 @@ function Training({ courses, catalog, onEnroll, enrollingId }) {
  return (
   <div className="space-y-stack-lg">
    <section>
-    <h3 className="mb-4 font-display text-headline-sm text-white">Available Courses</h3>
+    <h3 className="mb-4 font-display text-headline-sm text-brand-dark dark:text-dark-brand">Available Courses</h3>
     {available.length > 0 ? (
      <div className="grid gap-gutter sm:grid-cols-2 lg:grid-cols-3">
       {available.map((c) => (
@@ -855,7 +855,7 @@ function Training({ courses, catalog, onEnroll, enrollingId }) {
    </section>
 
    <section>
-    <h3 className="mb-4 font-display text-headline-sm text-white">My Enrollments</h3>
+    <h3 className="mb-4 font-display text-headline-sm text-brand-dark dark:text-dark-brand">My Enrollments</h3>
     <div className="responsive-table overflow-x-auto rounded-xl border border-outline-variant bg-white dark:bg-dark-surface shadow-sm dark:border-dark-outline-variant">
      <table className="w-full text-left">
       <thead className="border-b border-outline-variant bg-surface-container font-label-caps text-label-caps uppercase text-ink-muted dark:border-dark-outline-variant dark:bg-dark-surface-container dark:text-dark-ink-muted">
@@ -916,7 +916,7 @@ function Documents({ docs }) {
     ))}
    </div>
    <section>
-    <h3 className="mb-4 font-display text-headline-sm text-white">My Documents</h3>
+    <h3 className="mb-4 font-display text-headline-sm text-brand-dark dark:text-dark-brand">My Documents</h3>
     {docs.length === 0 && <p className="py-8 text-center text-body-sm text-ink-muted dark:text-dark-ink-muted">No documents available yet.</p>}
     <div className="grid gap-gutter sm:grid-cols-2 lg:grid-cols-3">
      {pagedDocs.map((d) => (
@@ -1220,8 +1220,8 @@ export default function EmployeePortal() {
   if (!initializing && user && denied) navigate(profile.role === 'client' ? '/client' : '/login', { replace: true });
  }, [initializing, user, denied, profile.role, navigate]);
 
- if (initializing || !user || denied) return <div className="bg-white/10 py-section-padding"><LoadingSpinner /></div>;
- if (loading) return <div className="bg-white/10 py-section-padding"><LoadingSpinner /></div>;
+ if (initializing || !user || denied) return <div className="bg-surface py-section-padding dark:bg-dark-surface"><LoadingSpinner /></div>;
+ if (loading) return <div className="bg-surface py-section-padding dark:bg-dark-surface"><LoadingSpinner /></div>;
 
   return (
    <div className="flex h-dvh flex-col bg-dark-surface">
@@ -1235,19 +1235,19 @@ export default function EmployeePortal() {
       </div>
      </div>
      <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-      <Button variant="outline-light" size="md" onClick={() => { logout(); navigate('/login', { replace: true }); }} icon={<Icon name="logout" />}>
+      <Button variant="primary" size="md" onClick={() => { logout(); navigate('/login', { replace: true }); }} icon={<Icon name="logout" />}>
        Sign Out
       </Button>
      </div>
     </div>
 
    <div className="flex min-h-0 flex-1">
-    <aside className="hidden w-56 shrink-0 overflow-y-auto border-r border-brand-dark/30 bg-brand-dark md:block">
-     <nav aria-label="Portal navigation" className="flex flex-col gap-1 p-3">
+    <aside className="hidden w-56 shrink-0 overflow-y-auto border-r border-outline-variant bg-white md:block dark:border-dark-outline-variant dark:bg-dark-surface">
+     <nav aria-label="Portal navigation" className="flex flex-col gap-1.5 p-3">
       {portalTabs.map((tab) => (
        <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-        className={`flex items-center gap-3 rounded-lg px-4 py-3 text-left font-label-caps text-label-caps uppercase transition-colors ${
-         activeTab === tab.id ? 'bg-white/20 font-bold text-white' : 'text-white/70 hover:bg-white/10 hover:text-white'
+        className={`flex items-center gap-3 rounded-lg px-4 py-3 text-left font-label-caps text-label-caps uppercase transition-all ${
+         activeTab === tab.id ? 'bg-brand font-bold text-white shadow-sm' : 'font-semibold text-ink-muted hover:bg-brand/10 hover:text-brand dark:text-dark-ink-muted dark:hover:bg-dark-surface-container dark:hover:text-dark-brand'
         }`}>
         <Icon name={tab.icon} className="text-lg" />{tab.label}
        </button>
@@ -1256,18 +1256,18 @@ export default function EmployeePortal() {
     </aside>
 
     <div className="flex min-h-0 flex-1 flex-col">
-     <div className="scrollbar-hide mb-stack-lg flex gap-1 overflow-x-auto border-b px-4 py-2 sm:px-6 md:hidden lg:px-10 xl:px-12">
+     <div className="scrollbar-hide mb-stack-lg flex gap-1 overflow-x-auto border-b border-outline-variant bg-white px-4 py-2 sm:px-6 md:hidden lg:px-10 xl:px-12 dark:border-dark-outline-variant dark:bg-dark-surface">
       {portalTabs.map((tab) => (
        <button key={tab.id} onClick={() => setActiveTab(tab.id)}
         className={`flex items-center gap-2 whitespace-nowrap border-b-2 px-4 py-3 font-label-caps text-label-caps uppercase transition-colors ${
-         activeTab === tab.id ? 'border-white font-bold text-white' : 'border-transparent text-white/70 hover:border-white/40 hover:text-white'
+         activeTab === tab.id ? 'border-brand font-bold text-brand' : 'border-transparent font-semibold text-ink-muted hover:border-brand/40 hover:text-ink dark:text-dark-ink-muted dark:hover:text-white'
         }`}>
         <Icon name={tab.icon} className="text-lg" />{tab.label}
        </button>
       ))}
      </div>
 
-     <div className="min-w-0 flex-1 overflow-y-auto px-4 py-stack-lg sm:px-6 lg:px-10 xl:px-12 ">
+     <div className="min-w-0 flex-1 overflow-y-auto bg-surface px-4 py-stack-lg sm:px-6 lg:px-10 xl:px-12 dark:bg-dark-surface">
       {activeTab === 'overview' && <Overview profile={profile} attendance={attendance} leaves={leaves} timesheets={timesheets} payslips={payslips} />}
       <Suspense fallback={<TabFallback />}>
        {activeTab === 'crm-dashboard' && effectiveRole === 'sales' && <CrmDashboard leads={leadsData} proposals={proposalsData} contracts={contractsData} />}

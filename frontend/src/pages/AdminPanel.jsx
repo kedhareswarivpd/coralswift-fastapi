@@ -1630,9 +1630,9 @@ function ContactsManagement() {
     {loading ? (
      <div className="p-stack-lg"><SkeletonTable rows={6} columns={10} /></div>
     ) : (
-     <div className="responsive-table overflow-x-auto">
-      <table className="w-full text-left">
-       <thead className="bg-surface-container font-label-caps text-label-caps uppercase text-ink-muted dark:bg-dark-surface-container dark:text-dark-ink-muted">
+     <div className="responsive-table overflow-x-auto custom-scrollbar pb-4">
+      <table className="w-full min-w-[1200px] text-left">
+       <thead className="bg-surface-container font-label-caps text-label-caps uppercase text-ink-muted dark:bg-dark-surface-container dark:text-dark-ink-muted whitespace-nowrap">
         <tr>
          <th className="px-stack-lg py-4">Name</th>
          <th className="px-stack-lg py-4">Email</th>
@@ -2488,7 +2488,7 @@ export default function AdminPanel() {
      </nav>
     </aside>
 
-    <div className="flex min-h-0 flex-1 flex-col">
+    <div className="flex min-h-0 min-w-0 flex-1 flex-col">
      <Tabs
       tabs={adminPanelTabs.map((tab) => ({ key: tab.id, label: tab.label, icon: <Icon name={tab.icon} className="text-lg" /> }))}
       active={activeTab}
