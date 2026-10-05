@@ -111,7 +111,7 @@ function LeaveApprovals() {
         ? Math.ceil((new Date(l.end_date) - new Date(l.start_date)) / 86400000) + 1
         : '—';
        return (
-        <tr key={l.id} className="transition-colors hover:bg-accent-cyan-pale dark:bg-blue-900/30">
+        <tr key={l.id} className="transition-colors hover:bg-accent-cyan-pale dark:hover:bg-white/5">
          <td data-label="Employee" className="px-stack-lg py-4">
           <p className="text-body-md font-semibold text-brand-dark dark:text-white">{l.employee_code || '—'}</p>
           {l.designation && <p className="text-body-sm text-ink-muted dark:text-dark-ink-muted">{l.designation}</p>}
@@ -292,7 +292,7 @@ function Recruitment() {
      </thead>
      <tbody className="divide-y divide-outline-variant dark:divide-dark-outline-variant">
       {applications.map((a) => (
-       <tr key={a.id} className="transition-colors hover:bg-accent-cyan-pale dark:bg-blue-900/30">
+       <tr key={a.id} className="transition-colors hover:bg-accent-cyan-pale dark:hover:bg-white/5">
         <td data-label="Applicant" className="px-stack-lg py-4 text-body-md text-brand-dark dark:text-white">{a.full_name}</td>
         <td data-label="Position" className="px-stack-lg py-4 text-body-sm text-ink-muted dark:text-dark-ink-muted">{positionTitle(a.career_id)}</td>
         <td data-label="Email" className="px-stack-lg py-4 text-body-sm text-ink-muted dark:text-dark-ink-muted">{a.email}</td>

@@ -12,8 +12,9 @@ export default function AboutHero() {
 
           <h1 className="mb-6 font-display text-4xl font-extrabold tracking-tight text-ink dark:text-dark-ink sm:text-5xl lg:text-6xl">
             Engineering Mission-Critical Systems for the{' '}
-            <span className="bg-gradient-to-r from-orange-500 via-brand to-purple-600 bg-clip-text text-transparent">
-              Global Economy
+            <span className="text-[#FF5500]">Global</span>{' '}
+            <span className="bg-gradient-to-r from-[#FF5500] via-[#E11D48] to-[#8B5CF6] bg-clip-text text-transparent">
+              Economy
             </span>
           </h1>
 
@@ -27,7 +28,7 @@ export default function AboutHero() {
           {/* Our Mission */}
           <div className="group relative overflow-hidden rounded-3xl border border-outline-variant/70 bg-white p-8 shadow-sm transition-all duration-300 hover:-translate-y-3 hover:border-orange-400/80 hover:shadow-2xl hover:shadow-orange-500/15 dark:border-dark-outline-variant/80 dark:bg-dark-surface dark:hover:border-orange-600/80 sm:p-10">
             {/* Top Border Gradient Accent Line */}
-            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-orange-500 via-brand to-amber-500 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#FF5500] via-[#E11D48] to-[#8B5CF6] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
             
             <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-100 text-brand transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6 dark:bg-orange-950/50">
               <Icon name="track_changes" className="text-2xl" />
@@ -43,7 +44,7 @@ export default function AboutHero() {
           {/* Our Vision */}
           <div className="group relative overflow-hidden rounded-3xl border border-outline-variant/70 bg-white p-8 shadow-sm transition-all duration-300 hover:-translate-y-3 hover:border-rose-400/80 hover:shadow-2xl hover:shadow-rose-500/15 dark:border-dark-outline-variant/80 dark:bg-dark-surface dark:hover:border-rose-600/80 sm:p-10">
             {/* Top Border Gradient Accent Line */}
-            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-rose-500 via-pink-500 to-purple-500 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#FF5500] via-[#E11D48] to-[#8B5CF6] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
             
             <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-rose-100 text-rose-500 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6 dark:bg-rose-950/50">
               <Icon name="public" className="text-2xl" />

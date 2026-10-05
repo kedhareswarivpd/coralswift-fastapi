@@ -8,7 +8,9 @@ export default function ServicesHero() {
    <div className="mx-auto grid max-w-container items-center gap-stack-lg md:grid-cols-2">
     <div className="flex flex-col gap-stack-md">
      <Badge className="animate-hero-1 w-fit bg-accent-cyan-pale text-brand">High-Performance Engineering</Badge>
-     <h1 className="animate-hero-2 font-display text-display-lg-mobile text-white md:text-display-lg">Our Technology Offerings</h1>
+     <h1 className="animate-hero-2 font-display text-display-lg-mobile text-white md:text-display-lg">
+      Our <span className="text-[#FF5500]">Technology</span> <span className="bg-gradient-to-r from-[#FF5500] via-[#E11D48] to-[#8B5CF6] bg-clip-text text-transparent">Offerings</span>
+     </h1>
      <p className="animate-hero-3 max-w-xl font-body text-body-lg text-white">
       Engineered for scale, security, and velocity. We bridge the gap between complex enterprise needs
       and cutting-edge digital implementation.

@@ -10,7 +10,7 @@ export default function BlogHero() {
     <div className="max-w-3xl">
      <span className="animate-hero-1 block font-label-caps text-label-caps uppercase tracking-widest text-accent-cyan">Blog</span>
      <h1 className="animate-hero-2 mb-6 mt-4 font-display text-headline-lg text-white md:text-display-lg">
-      Insights from the Engineering Frontline
+      Insights from the <span className="text-[#FF5500]">Engineering</span> <span className="bg-gradient-to-r from-[#FF5500] via-[#E11D48] to-[#8B5CF6] bg-clip-text text-transparent">Frontline</span>
      </h1>
      <p className="animate-hero-3 max-w-2xl text-body-lg text-white/80">
       Deep dives, practical guides, and thought leadership from our team of engineers,

@@ -66,7 +66,7 @@ export default function JourneyMilestones() {
                 <div className="absolute left-0 top-0 bottom-0 w-1.5 rounded-l-3xl bg-gradient-to-b from-orange-500 to-rose-500 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
                 <div className="flex items-center gap-6 z-10">
-                  <span className="shrink-0 rounded-2xl border border-orange-200/80 bg-orange-50/80 px-4 py-2 font-display text-sm font-bold text-orange-600 shadow-xs transition-all duration-300 group-hover:border-transparent group-hover:bg-gradient-to-r group-hover:from-orange-500 group-hover:to-rose-500 group-hover:text-white group-hover:shadow-md group-hover:shadow-orange-500/30 dark:border-orange-900/60 dark:bg-orange-950/40 dark:text-orange-400 sm:px-5 sm:py-2.5">
+                  <span className="shrink-0 rounded-2xl border border-orange-200/80 bg-orange-50/80 px-4 py-2 font-display text-sm font-bold text-orange-600 shadow-xs transition-all duration-300 group-hover:border-transparent group-hover:bg-gradient-to-r group-hover:from-[#FF5500] group-hover:via-[#E11D48] group-hover:to-[#8B5CF6] group-hover:text-white group-hover:shadow-md group-hover:shadow-orange-500/30 dark:border-orange-900/60 dark:bg-orange-950/40 dark:text-orange-400 sm:px-5 sm:py-2.5">
                     {item.year}
                   </span>
                   <div>
@@ -79,7 +79,7 @@ export default function JourneyMilestones() {
                   </div>
                 </div>
 
-                <div className="hidden shrink-0 h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-slate-50/80 text-slate-400 transition-all duration-300 group-hover:border-transparent group-hover:bg-gradient-to-r group-hover:from-orange-500 group-hover:to-rose-500 group-hover:text-white group-hover:shadow-md group-hover:shadow-orange-500/30 group-hover:scale-110 group-hover:translate-x-1 dark:border-slate-800 dark:bg-dark-surface-container sm:flex">
+                <div className="hidden shrink-0 h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-slate-50/80 text-slate-400 transition-all duration-300 group-hover:border-transparent group-hover:bg-gradient-to-r group-hover:from-[#FF5500] group-hover:via-[#E11D48] group-hover:to-[#8B5CF6] group-hover:text-white group-hover:shadow-md group-hover:shadow-orange-500/30 group-hover:scale-110 group-hover:translate-x-1 dark:border-slate-800 dark:bg-dark-surface-container sm:flex">
                   <Icon name="arrow_forward" className="text-base" />
                 </div>
               </div>

@@ -8,12 +8,12 @@ export default function CaseStudyCard({ study }) {
   return (
     <article className="group relative overflow-hidden flex h-full flex-col justify-between rounded-3xl border border-slate-200/80 bg-white p-7 shadow-xs transition-all duration-300 hover:-translate-y-2 hover:border-orange-400/90 hover:bg-gradient-to-r hover:from-orange-50/50 hover:via-white hover:to-white hover:shadow-2xl hover:shadow-orange-500/15 dark:border-dark-outline-variant/80 dark:bg-dark-surface dark:hover:from-orange-950/20 dark:hover:via-dark-surface dark:hover:to-dark-surface sm:p-8">
       {/* Top Border Gradient Accent Line (Visible ONLY on Hover) */}
-      <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-orange-500 via-amber-500 to-rose-500 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+      <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#FF5500] via-[#E11D48] to-[#8B5CF6] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
       <div>
         {/* Industry Pill Badge */}
         <div className="mb-6 flex items-center justify-between gap-4">
-          <span className="rounded-2xl border border-orange-200/80 bg-orange-50/80 px-4 py-1.5 font-display text-xs font-bold text-orange-600 transition-all duration-300 group-hover:border-transparent group-hover:bg-gradient-to-r group-hover:from-orange-500 group-hover:to-rose-500 group-hover:text-white group-hover:shadow-md group-hover:shadow-orange-500/30 dark:border-orange-900/60 dark:bg-orange-950/40 dark:text-orange-400">
+          <span className="rounded-2xl border border-orange-200/80 bg-orange-50/80 px-4 py-1.5 font-display text-xs font-bold text-orange-600 transition-all duration-300 group-hover:border-transparent group-hover:bg-gradient-to-r group-hover:from-[#FF5500] group-hover:via-[#E11D48] group-hover:to-[#8B5CF6] group-hover:text-white group-hover:shadow-md group-hover:shadow-orange-500/30 dark:border-orange-900/60 dark:bg-orange-950/40 dark:text-orange-400">
             {study.industry}
           </span>
         </div>

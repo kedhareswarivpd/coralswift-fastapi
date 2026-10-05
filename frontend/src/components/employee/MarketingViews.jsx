@@ -187,7 +187,7 @@ function MarketingLeadsView() {
         </thead>
         <tbody className="divide-y divide-outline-variant dark:divide-dark-outline-variant">
          {inProgressContacts.map((s) => (
-          <tr key={s.id} className="transition-colors hover:bg-accent-cyan-pale dark:bg-blue-900/30">
+          <tr key={s.id} className="transition-colors hover:bg-accent-cyan-pale dark:hover:bg-white/5">
            <td data-label="Contact" className="px-stack-lg py-4">
             <p className="text-body-md font-semibold text-brand-dark dark:text-white">{s.name}</p>
             <p className="text-body-sm text-ink-muted dark:text-dark-ink-muted">{s.email}</p>
@@ -222,7 +222,7 @@ function MarketingLeadsView() {
       </thead>
       <tbody className="divide-y divide-outline-variant dark:divide-dark-outline-variant">
        {leads.map((l) => (
-        <tr key={l.id} className="transition-colors hover:bg-accent-cyan-pale dark:bg-blue-900/30">
+        <tr key={l.id} className="transition-colors hover:bg-accent-cyan-pale dark:hover:bg-white/5">
          <td data-label="Company / Contact" className="px-stack-lg py-4">
           <p className="text-body-md font-semibold text-brand-dark dark:text-white">{l.company || '—'}</p>
           <p className="text-body-sm text-ink-muted dark:text-dark-ink-muted">{l.contact_name}</p>
@@ -357,7 +357,7 @@ function TestimonialModeration() {
    <div className="grid grid-cols-2 gap-gutter lg:grid-cols-3">
     {kpis.map((stat) => (
      <div key={stat.label} className="flex flex-col rounded-xl border border-outline-variant bg-white dark:bg-dark-surface p-6 shadow-sm dark:border-dark-outline-variant">
-      <div className="mb-4 inline-flex size-11 items-center justify-center rounded-xl bg-accent-cyan-pale dark:bg-blue-900/30">
+      <div className="mb-4 inline-flex size-11 items-center justify-center rounded-xl bg-accent-cyan-pale dark:bg-brand/10">
        <Icon name={stat.icon} className="text-2xl text-brand" />
       </div>
       <p className="font-stat text-3xl font-bold text-brand-dark dark:text-white">{stat.value}</p>
@@ -443,7 +443,7 @@ function TestimonialModeration() {
    <div className="grid gap-gutter sm:grid-cols-2 lg:grid-cols-3">
     {visible.map((t) => (
      <div key={t.id} className="flex flex-col rounded-xl border border-outline-variant bg-white dark:bg-dark-surface p-6 shadow-sm dark:border-dark-outline-variant">
-      <div className="mb-3 inline-flex size-11 items-center justify-center rounded-xl bg-accent-cyan-pale dark:bg-blue-900/30">
+      <div className="mb-3 inline-flex size-11 items-center justify-center rounded-xl bg-accent-cyan-pale dark:bg-brand/10">
        <Icon name="person" className="text-2xl text-brand" />
       </div>
       <p className="font-display text-body-md font-semibold text-brand-dark dark:text-white">{t.author_name}</p>

@@ -47,6 +47,47 @@ body {
 
 :root {
   --font-size: 16px;
+  --background: #FFFFFF;
+  --foreground: #0B0F19;
+  --card: #FFFFFF;
+  --card-foreground: #0B0F19;
+  --popover: #FFFFFF;
+  --popover-foreground: #0B0F19;
+  --primary: #FF5500;
+  --primary-foreground: #ffffff;
+  --secondary: #F8FAFC;
+  --secondary-foreground: #0B0F19;
+  --muted: #F1F5F9;
+  --muted-foreground: #64748B;
+  --accent: #FF7A00;
+  --accent-foreground: #FFFFFF;
+  --destructive: #DC2626;
+  --destructive-foreground: #ffffff;
+  --border: #FFE3D1;
+  --input: #FFE3D1;
+  --input-background: #FFFFFF;
+  --switch-background: #CBD5E1;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --ring: #FF5500;
+  --chart-1: #FF5500;
+  --chart-2: #FF7A00;
+  --chart-3: #0B0F19;
+  --chart-4: #16A34A;
+  --chart-5: #8B5CF6;
+  --radius: 0.625rem;
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #0B0F19;
+  --sidebar-primary: #FF5500;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #FFF7ED;
+  --sidebar-accent-foreground: #FF5500;
+  --sidebar-border: #FFE3D1;
+  --sidebar-ring: #FF5500;
+}
+
+.dark {
+  color-scheme: dark;
   --background: #0B0F19;
   --foreground: #F8FAFC;
   --card: #111827;
@@ -67,27 +108,7 @@ body {
   --input: rgba(255, 85, 0, 0.1);
   --input-background: #111827;
   --switch-background: #1F2937;
-  --font-weight-medium: 500;
-  --font-weight-normal: 400;
   --ring: #FF5500;
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: #030213;
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
-
-.dark {
-  color-scheme: dark;
   --sidebar: #111827;
   --sidebar-foreground: #F8FAFC;
   --sidebar-primary: #FF5500;

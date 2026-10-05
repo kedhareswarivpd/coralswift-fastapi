@@ -11,8 +11,11 @@ export default function CaseStudiesHero() {
 
           <h1 className="font-display text-4xl font-extrabold tracking-tight text-ink dark:text-dark-ink sm:text-5xl lg:text-6xl leading-[1.12]">
             Engineering Case Studies &amp;{' '}
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-amber-500 to-rose-500">
-              Enterprise Impact
+            <span className="block mt-1">
+              <span className="text-[#FF5500]">Enterprise</span>{' '}
+              <span className="bg-gradient-to-r from-[#FF5500] via-[#E11D48] to-[#8B5CF6] bg-clip-text text-transparent">
+                Impact
+              </span>
             </span>
           </h1>
 

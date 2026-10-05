@@ -599,7 +599,7 @@ export default function ContentManager() {
        </thead>
        <tbody className="divide-y divide-outline-variant dark:divide-dark-outline-variant">
         {items.map((item) => (
-         <tr key={item.id} className="transition-colors hover:bg-accent-cyan-pale dark:bg-blue-900/30">
+         <tr key={item.id} className="transition-colors hover:bg-accent-cyan-pale dark:hover:bg-white/5">
           <td data-label="Name" className="px-stack-lg py-4 text-body-md text-brand-dark dark:text-dark-brand">{resource.title(item)}</td>
           <td data-label="Status" className="px-stack-lg py-4">
            {hasPublish ? (

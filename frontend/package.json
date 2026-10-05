@@ -11,7 +11,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui"
+    "test:e2e:ui": "playwright test --ui",
+    "docker:up": "docker compose -f ../docker-compose.yml -f ../docker-compose.override.yml up -d --build",
+    "docker:build": "docker compose -f ../docker-compose.yml -f ../docker-compose.override.yml build --no-cache"
   },
   "dependencies": {
     "dompurify": "^3.4.14",

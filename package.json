@@ -1,0 +1,13 @@
+{
+  "name": "coralswift-fastapi",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CoralSwift Technologies Enterprise Platform",
+  "scripts": {
+    "docker:up": "docker compose up -d --build",
+    "docker:down": "docker compose down",
+    "docker:build": "docker compose build --no-cache",
+    "docker:logs": "docker compose logs -f",
+    "docker:restart": "docker compose down && docker compose up -d --build"
+  }
+}

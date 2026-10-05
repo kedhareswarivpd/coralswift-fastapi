@@ -31,13 +31,21 @@ export default function Footer() {
             {/* White Logo Badge Card */}
             <Link
               to="/"
-              className="mb-4 inline-flex items-center rounded-2xl bg-white px-4 py-2.5 shadow-md transition-transform hover:scale-105"
+              className="mb-4 inline-flex items-center gap-2.5 rounded-2xl bg-white px-4 py-2.5 shadow-md transition-transform hover:scale-105"
             >
               <img
-                src="/logo.png"
-                alt="CoralSwift Technologies"
-                className="h-7 w-auto object-contain"
+                src="/logo-icon.png"
+                alt="CoralSwift Emblem"
+                className="h-8 w-auto object-contain"
               />
+              <div className="flex flex-col leading-none">
+                <span className="font-display text-xl font-bold tracking-tight text-slate-900">
+                  Coral<span className="bg-gradient-to-r from-[#FF5500] via-[#E11D48] to-[#8B5CF6] bg-clip-text text-transparent">Swift</span>
+                </span>
+                <span className="text-[9px] font-semibold tracking-[0.25em] uppercase text-slate-500 -mt-0.5">
+                  Technologies
+                </span>
+              </div>
             </Link>
 
             {/* Officially Partnered Badge */}

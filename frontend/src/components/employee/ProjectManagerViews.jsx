@@ -198,7 +198,7 @@ function TeamProjects({ userId }) {
        <div className="mb-3 flex flex-wrap items-center gap-1.5">
         <span className="mr-1 font-label-caps text-body-xs uppercase text-ink-muted dark:text-dark-ink-muted">Team:</span>
         {p.team.map((m) => (
-         <span key={m.id} className="inline-flex items-center rounded-full border border-blue-200 bg-accent-cyan-pale px-2.5 py-0.5 text-body-xs font-medium text-brand dark:bg-blue-900/30">
+         <span key={m.id} className="inline-flex items-center rounded-full border border-brand/30 bg-accent-cyan-pale px-2.5 py-0.5 text-body-xs font-medium text-brand dark:bg-brand/10">
           {m.employee_code || 'EMP'}{m.designation ? ` · ${m.designation}` : ''}
          </span>
         ))}
@@ -801,7 +801,7 @@ function Approvals() {
      </thead>
      <tbody className="divide-y divide-outline-variant dark:divide-dark-outline-variant">
       {visible.map((t) => (
-       <tr key={t.id} className="transition-colors hover:bg-accent-cyan-pale dark:bg-blue-900/30">
+       <tr key={t.id} className="transition-colors hover:bg-accent-cyan-pale dark:hover:bg-white/5">
         <td data-label="Employee" className="px-stack-lg py-4">
          <p className="text-body-md font-semibold text-brand-dark dark:text-white">{t.employee_name || t.employee_code || '—'}</p>
          {t.employee_code && t.employee_name && <p className="text-body-sm text-ink-muted dark:text-dark-ink-muted">{t.employee_code}</p>}

@@ -186,7 +186,7 @@ function Dashboard({ kpis: propKpis, statusBreakdown: propBreakdown, setActiveTa
    <div className="grid grid-cols-2 gap-6 lg:grid-cols-4">
     {statCards.map((s) => (
      <div key={s.label} className="flex flex-col rounded-xl border border-outline-variant bg-white p-6 shadow-sm transition-shadow hover:shadow-md dark:border-dark-outline-variant dark:bg-dark-surface">
-      <div className="mb-4 inline-flex size-11 items-center justify-center rounded-xl bg-accent-cyan-pale dark:bg-blue-900/30">
+      <div className="mb-4 inline-flex size-11 items-center justify-center rounded-xl bg-accent-cyan-pale dark:bg-brand/10">
        <Icon name={s.icon} className={`text-2xl ${s.color}`} />
       </div>
       <p className="font-stat text-3xl font-bold text-brand-dark dark:text-dark-brand">{s.value}</p>
@@ -226,7 +226,7 @@ function Dashboard({ kpis: propKpis, statusBreakdown: propBreakdown, setActiveTa
        { icon: 'upload_file', label: 'Upload Resource', desc: 'Add a whitepaper or downloadable asset', tab: 'media' },
        { icon: 'campaign', label: 'Send Notification', desc: 'Broadcast a message to all users', tab: 'notifications' },
       ].map((action) => (
-       <div key={action.label} onClick={() => setActiveTab(action.tab)} className="flex cursor-pointer items-center gap-4 rounded-lg bg-surface-container p-3 transition-colors hover:bg-accent-cyan-pale dark:bg-blue-900/30 dark:bg-dark-surface-container dark:hover:bg-blue-900/30">
+       <div key={action.label} onClick={() => setActiveTab(action.tab)} className="flex cursor-pointer items-center gap-4 rounded-lg bg-surface-container p-3 transition-colors hover:bg-accent-cyan-pale dark:bg-dark-surface-container dark:hover:bg-brand/10">
         <Icon name={action.icon} className="text-2xl text-brand" />
         <div>
          <p className="text-body-md font-semibold text-brand-dark dark:text-dark-brand">{action.label}</p>
@@ -1648,7 +1648,7 @@ function ContactsManagement() {
        </thead>
        <tbody className="divide-y divide-outline-variant dark:divide-dark-outline-variant">
         {submissions.map((s) => (
-         <tr key={s.id} className="transition-colors hover:bg-accent-cyan-pale dark:bg-blue-900/30 dark:hover:bg-blue-900/30">
+         <tr key={s.id} className="transition-colors hover:bg-accent-cyan-pale dark:hover:bg-white/5">
           <td data-label="Name" className="px-stack-lg py-4 text-body-md font-semibold text-brand-dark dark:text-dark-brand">{s.name}</td>
           <td data-label="Email" className="px-stack-lg py-4 text-body-sm text-ink-muted dark:text-dark-ink-muted">{s.email}</td>
           <td data-label="Phone" className="px-stack-lg py-4 text-body-sm text-ink-muted dark:text-dark-ink-muted">{s.phone || '—'}</td>
@@ -1671,7 +1671,7 @@ function ContactsManagement() {
              <button
               onClick={() => setConvertTarget(s)}
               aria-label="Convert to Lead"
-              className="rounded p-1 text-ink-muted transition-colors hover:bg-accent-cyan-pale hover:text-brand dark:bg-blue-900/30 dark:text-dark-ink-muted dark:hover:bg-blue-900/30"
+              className="rounded p-1 text-ink-muted transition-colors hover:bg-accent-cyan-pale hover:text-brand dark:text-dark-ink-muted dark:hover:bg-brand/10"
               title="Convert to Lead"
              >
               <Icon name="person_add" />

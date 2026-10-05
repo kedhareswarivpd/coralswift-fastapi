@@ -86,7 +86,7 @@ export default function SignContractPage() {
           <Icon name="error" className="mx-auto mb-4 text-5xl text-rose-500" />
           <h2 className="text-xl font-bold text-slate-900 dark:text-white">Contract Error</h2>
           <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">{error}</p>
-          <Link to="/" className="mt-6 inline-block rounded-xl bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow hover:bg-blue-700">
+          <Link to="/" className="mt-6 inline-block rounded-xl bg-brand px-6 py-2.5 text-sm font-semibold text-white shadow hover:bg-brand-light">
             Return to Homepage
           </Link>
         </div>
@@ -103,11 +103,11 @@ export default function SignContractPage() {
         <div className="mb-8 rounded-2xl border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-slate-800">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-brand/10 px-3 py-1 text-xs font-semibold text-brand dark:bg-brand/20 dark:text-brand-light">
                 <Icon name="verified" className="text-sm" /> Digital Service Agreement
               </span>
               <h1 className="mt-3 text-2xl font-bold text-slate-900 dark:text-white">
-                CoreFusion Technologies Contract
+                CoralSwift Technologies Contract
               </h1>
               <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                 Prepared for <strong className="text-slate-700 dark:text-slate-200">{contract?.contact_name}</strong> {contract?.company_name && `(${contract?.company_name})`}
@@ -171,7 +171,7 @@ export default function SignContractPage() {
         ) : (
           <form onSubmit={handleSignContract} className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-slate-800">
             <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <Icon name="draw" className="text-blue-600" /> Digital Signature Execution
+              <Icon name="draw" className="text-brand" /> Digital Signature Execution
             </h3>
             <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
               Please enter your full legal name below to sign and execute this agreement online.
@@ -194,7 +194,7 @@ export default function SignContractPage() {
                   placeholder="e.g. Jane Doe"
                   value={signerName}
                   onChange={(e) => setSignerName(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 font-serif text-lg text-slate-900 placeholder-slate-400 focus:border-blue-600 focus:outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+                  className="mt-1 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 font-serif text-lg text-slate-900 placeholder-slate-400 focus:border-brand focus:ring-1 focus:ring-brand focus:outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-white"
                 />
               </div>
 
@@ -204,7 +204,7 @@ export default function SignContractPage() {
                   id="agree_checkbox"
                   checked={agreed}
                   onChange={(e) => setAgreed(e.target.checked)}
-                  className="mt-1 size-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                  className="mt-1 size-4 rounded border-slate-300 text-brand focus:ring-brand"
                 />
                 <label htmlFor="agree_checkbox" className="text-xs leading-relaxed text-slate-600 dark:text-slate-400 cursor-pointer">
                   I confirm that I am authorized to enter into this contract on behalf of my organization and agree to the scope and terms specified above.

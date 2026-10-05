@@ -160,7 +160,7 @@ export default function LeadFlowPage({ leadId, onBack, onRefresh }) {
      <ol className="space-y-4">
       {activities.map((a) => (
        <li key={a.id} className="flex gap-3">
-        <div className="mt-0.5 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-accent-cyan-pale text-brand-dark dark:bg-blue-900/30 dark:text-white">
+        <div className="mt-0.5 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-accent-cyan-pale text-brand-dark dark:bg-brand/10 dark:text-white">
          <Icon name={ACTIVITY_ICON[a.activity_type] || 'circle'} className="text-sm" />
         </div>
         <div>
@@ -285,10 +285,10 @@ export default function LeadFlowPage({ leadId, onBack, onRefresh }) {
          )}
         </div>
        </div>
-       <div className="mt-3 flex items-center justify-between rounded-lg border border-blue-200 bg-blue-50/50 p-3 dark:border-blue-900/40 dark:bg-blue-950/20">
-        <div className="text-xs text-blue-900 dark:text-blue-300">
+       <div className="mt-3 flex items-center justify-between rounded-lg border border-brand/30 bg-brand/5 p-3 dark:border-brand/40 dark:bg-brand/10">
+        <div className="text-xs text-brand-dark dark:text-brand-light">
          <strong>Direct Client Digital Signing Link:</strong>
-         <span className="block font-mono text-[11px] text-blue-700 dark:text-blue-400 truncate max-w-xs">{`${window.location.origin}/sign-contract/${contract.id}`}</span>
+         <span className="block font-mono text-[11px] text-brand dark:text-brand-light truncate max-w-xs">{`${window.location.origin}/sign-contract/${contract.id}`}</span>
         </div>
         <Button type="button" variant="outline" size="sm" onClick={() => {
          navigator.clipboard.writeText(`${window.location.origin}/sign-contract/${contract.id}`);

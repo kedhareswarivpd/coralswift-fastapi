@@ -11,7 +11,7 @@ export default function TechHero() {
     <div className="max-w-3xl">
      <span className="animate-hero-1 block font-label-caps text-label-caps uppercase tracking-widest text-accent-cyan">Technology Stack</span>
      <h1 className="animate-hero-2 mb-6 mt-4 font-display text-headline-lg text-white md:text-display-lg">
-      Modern Stack. Deep Expertise.
+      Modern Stack. <span className="text-[#FF5500]">Deep</span> <span className="bg-gradient-to-r from-[#FF5500] via-[#E11D48] to-[#8B5CF6] bg-clip-text text-transparent">Expertise.</span>
      </h1>
      <p className="animate-hero-3 max-w-2xl text-body-lg text-white/80">
       Our engineers bring hands-on expertise across the full modern technology landscape —

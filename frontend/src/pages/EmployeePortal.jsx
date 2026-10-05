@@ -94,7 +94,7 @@ function Overview({ profile, attendance, leaves, timesheets, payslips }) {
      { label: 'Latest Payslip', value: `$${payslips[0]?.netPay?.toLocaleString() || 0}`, icon: 'payments' },
     ].map((stat) => (
      <div key={stat.label} className="flex flex-col rounded-xl border border-outline-variant bg-white dark:bg-dark-surface p-6 shadow-sm transition-shadow hover:shadow-md dark:border-dark-outline-variant">
-      <div className="mb-4 inline-flex size-11 items-center justify-center rounded-xl bg-accent-cyan-pale dark:bg-blue-900/30">
+      <div className="mb-4 inline-flex size-11 items-center justify-center rounded-xl bg-accent-cyan-pale dark:bg-brand/10">
        <Icon name={stat.icon} className="text-2xl text-brand" />
       </div>
       <p className="font-stat text-3xl font-bold capitalize text-brand-dark dark:text-white">{stat.value}</p>
@@ -181,17 +181,17 @@ function Attendance({ attendance, onChange }) {
    <div className="rounded-xl border border-outline-variant bg-white dark:bg-dark-surface p-6 shadow-sm dark:border-dark-outline-variant">
     <h3 className="mb-6 font-display text-headline-sm text-brand-dark dark:text-white">Today&apos;s Attendance</h3>
     <div className="mb-6 grid gap-gutter sm:grid-cols-3">
-     <div className="rounded-xl bg-accent-cyan-pale p-stack-lg text-center dark:bg-blue-900/30">
+     <div className="rounded-xl bg-accent-cyan-pale p-stack-lg text-center dark:bg-brand/10">
       <Icon name="login" className="mb-2 text-3xl text-brand" />
       <p className="font-label-caps text-label-caps text-brand">Check-In</p>
       <p className="font-display text-headline-sm text-brand">{attendance.checkIn || '--'}</p>
      </div>
-     <div className="rounded-xl bg-accent-cyan-pale p-stack-lg text-center dark:bg-blue-900/30">
+     <div className="rounded-xl bg-accent-cyan-pale p-stack-lg text-center dark:bg-brand/10">
       <Icon name="logout" className="mb-2 text-3xl text-brand" />
       <p className="font-label-caps text-label-caps text-brand">Check-Out</p>
       <p className="font-display text-headline-sm text-brand">{attendance.checkOut || '--'}</p>
      </div>
-     <div className="rounded-xl bg-accent-cyan-pale p-stack-lg text-center dark:bg-blue-900/30">
+     <div className="rounded-xl bg-accent-cyan-pale p-stack-lg text-center dark:bg-brand/10">
       <Icon name="badge" className="mb-2 text-3xl text-brand" />
       <p className="font-label-caps text-label-caps text-brand">Status</p>
       <StatusBadge variant={attendance.status === 'present' ? 'success' : 'warning'} className="mt-1">
@@ -324,7 +324,7 @@ function Leaves({ leaves: initialLeaves }) {
       {pagedLeaves.length === 0 ? (
        <tr><td data-label="Type" colSpan={5} className="px-stack-lg py-8 text-center text-body-sm text-ink-muted dark:text-dark-ink-muted">No leave requests yet.</td></tr>
       ) : pagedLeaves.map((l) => (
-       <tr key={l.id} className="transition-colors hover:bg-accent-cyan-pale dark:bg-blue-900/30">
+       <tr key={l.id} className="transition-colors hover:bg-accent-cyan-pale dark:hover:bg-white/5">
         <td data-label="Type" className="px-stack-lg py-4 text-body-md capitalize text-brand-dark dark:text-white">{l.type}</td>
         <td data-label="From" className="px-stack-lg py-4 text-body-md text-ink-muted dark:text-dark-ink-muted">{l.from}</td>
         <td data-label="To" className="px-stack-lg py-4 text-body-md text-ink-muted dark:text-dark-ink-muted">{l.to}</td>
@@ -415,7 +415,7 @@ function Timesheets({ timesheets: initialTimesheets }) {
      <div className="grid gap-4 sm:grid-cols-3">
       <div>
        <input type="date" value={form.date} onChange={(e) => handleChange('date', e.target.value)}
-        className={`w-full rounded border bg-brand px-4 py-3 text-body-md text-white placeholder-white/60 focus:outline-none ${errors.date ? 'border-status-error focus:border-status-error' : 'border-blue-700 focus:border-brand'}`} />
+        className={`w-full rounded border bg-brand px-4 py-3 text-body-md text-white placeholder-white/60 focus:outline-none ${errors.date ? 'border-status-error focus:border-status-error' : 'border-outline-variant focus:border-brand'}`} />
        {errors.date && <p className="mt-1 text-body-xs text-status-error">{errors.date}</p>}
       </div>
       <input type="text" placeholder="Project name (optional)" value={form.project} onChange={(e) => handleChange('project', e.target.value)}
@@ -446,7 +446,7 @@ function Timesheets({ timesheets: initialTimesheets }) {
      </thead>
      <tbody className="divide-y divide-outline-variant dark:divide-dark-outline-variant">
       {pagedEntries.map((e) => (
-       <tr key={e.id} className="transition-colors hover:bg-accent-cyan-pale dark:bg-blue-900/30">
+       <tr key={e.id} className="transition-colors hover:bg-accent-cyan-pale dark:hover:bg-white/5">
         <td data-label="Date" className="px-stack-lg py-4 text-body-md text-ink-muted dark:text-dark-ink-muted">{e.date}</td>
         <td data-label="Project" className="px-stack-lg py-4 text-body-md text-brand-dark dark:text-white">{e.project}</td>
         <td data-label="Hours" className="px-stack-lg py-4 text-body-md text-brand-dark dark:text-white">{e.hours}h</td>
@@ -480,7 +480,7 @@ function Payslips({ payslips }) {
    <div className="grid grid-cols-2 gap-gutter lg:grid-cols-3">
     {kpis.map((stat) => (
      <div key={stat.label} className="flex flex-col rounded-xl border border-outline-variant bg-white dark:bg-dark-surface p-6 shadow-sm dark:border-dark-outline-variant">
-      <div className="mb-4 inline-flex size-11 items-center justify-center rounded-xl bg-accent-cyan-pale dark:bg-blue-900/30">
+      <div className="mb-4 inline-flex size-11 items-center justify-center rounded-xl bg-accent-cyan-pale dark:bg-brand/10">
        <Icon name={stat.icon} className="text-2xl text-brand" />
       </div>
       <p className="font-stat text-3xl font-bold text-brand-dark dark:text-white">{stat.value}</p>
@@ -508,7 +508,7 @@ function Payslips({ payslips }) {
       {pagedPayslips.length === 0 ? (
        <tr><td data-label="Period" colSpan={6} className="px-stack-lg py-12 text-center text-body-sm text-ink-muted dark:text-dark-ink-muted">No payslips available yet.</td></tr>
       ) : pagedPayslips.map((p) => (
-       <tr key={`${p.month}-${p.year}`} className="transition-colors hover:bg-accent-cyan-pale dark:hover:bg-blue-900/30">
+       <tr key={`${p.month}-${p.year}`} className="transition-colors hover:bg-accent-cyan-pale dark:hover:bg-white/5">
         <td data-label="Period" className="px-stack-lg py-4 font-semibold text-brand-dark dark:text-white">
          <div className="flex items-center gap-2">
           <Icon name="calendar_month" className="text-base text-brand" />
@@ -523,7 +523,7 @@ function Payslips({ payslips }) {
          {p.file_url ? (
           <a
            href={p.file_url} target="_blank" rel="noreferrer" aria-label={`Download ${p.month} ${p.year} payslip`}
-           className="inline-flex items-center gap-1.5 rounded-lg border border-outline-variant bg-white dark:bg-dark-surface px-3 py-1.5 text-body-xs font-semibold text-ink shadow-sm transition hover:border-blue-500 hover:text-brand active:scale-95 dark:border-dark-outline-variant dark:text-white">
+           className="inline-flex items-center gap-1.5 rounded-lg border border-outline-variant bg-white dark:bg-dark-surface px-3 py-1.5 text-body-xs font-semibold text-ink shadow-sm transition hover:border-brand hover:text-brand active:scale-95 dark:border-dark-outline-variant dark:text-white">
            <Icon name="download" className="text-sm" /> Slip
           </a>
          ) : (
@@ -573,7 +573,7 @@ function Tasks({ tasks, page, totalPages, onPageChange, onRefresh }) {
    <div className="grid grid-cols-2 gap-gutter lg:grid-cols-3">
     {kpis.map((stat) => (
      <div key={stat.label} className="flex flex-col rounded-xl border border-outline-variant bg-white dark:bg-dark-surface p-6 shadow-sm dark:border-dark-outline-variant">
-      <div className="mb-4 inline-flex size-11 items-center justify-center rounded-xl bg-accent-cyan-pale dark:bg-blue-900/30">
+      <div className="mb-4 inline-flex size-11 items-center justify-center rounded-xl bg-accent-cyan-pale dark:bg-brand/10">
        <Icon name={stat.icon} className="text-2xl text-brand" />
       </div>
       <p className="font-stat text-3xl font-bold text-brand-dark dark:text-white">{stat.value}</p>
@@ -602,7 +602,7 @@ function Tasks({ tasks, page, totalPages, onPageChange, onRefresh }) {
       {tasks.length === 0 ? (
        <tr><td data-label="Task Deliverable" colSpan={6} className="px-stack-lg py-12 text-center text-body-sm text-ink-muted dark:text-dark-ink-muted">No tasks assigned yet.</td></tr>
       ) : tasks.map((t) => (
-       <tr key={t.id} onClick={() => setSelectedTask(t)} className="cursor-pointer transition-colors hover:bg-accent-cyan-pale dark:hover:bg-blue-900/30">
+       <tr key={t.id} onClick={() => setSelectedTask(t)} className="cursor-pointer transition-colors hover:bg-accent-cyan-pale dark:hover:bg-white/5">
         <td data-label="Task Deliverable" className="px-stack-lg py-4 font-semibold text-brand-dark dark:text-white">{t.title}</td>
         <td data-label="Project" className="px-stack-lg py-4">
          <span className="inline-flex items-center gap-1 rounded-md bg-surface-container px-2 py-0.5 text-body-xs font-semibold text-ink dark:bg-dark-surface-container dark:text-white">
@@ -688,7 +688,7 @@ function Projects({ projects, page, totalPages, onPageChange }) {
    <div className="grid grid-cols-2 gap-gutter lg:grid-cols-3">
     {kpis.map((stat) => (
      <div key={stat.label} className="flex flex-col rounded-xl border border-outline-variant bg-white dark:bg-dark-surface p-6 shadow-sm dark:border-dark-outline-variant">
-      <div className="mb-4 inline-flex size-11 items-center justify-center rounded-xl bg-accent-cyan-pale dark:bg-blue-900/30">
+      <div className="mb-4 inline-flex size-11 items-center justify-center rounded-xl bg-accent-cyan-pale dark:bg-brand/10">
        <Icon name={stat.icon} className="text-2xl text-brand" />
       </div>
       <p className="font-stat text-3xl font-bold text-brand-dark dark:text-white">{stat.value}</p>
@@ -777,7 +777,7 @@ function Performance({ reviews }) {
    <div className="grid grid-cols-2 gap-gutter lg:grid-cols-3">
     {kpis.map((stat) => (
      <div key={stat.label} className="flex flex-col rounded-xl border border-outline-variant bg-white dark:bg-dark-surface p-6 shadow-sm dark:border-dark-outline-variant">
-      <div className="mb-4 inline-flex size-11 items-center justify-center rounded-xl bg-accent-cyan-pale dark:bg-blue-900/30">
+      <div className="mb-4 inline-flex size-11 items-center justify-center rounded-xl bg-accent-cyan-pale dark:bg-brand/10">
        <Icon name={stat.icon} className="text-2xl text-brand" />
       </div>
       <p className="font-stat text-3xl font-bold text-brand-dark dark:text-white">{stat.value}</p>
@@ -907,7 +907,7 @@ function Documents({ docs }) {
    <div className="grid grid-cols-2 gap-gutter lg:grid-cols-3">
     {kpis.map((stat) => (
      <div key={stat.label} className="flex flex-col rounded-xl border border-outline-variant bg-white dark:bg-dark-surface p-6 shadow-sm dark:border-dark-outline-variant">
-      <div className="mb-4 inline-flex size-11 items-center justify-center rounded-xl bg-accent-cyan-pale dark:bg-blue-900/30">
+      <div className="mb-4 inline-flex size-11 items-center justify-center rounded-xl bg-accent-cyan-pale dark:bg-brand/10">
        <Icon name={stat.icon} className="text-2xl text-brand" />
       </div>
       <p className="font-stat text-3xl font-bold text-brand-dark dark:text-white">{stat.value}</p>
@@ -921,7 +921,7 @@ function Documents({ docs }) {
     <div className="grid gap-gutter sm:grid-cols-2 lg:grid-cols-3">
      {pagedDocs.map((d) => (
       <div key={d.id} className="flex flex-col rounded-xl border border-outline-variant bg-white dark:bg-dark-surface p-6 shadow-sm dark:border-dark-outline-variant">
-       <div className="mb-3 inline-flex size-11 items-center justify-center rounded-xl bg-accent-cyan-pale dark:bg-blue-900/30">
+       <div className="mb-3 inline-flex size-11 items-center justify-center rounded-xl bg-accent-cyan-pale dark:bg-brand/10">
         <Icon name={typeIcon[d.type] || 'description'} className="text-2xl text-brand" />
        </div>
        <p className="font-display text-body-md font-semibold text-brand-dark dark:text-white">{d.name}</p>
@@ -1224,14 +1224,16 @@ export default function EmployeePortal() {
  if (loading) return <div className="bg-surface py-section-padding dark:bg-dark-surface"><LoadingSpinner /></div>;
 
   return (
-   <div className="flex h-dvh flex-col bg-dark-surface">
-    <div className="sticky top-0 z-20 flex items-center justify-between gap-2 border-b border-brand-dark/30 bg-brand-dark px-4 py-3 sm:gap-4 sm:px-6 lg:px-10 xl:px-12">
-     <div className="flex min-w-0 items-center gap-2 sm:gap-4">
-      <Avatar name={profile.name} size="lg" />
+   <div className="flex h-dvh flex-col bg-surface dark:bg-dark-surface">
+    <div className="sticky top-0 z-20 flex items-center justify-between gap-2 border-b border-outline-variant bg-white px-4 py-3 shadow-sm dark:border-dark-outline-variant dark:bg-dark-surface sm:gap-4 sm:px-6 lg:px-10 xl:px-12">
+     <div className="flex min-w-0 items-center gap-3 sm:gap-4">
+      <img src="/logo-icon.png" alt="CoralSwift Emblem" className="h-9 w-auto shrink-0 object-contain" />
+      <div className="hidden h-7 w-px bg-outline-variant sm:block dark:bg-dark-outline-variant" />
+      <Avatar name={profile.name} size="md" />
       <div className="min-w-0">
-       <p className="mb-0.5 font-label-caps text-body-xs uppercase tracking-widest text-cyan-300 font-bold">{portalTitle}</p>
-       <h1 className="max-w-[50vw] truncate font-display text-headline-md font-bold text-white sm:max-w-none">{profile.name}</h1>
-       <p className="truncate text-body-sm text-white/80">{profile.email}{profile.designation ? ` · ${profile.designation}` : ''}{profile.department ? ` · ${profile.department}` : ''}</p>
+       <p className="mb-0.5 hidden font-label-caps text-body-xs uppercase tracking-widest text-brand sm:block">{portalTitle}</p>
+       <h1 className="max-w-[40vw] truncate font-display text-headline-sm font-bold text-brand-dark sm:max-w-none dark:text-white">{profile.name}</h1>
+       <p className="hidden truncate text-body-sm text-ink-muted sm:block dark:text-dark-ink-muted">{profile.email}{profile.designation ? ` · ${profile.designation}` : ''}{profile.department ? ` · ${profile.department}` : ''}</p>
       </div>
      </div>
      <div className="flex shrink-0 items-center gap-2 sm:gap-3">

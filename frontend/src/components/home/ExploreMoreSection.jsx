@@ -46,9 +46,9 @@ export default function ExploreMoreSection() {
               to={cat.to}
               className="card-interactive group relative flex h-full flex-col justify-between overflow-hidden rounded-xl border border-outline-variant/80 bg-white p-6 transition-all duration-300 hover:-translate-y-2 hover:border-orange-400/80 hover:shadow-xl dark:border-dark-outline-variant/80 dark:bg-dark-surface"
             >
-              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-500 to-rose-500 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#FF5500] via-[#E11D48] to-[#8B5CF6] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
               <div>
-                <div className="mb-4 flex size-12 items-center justify-center rounded-xl bg-orange-50 text-orange-600 transition-all duration-300 group-hover:scale-110 group-hover:bg-gradient-to-r group-hover:from-orange-500 group-hover:to-rose-500 group-hover:text-white dark:bg-orange-950/40 dark:text-orange-400">
+                <div className="mb-4 flex size-12 items-center justify-center rounded-xl bg-orange-50 text-orange-600 transition-all duration-300 group-hover:scale-110 group-hover:bg-gradient-to-r group-hover:from-[#FF5500] group-hover:via-[#E11D48] group-hover:to-[#8B5CF6] group-hover:text-white dark:bg-orange-950/40 dark:text-orange-400">
                   <Icon name={cat.icon} className="text-2xl" />
                 </div>
                 <h3 className="mb-2 font-display text-headline-sm font-semibold text-ink transition-colors duration-200 group-hover:text-orange-600 dark:text-dark-ink dark:group-hover:text-orange-400">

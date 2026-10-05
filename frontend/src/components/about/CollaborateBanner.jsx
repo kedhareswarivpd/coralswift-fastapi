@@ -16,7 +16,7 @@ export default function CollaborateBanner() {
             </p>
             <Link
               to="/contact"
-              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 via-pink-600 to-indigo-600 px-8 py-3.5 font-display text-sm font-bold text-white shadow-lg shadow-orange-500/20 transition-all duration-300 hover:scale-105 hover:shadow-orange-500/35"
+              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#FF5500] via-[#E11D48] to-[#8B5CF6] px-8 py-3.5 font-display text-sm font-bold text-white shadow-lg shadow-orange-500/20 transition-all duration-300 hover:scale-105 hover:shadow-orange-500/35"
             >
               <span>Request Executive Briefing</span>
               <Icon name="arrow_forward" className="text-lg" />
