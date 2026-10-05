@@ -77,6 +77,7 @@ export const rolePortalTabs = {
   hr: [
     { id: 'leave-approvals', label: 'Leave Approvals', icon: 'event_available' },
     { id: 'recruitment', label: 'Recruitment', icon: 'group_add' },
+    { id: 'performance-reviews-mgr', label: 'Performance Reviews (HR)', icon: 'rate_review' },
   ],
 };
 

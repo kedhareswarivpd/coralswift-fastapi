@@ -65,6 +65,7 @@ const Invoices = namedLazy(opsImporter, 'Invoices');
 const hrImporter = () => import('../components/employee/HrViews.jsx');
 const LeaveApprovals = namedLazy(hrImporter, 'LeaveApprovals');
 const Recruitment = namedLazy(hrImporter, 'Recruitment');
+const PerformanceReviewsManagement = namedLazy(hrImporter, 'PerformanceReviewsManagement');
 
 // Self-service lists (leaves/timesheets/payslips/performance/training/documents)
 // are fetched once as a capped array (SELF_SERVICE_LIST_CAP server-side, not
@@ -1231,7 +1232,7 @@ export default function EmployeePortal() {
       <div className="hidden h-7 w-px bg-outline-variant sm:block dark:bg-dark-outline-variant" />
       <Avatar name={profile.name} size="md" />
       <div className="min-w-0">
-       <p className="mb-0.5 hidden font-label-caps text-body-xs uppercase tracking-widest text-brand sm:block">{portalTitle}</p>
+       <p className="mb-0.5 hidden font-label-caps text-body-xs uppercase tracking-widest text-brand sm:block dark:text-amber-400">{portalTitle}</p>
        <h1 className="max-w-[40vw] truncate font-display text-headline-sm font-bold text-brand-dark sm:max-w-none dark:text-white">{profile.name}</h1>
        <p className="hidden truncate text-body-sm text-ink-muted sm:block dark:text-dark-ink-muted">{profile.email}{profile.designation ? ` · ${profile.designation}` : ''}{profile.department ? ` · ${profile.department}` : ''}</p>
       </div>
@@ -1291,6 +1292,7 @@ export default function EmployeePortal() {
        {activeTab === 'invoices' && effectiveRole === 'finance' && <Invoices />}
        {activeTab === 'leave-approvals' && effectiveRole === 'hr' && <LeaveApprovals />}
        {activeTab === 'recruitment' && effectiveRole === 'hr' && <Recruitment />}
+       {activeTab === 'performance-reviews-mgr' && effectiveRole === 'hr' && <PerformanceReviewsManagement />}
       </Suspense>
       {activeTab === 'attendance' && <Attendance attendance={attendance} onChange={setAttendance} />}
       {activeTab === 'leaves' && <Leaves leaves={leaves} />}

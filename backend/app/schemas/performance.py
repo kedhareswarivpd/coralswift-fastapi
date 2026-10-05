@@ -12,6 +12,8 @@ class PerformanceReviewBase(BaseModel):
     review_period: str = Field(min_length=1, max_length=50)
     review_date: date
     rating: int | None = Field(None, ge=1, le=10)
+    goals_set: int = 5
+    goals_achieved: int = 5
     strengths: str | None = None
     areas_for_improvement: str | None = None
     goals: str | None = None
@@ -25,6 +27,8 @@ class PerformanceReviewCreate(PerformanceReviewBase):
 
 class PerformanceReviewUpdate(BaseModel):
     rating: int | None = Field(None, ge=1, le=10)
+    goals_set: int | None = None
+    goals_achieved: int | None = None
     strengths: str | None = None
     areas_for_improvement: str | None = None
     goals: str | None = None
