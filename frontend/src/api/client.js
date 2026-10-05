@@ -1,4 +1,7 @@
-const API_URL = import.meta.env.VITE_API_URL || '/api/v1';
+const rawConfiguredUrl = (import.meta.env.VITE_API_URL || '/api/v1').trim().replace(/\/+$/, '');
+const API_URL = rawConfiguredUrl && !rawConfiguredUrl.endsWith('/api/v1')
+  ? `${rawConfiguredUrl}/api/v1`
+  : (rawConfiguredUrl || '/api/v1');
 
 // Cookie-based auth (CoralSwift self-auth): cf_access_token/cf_refresh_token
 // are httpOnly and never touched by JS. cf_csrf_token is the one readable
