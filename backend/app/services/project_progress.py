@@ -24,7 +24,7 @@ from app.services.notification_service import notify_roles, notify_user
 
 async def recompute_project_progress(db: AsyncSession, project_id) -> None:
     project = await db.get(Project, project_id)
-    if project is None:
+    if project is None or not isinstance(project, Project):
         return
 
     total = (await db.execute(select(func.count()).select_from(Task).where(Task.project_id == project_id))).scalar_one()

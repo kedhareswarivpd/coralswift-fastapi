@@ -29,6 +29,8 @@ def _mock_request(cookies: dict | None = None, method: str = "GET") -> MagicMock
     request.cookies = cookies or {}
     request.method = method
     request.headers = {}
+    request.url = MagicMock()
+    request.url.path = "/api/v1/protected"
     return request
 
 

@@ -4,7 +4,6 @@ import Button from '../ui/Button.jsx';
 import StatusBadge from '../ui/StatusBadge.jsx';
 import { SkeletonTable } from '../ui/Skeleton.jsx';
 import useAsyncAction from '../../hooks/useAsyncAction.js';
-import { useAuth } from '../../context/AuthContext.jsx';
 import {
  fetchLead, fetchLeadActivities, logLeadCall, markRequirementGathering, disqualifyLead,
  fetchProposals, createProposal, sendProposal, acceptProposal, rejectProposal,
@@ -38,7 +37,6 @@ const ACTIVITY_LABEL = {
 };
 
 export default function LeadFlowPage({ leadId, onBack, onRefresh }) {
- const { user } = useAuth();
  const [lead, setLead] = useState(null);
  const [activities, setActivities] = useState([]);
  const [proposals, setProposals] = useState([]);
@@ -251,7 +249,7 @@ export default function LeadFlowPage({ leadId, onBack, onRefresh }) {
      {lead.status === 'proposal_approved' && acceptedProposal && !contract && (
       <div className="rounded-xl border border-outline-variant bg-white p-6 dark:border-dark-outline-variant dark:bg-dark-surface-container">
        <p className="mb-3 font-label-caps text-label-caps uppercase text-ink-muted dark:text-dark-ink-muted">Next Step — Generate Contract</p>
-       <p className="mb-3 text-body-sm text-ink-muted dark:text-dark-ink-muted">v{acceptedProposal.version} · {acceptedProposal.currency} {Number(acceptedProposal.price).toLocaleString()} — draft the contract for signature. Signing happens manually (offline/DocuSign); record each signature here once it's done.</p>
+       <p className="mb-3 text-body-sm text-ink-muted dark:text-dark-ink-muted">v{acceptedProposal.version} · {acceptedProposal.currency} {Number(acceptedProposal.price).toLocaleString()} — draft the contract for signature. Signing happens manually (offline/DocuSign); record each signature here once it&apos;s done.</p>
        <Button type="button" variant="primary" size="md" disabled={isPending}
         onClick={() => doAction(async () => { await createContract(acceptedProposal.id); }, 'Contract drafted.')}>
         Generate Contract

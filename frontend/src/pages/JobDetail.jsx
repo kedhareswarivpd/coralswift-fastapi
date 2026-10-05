@@ -68,7 +68,7 @@ export default function JobDetail() {
       const careerId = job.id || job.slug || '1';
       await submitJobApplication(careerId, { ...form, resume });
       setStatus('success');
-    } catch (err) {
+    } catch {
       // Success state confirmation for static demo
       setStatus('success');
     }

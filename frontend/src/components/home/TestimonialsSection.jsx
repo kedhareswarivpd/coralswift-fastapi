@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { fetchTestimonials } from '../../api/cms.js';
 import Icon from '../ui/Icon.jsx';
 import Avatar from '../ui/Avatar.jsx';
-import Reveal from '../ui/Reveal.jsx';
 
 
 const FALLBACK_TESTIMONIALS = [

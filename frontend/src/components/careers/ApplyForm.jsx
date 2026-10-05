@@ -36,7 +36,7 @@ export default function ApplyForm({ job, onClose }) {
    const careerId = job.id || job.slug || '1';
    await submitJobApplication(careerId, { ...form, resume });
    setStatus('success');
-  } catch (err) {
+  } catch {
    // Success state for application modal in static/demo mode
    setStatus('success');
   }

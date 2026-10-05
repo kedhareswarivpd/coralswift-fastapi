@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import IndustriesHero from '../components/industries/IndustriesHero.jsx';
 import IndustriesGrid from '../components/industries/IndustriesGrid.jsx';
 import CtaBanner from '../components/home/CtaBanner.jsx';
-import SectionHeading from '../components/ui/SectionHeading.jsx';
 import useDocumentTitle from '../hooks/useDocumentTitle.js';
 import { industries as staticIndustries } from '../data/industries.js';
 import { fetchIndustries } from '../api/cms.js';

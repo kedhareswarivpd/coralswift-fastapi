@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import CaseStudiesHero from '../components/caseStudies/CaseStudiesHero.jsx';
 import CaseStudiesGrid from '../components/caseStudies/CaseStudiesGrid.jsx';
 import CtaBanner from '../components/home/CtaBanner.jsx';
-import SectionHeading from '../components/ui/SectionHeading.jsx';
 import useDocumentTitle from '../hooks/useDocumentTitle.js';
 import { caseStudies as staticCaseStudies } from '../data/caseStudies.js';
 import { fetchCaseStudies } from '../api/cms.js';

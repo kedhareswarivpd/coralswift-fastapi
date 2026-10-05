@@ -989,7 +989,7 @@ function RolesPermissions() {
      ))}
      {filteredCatalog.length === 0 && (
       <div className="col-span-2 py-8 text-center text-body-sm text-ink-muted dark:text-dark-ink-muted">
-       No roles match your search filter "{roleCatalogSearch}".
+       No roles match your search filter &quot;{roleCatalogSearch}&quot;.
       </div>
      )}
     </div>

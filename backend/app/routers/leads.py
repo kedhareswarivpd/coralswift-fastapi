@@ -195,7 +195,7 @@ async def convert_lead(lead_id: uuid.UUID, db: AsyncSession = Depends(get_db), c
     a rapid double-click produces exactly one client either way.
     """
     lead = await crud.get(db, lead_id)
-    if current_user.role == "sales" and lead.owner_id != current_user.id:
+    if getattr(current_user, "role", None) == "sales" and lead.owner_id != getattr(current_user, "id", None):
         raise ApiError.forbidden("You do not have access to this lead")
 
     # UAT closure pass §4: nothing blocked converting a disqualified

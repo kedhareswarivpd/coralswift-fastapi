@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import useDocumentTitle from '../hooks/useDocumentTitle.js';
 import Icon from '../components/ui/Icon.jsx';
-import Badge from '../components/ui/Badge.jsx';
 import Pulse, { SkeletonHeading, SkeletonCard } from '../components/ui/Skeleton.jsx';
 import NotFound from './NotFound.jsx';
 import CtaBanner from '../components/home/CtaBanner.jsx';
