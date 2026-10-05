@@ -41,25 +41,14 @@ function handleUnauthorizedState() {
 }
 
 async function parseResponseBody(response) {
-  if (typeof response?.json === 'function') {
-    try {
-      return await response.json();
-    } catch {
-      // Some mocked fetch responses only expose .text() or plain data.
-    }
+  if (!response) return null;
+  const bodyText = typeof response.text === 'function' ? await response.text().catch(() => '') : '';
+  if (!bodyText || !bodyText.trim()) return null;
+  try {
+    return JSON.parse(bodyText);
+  } catch {
+    return bodyText;
   }
-
-  if (typeof response?.text === 'function') {
-    const bodyText = await response.text().catch(() => '');
-    if (!bodyText) return null;
-    try {
-      return JSON.parse(bodyText);
-    } catch {
-      return bodyText;
-    }
-  }
-
-  return null;
 }
 
 // A 401 from many in-flight requests must trigger exactly one refresh call,
@@ -127,22 +116,17 @@ export async function apiRequest(path, { method = 'GET', body, headers, signal, 
   const explicitlyJson = contentType.includes('application/json') || contentType.includes('+json');
 
   if (!response.ok) {
-    let errorBody = null;
-    if (explicitlyJson || typeof response.json === 'function') {
-      errorBody = await parseResponseBody(response);
-    } else {
-      const fallbackText = typeof response.text === 'function' ? await response.text().catch(() => '') : '';
-      errorBody = fallbackText || null;
-    }
+    const errorBody = await parseResponseBody(response);
 
     if (response.status === 401 && path !== '/auth/me') {
       handleUnauthorizedState();
     }
 
+    const isHtmlText = typeof errorBody === 'string' && (errorBody.trim().startsWith('<!doctype') || errorBody.trim().startsWith('<html'));
     const message =
       errorBody && typeof errorBody === 'object' && errorBody.message
         ? errorBody.message
-        : typeof errorBody === 'string' && errorBody.trim()
+        : typeof errorBody === 'string' && errorBody.trim() && !isHtmlText
           ? errorBody
           : response.statusText || `Request failed with status ${response.status}`;
 
@@ -153,28 +137,20 @@ export async function apiRequest(path, { method = 'GET', body, headers, signal, 
     );
   }
 
-  if (!explicitlyJson && typeof response.json === 'function') {
-    try {
-      return await response.json();
-    } catch {
-      // Fall through to HTML/non-JSON detection below for real responses that
-      // do not actually return JSON despite exposing .json().
-    }
-  }
+  const parsedBody = await parseResponseBody(response);
 
-  if (!explicitlyJson) {
-    const bodyText = typeof response.text === 'function' ? await response.text().catch(() => '') : '';
+  if (!explicitlyJson && typeof parsedBody === 'string') {
+    const isHtmlText = parsedBody.trim().startsWith('<!doctype') || parsedBody.trim().startsWith('<html');
     throw new ApiRequestError(
       `Expected JSON from ${API_URL}${path} but got ${contentType || 'non-JSON'} (HTTP ${response.status}). ` +
-        (bodyText.trim().startsWith('<!doctype') || bodyText.trim().startsWith('<html')
-          ? 'The SPA fallback (index.html) was returned instead of the API — check that VITE_API_URL is unset/"/api/v1" on the host and that the /api/v1 proxy rewrite is active.'
-          : `Body preview: ${bodyText.slice(0, 200)}`),
+        (isHtmlText
+          ? 'The SPA fallback (index.html) was returned instead of the API — check that VITE_API_URL is configured correctly.'
+          : `Body preview: ${parsedBody.slice(0, 200)}`),
       response.status,
       []
     );
   }
 
-  const parsedBody = await parseResponseBody(response);
   return parsedBody;
 }
 

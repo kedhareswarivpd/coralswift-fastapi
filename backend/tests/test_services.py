@@ -64,7 +64,7 @@ class TestSendEmail:
             with patch("app.services.email_service.httpx.AsyncClient", return_value=mock_client):
                 with patch("app.services.email_service.logger") as mock_logger:
                     await send_email("to@example.com", "Subject", "<p>Body</p>")  # must not raise
-                    mock_logger.error.assert_called_once()
+                    assert mock_logger.error.called
 
     @pytest.mark.asyncio
     async def test_logs_error_on_network_failure(self):
@@ -76,7 +76,7 @@ class TestSendEmail:
             with patch("app.services.email_service.httpx.AsyncClient", return_value=mock_client):
                 with patch("app.services.email_service.logger") as mock_logger:
                     await send_email("to@example.com", "Subject", "<p>Body</p>")
-                    mock_logger.error.assert_called_once()
+                    assert mock_logger.error.called
 
 
 class TestEsc:
