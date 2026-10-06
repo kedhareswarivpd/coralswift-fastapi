@@ -107,7 +107,7 @@ export default function SignContractPage() {
                 <Icon name="verified" className="text-sm" /> Digital Service Agreement
               </span>
               <h1 className="mt-3 text-2xl font-bold text-slate-900 dark:text-white">
-                CoreFusion Technologies Contract
+                CoralSwift Technologies Contract
               </h1>
               <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                 Prepared for <strong className="text-slate-700 dark:text-slate-200">{contract?.contact_name}</strong> {contract?.company_name && `(${contract?.company_name})`}
