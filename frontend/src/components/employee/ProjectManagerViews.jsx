@@ -1,3 +1,4 @@
+import { fetchProjectUpdates, postProjectUpdate, toggleProjectUpdateVisibility } from '../../api/projects.js';
 import { useState, useEffect, useCallback } from 'react';
 import Icon from '../ui/Icon.jsx';
 import Button from '../ui/Button.jsx';
@@ -32,6 +33,7 @@ function TeamProjects({ userId }) {
  const [form, setForm] = useState({ title: '', client_id: '', budget: '', start_date: '', end_date: '' });
  const [fieldErrors, setFieldErrors] = useState({});
  const [assigningId, setAssigningId] = useState(null);
+ const [updatesProject, setUpdatesProject] = useState(null);
  const [teamSelection, setTeamSelection] = useState([]);
  const [toast, setToast] = useState({ msg: '', type: 'success' });
  const [page, setPage] = useState(1);
@@ -181,7 +183,7 @@ function TeamProjects({ userId }) {
        <span className="w-10 text-right text-body-sm font-semibold text-brand-dark dark:text-white">{p.progress_percent}%</span>
       </div>
 
-      {p.status === 'completed' && !p.completion_submitted_at && (
+      {p.status === 'completed' && (p.client_review_status === 'changes_requested' || !p.completion_submitted_at) && (
        <div className="mb-3 flex items-center justify-between rounded-lg border border-green-500/30 bg-status-success-bg0/10 px-4 py-2">
         <span className="text-body-sm text-status-success-text">All tasks done — ready to submit for client review.</span>
         <RowAction disabled={submittingReview} onClick={() => submitForReview(p)}>
@@ -222,9 +224,14 @@ function TeamProjects({ userId }) {
         </div>
        </div>
       ) : (
-       <RowAction onClick={() => startAssign(p)}>
-        {p.team && p.team.length > 0 ? 'Edit Team' : 'Assign Team'}
-       </RowAction>
+       <div className="flex gap-2">
+        <RowAction onClick={() => startAssign(p)}>
+         {p.team && p.team.length > 0 ? 'Edit Team' : 'Assign Team'}
+        </RowAction>
+        <RowAction variant="outline" onClick={() => setUpdatesProject(p)}>
+         Updates
+        </RowAction>
+       </div>
       )}
      </div>
     ))}
@@ -232,6 +239,7 @@ function TeamProjects({ userId }) {
    </div>
 
    <Pagination page={page} totalPages={totalPages} onChange={setPage} />
+   {updatesProject && <ProjectUpdatesModal project={updatesProject} onClose={() => setUpdatesProject(null)} />}
   </div>
  );
 }
@@ -829,4 +837,76 @@ function Approvals() {
 }
 
 
-export { TeamProjects, TaskBoard, Approvals };
+
+function ProjectUpdatesModal({ project, onClose }) {
+    const [updates, setUpdates] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [newText, setNewText] = useState('');
+    const [newHours, setNewHours] = useState('');
+
+    const load = useCallback(() => {
+        setLoading(true);
+        fetchProjectUpdates(project.id).then(res => {
+            setUpdates(res.data || []);
+        }).catch(err => {
+            console.error(err);
+        }).finally(() => setLoading(false));
+    }, [project.id]);
+
+    useEffect(() => { load(); }, [load]);
+
+    const handlePost = async (e) => {
+        e.preventDefault();
+        if (!newText.trim()) return;
+        try {
+            await postProjectUpdate(project.id, newText, newHours ? Number(newHours) : null);
+            setNewText('');
+            setNewHours('');
+            load();
+        } catch (err) {
+            alert(err.message || 'Failed to post update');
+        }
+    };
+
+    const handleToggle = async (updateId, current) => {
+        try {
+            await toggleProjectUpdateVisibility(project.id, updateId, !current);
+            load();
+        } catch (err) {
+            alert(err.message || 'Failed to toggle visibility');
+        }
+    };
+
+    return (
+        <Modal open onClose={onClose} title={`Updates: ${project.title}`} size="md">
+            <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
+                {loading ? <p className="text-body-sm text-ink-muted">Loading updates...</p> : updates.length === 0 ? <p className="text-body-sm text-ink-muted">No updates yet.</p> : (
+                    <div className="space-y-3">
+                        {updates.map(u => (
+                            <div key={u.id} className="p-3 border border-outline-variant dark:border-dark-outline-variant rounded-lg bg-surface-container dark:bg-dark-surface-container flex flex-col gap-2">
+                                <div className="flex justify-between items-start">
+                                    <p className="text-body-xs text-ink-muted dark:text-dark-ink-muted">{new Date(u.created_at).toLocaleString()}</p>
+                                    <label className="flex items-center gap-1.5 cursor-pointer">
+                                        <input type="checkbox" checked={u.client_visible} onChange={() => handleToggle(u.id, u.client_visible)} className="rounded border-outline-variant text-brand focus:ring-brand" />
+                                        <span className="text-body-xs font-semibold text-brand-dark dark:text-white">Client Visible</span>
+                                    </label>
+                                </div>
+                                <p className="text-body-md text-brand-dark dark:text-white whitespace-pre-wrap">{u.update_text}</p>
+                                {u.hours_logged != null && <p className="text-body-xs text-ink-muted dark:text-dark-ink-muted">Hours logged: {u.hours_logged}</p>}
+                            </div>
+                        ))}
+                    </div>
+                )}
+                <form onSubmit={handlePost} className="mt-6 border-t border-outline-variant dark:border-dark-outline-variant pt-4 space-y-3">
+                    <textarea className={FORM_INPUT_CLASS} rows={3} placeholder="Write a new update..." value={newText} onChange={e => setNewText(e.target.value)} required />
+                    <div className="flex gap-2 items-center">
+                        <input type="number" step="0.5" className={`${FORM_INPUT_CLASS} w-32`} placeholder="Hours (opt)" value={newHours} onChange={e => setNewHours(e.target.value)} />
+                        <Button type="submit" variant="primary">Post Update</Button>
+                    </div>
+                </form>
+            </div>
+        </Modal>
+    );
+}
+
+export { TeamProjects, TaskBoard, Approvals, ProjectUpdatesModal };

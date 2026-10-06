@@ -1,7 +1,7 @@
 import uuid
 
-from fastapi import APIRouter, Depends, Request
-from sqlalchemy import select
+from fastapi import APIRouter, Depends, Request, Response
+from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
@@ -33,28 +33,77 @@ router = APIRouter(prefix="/leads", tags=["CRM — Leads"], dependencies=[Depend
 crud = CRUDBase(Lead, searchable_fields=["company", "contact_name", "email"])
 
 
+def _sales_blocked(current_user: User, lead: Lead) -> bool:
+    """Sales users may only touch their own leads — plus unowned ones
+    (owner_id IS NULL), which form the not-yet-assigned pool the "Assign to
+    Sales" step draws from (CRM audit Issue 1)."""
+    return current_user.role == "sales" and lead.owner_id is not None and lead.owner_id != current_user.id
+
+
+async def _owner_names(db: AsyncSession, owner_ids) -> dict[uuid.UUID, str]:
+    ids = {i for i in owner_ids if i}
+    if not ids:
+        return {}
+    users = (await db.execute(select(User).where(User.id.in_(ids)))).scalars().all()
+    return {u.id: u.name or u.email for u in users}
+
+
+async def _lead_out(db: AsyncSession, lead: Lead) -> LeadOut:
+    """LeadOut enriched with the owner's display name (CRM audit Issue 1:
+    the UI only had a raw owner_id UUID, so nobody could tell who owned a
+    lead)."""
+    out = LeadOut.model_validate(lead)
+    if lead.owner_id:
+        out.owner_name = (await _owner_names(db, [lead.owner_id])).get(lead.owner_id)
+    return out
+
+
+async def _lead_out_many(db: AsyncSession, leads) -> list[LeadOut]:
+    names = await _owner_names(db, [l.owner_id for l in leads])
+    outs = []
+    for lead in leads:
+        out = LeadOut.model_validate(lead)
+        out.owner_name = names.get(lead.owner_id)
+        outs.append(out)
+    return outs
+
+
 @router.get("", response_model=dict)
 async def list_leads(request: Request, db: AsyncSession = Depends(get_db), page: PageParams = Depends(page_params), current_user: User = Depends(get_current_user)):
     filters = {k: request.query_params.get(k) for k in ("status", "source") if request.query_params.get(k)}
+    extra_conditions = None
     if current_user.role == "sales":
-        filters["owner_id"] = current_user.id
+        # Issue 1 (CRM audit): sales previously only saw leads they already
+        # owned, so every unowned (never-assigned) lead was invisible here.
+        # Include the unowned pool so it can be seen and claimed via PATCH.
+        extra_conditions = [or_(Lead.owner_id == current_user.id, Lead.owner_id.is_(None))]
     elif owner_id := request.query_params.get("owner_id"):
         filters["owner_id"] = owner_id
-    items, total = await crud.list(db, page, filters)
+    items, total = await crud.list(db, page, filters, extra_conditions=extra_conditions)
     meta = build_pagination_meta(total, page.page, page.limit)
-    return success_response(data=[LeadOut.model_validate(lead) for lead in items], message="Leads fetched", meta=meta)
+    return success_response(data=await _lead_out_many(db, items), message="Leads fetched", meta=meta)
 
 
 @router.get("/{lead_id}", response_model=dict)
 async def get_lead(lead_id: uuid.UUID, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
     lead = await crud.get(db, lead_id)
-    if current_user.role == "sales" and lead.owner_id != current_user.id:
+    if _sales_blocked(current_user, lead):
         raise ApiError.forbidden("You do not have access to this lead")
-    return success_response(data=LeadOut.model_validate(lead))
+    return success_response(data=await _lead_out(db, lead))
 
 
 @router.post("", response_model=dict, status_code=201, dependencies=[Depends(require_roles("sales", "marketing", "admin"))])
-async def create_lead(payload: LeadCreate, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
+async def create_lead(payload: LeadCreate, response: Response, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
+    # CRM audit Issue 3: double-clicking Convert (or converting from two
+    # views) used to create one lead per click. Idempotent by submission —
+    # return the lead that already came from this contact submission.
+    if payload.contact_submission_id:
+        existing_lead = (
+            await db.execute(select(Lead).where(Lead.contact_submission_id == payload.contact_submission_id))
+        ).scalar_one_or_none()
+        if existing_lead is not None:
+            response.status_code = 200
+            return success_response(data=await _lead_out(db, existing_lead), message="Contact submission already converted to this lead", status_code=200)
     data = payload.model_dump()
     if not data.get("owner_id") and current_user.role == "sales":
         data["owner_id"] = current_user.id
@@ -78,7 +127,7 @@ async def create_lead(payload: LeadCreate, db: AsyncSession = Depends(get_db), c
             f"{lead.company or lead.contact_name} was assigned to you as a new lead.",
             NotificationType.info, f"/employee-portal?tab=leads&lead={lead.id}",
         )
-    return success_response(data=LeadOut.model_validate(lead), message="Lead created", status_code=201)
+    return success_response(data=await _lead_out(db, lead), message="Lead created", status_code=201)
 
 
 @router.patch("/{lead_id}", response_model=dict, dependencies=[Depends(require_roles("sales", "admin"))])
@@ -89,9 +138,14 @@ async def update_lead(lead_id: uuid.UUID, payload: LeadUpdate, db: AsyncSession 
     # PATCH had no matching check — any sales user could modify (including
     # reassigning `owner_id` to themselves) a lead owned by a different
     # salesperson, exactly the class of access GET was written to prevent.
-    if current_user.role == "sales" and existing.owner_id != current_user.id:
+    if _sales_blocked(current_user, existing):
         raise ApiError.forbidden("You do not have access to this lead")
     data = payload.model_dump(exclude_unset=True)
+    # A sales user touching an unowned lead claims it for themselves (CRM
+    # audit Issue 1); the explicit "assign" action is the same PATCH with
+    # owner_id set by admin.
+    if current_user.role == "sales" and existing.owner_id is None and "owner_id" not in data:
+        data["owner_id"] = current_user.id
     previous_owner = existing.owner_id
     lead = await crud.update(db, lead_id, data)
 
@@ -102,7 +156,7 @@ async def update_lead(lead_id: uuid.UUID, payload: LeadUpdate, db: AsyncSession 
             f"{lead.company or lead.contact_name} was reassigned to you.",
             NotificationType.info, f"/employee-portal?tab=leads&lead={lead.id}",
         )
-    return success_response(data=LeadOut.model_validate(lead), message="Lead updated")
+    return success_response(data=await _lead_out(db, lead), message="Lead updated")
 
 
 @router.delete("/{lead_id}", response_model=dict, dependencies=[Depends(require_roles("admin"))])
@@ -114,7 +168,7 @@ async def delete_lead(lead_id: uuid.UUID, db: AsyncSession = Depends(get_db)):
 @router.get("/{lead_id}/activities", response_model=dict)
 async def list_lead_activities(lead_id: uuid.UUID, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
     lead = await crud.get(db, lead_id)
-    if current_user.role == "sales" and lead.owner_id != current_user.id:
+    if _sales_blocked(current_user, lead):
         raise ApiError.forbidden("You do not have access to this lead")
     items = (
         await db.execute(select(LeadActivity).where(LeadActivity.lead_id == lead_id).order_by(LeadActivity.created_at))
@@ -129,7 +183,7 @@ async def log_call(lead_id: uuid.UUID, payload: LeadLogCallRequest, db: AsyncSes
     only ever advances status forward out of `new`, never backward, and
     never once the lead is disqualified/converted."""
     lead = await crud.get(db, lead_id)
-    if current_user.role == "sales" and lead.owner_id != current_user.id:
+    if _sales_blocked(current_user, lead):
         raise ApiError.forbidden("You do not have access to this lead")
     existing_note = f"{lead.notes}\n" if lead.notes else ""
     lead.notes = f"{existing_note}[Call Log] {payload.notes}"
@@ -140,7 +194,7 @@ async def log_call(lead_id: uuid.UUID, payload: LeadLogCallRequest, db: AsyncSes
     # columns (updated_at) in a state pydantic can't lazily reload outside
     # an async greenlet — refresh explicitly right before serializing.
     await db.refresh(lead)
-    return success_response(data=LeadOut.model_validate(lead), message="Call logged")
+    return success_response(data=await _lead_out(db, lead), message="Call logged")
 
 
 @router.post("/{lead_id}/requirement-gathering", response_model=dict)
@@ -149,12 +203,12 @@ async def mark_requirement_gathering(lead_id: uuid.UUID, payload: LeadRequiremen
     meeting, so the pipeline stage reflects that requirements are being
     actively gathered ahead of drafting a proposal."""
     lead = await crud.get(db, lead_id)
-    if current_user.role == "sales" and lead.owner_id != current_user.id:
+    if _sales_blocked(current_user, lead):
         raise ApiError.forbidden("You do not have access to this lead")
     await advance_lead_status(db, lead, LeadStatus.requirement_gathering)
     await log_lead_activity(db, lead.id, "requirement_gathering", payload.notes, current_user.id)
     await db.refresh(lead)
-    return success_response(data=LeadOut.model_validate(lead), message="Requirement gathering recorded")
+    return success_response(data=await _lead_out(db, lead), message="Requirement gathering recorded")
 
 
 @router.post("/{lead_id}/disqualify", response_model=dict)
@@ -165,7 +219,7 @@ async def disqualify_lead(lead_id: uuid.UUID, payload: LeadDisqualifyRequest, db
     for that specific path). Once a proposal is approved the only valid next
     step is converting the lead to a client, not disqualifying it."""
     lead = await crud.get(db, lead_id)
-    if current_user.role == "sales" and lead.owner_id != current_user.id:
+    if _sales_blocked(current_user, lead):
         raise ApiError.forbidden("You do not have access to this lead")
     if lead.status in (LeadStatus.converted, LeadStatus.disqualified):
         raise ApiError.bad_request("This lead is already closed and cannot be disqualified")
@@ -176,7 +230,7 @@ async def disqualify_lead(lead_id: uuid.UUID, payload: LeadDisqualifyRequest, db
     await advance_lead_status(db, lead, LeadStatus.disqualified)
     await log_lead_activity(db, lead.id, "disqualified", payload.reason, current_user.id)
     await db.refresh(lead)
-    return success_response(data=LeadOut.model_validate(lead), message="Lead disqualified")
+    return success_response(data=await _lead_out(db, lead), message="Lead disqualified")
 
 
 @router.post("/{lead_id}/convert", response_model=dict, dependencies=[Depends(require_roles("admin", "project_manager", "sales"))])
@@ -195,7 +249,7 @@ async def convert_lead(lead_id: uuid.UUID, db: AsyncSession = Depends(get_db), c
     a rapid double-click produces exactly one client either way.
     """
     lead = await crud.get(db, lead_id)
-    if getattr(current_user, "role", None) == "sales" and lead.owner_id != getattr(current_user, "id", None):
+    if _sales_blocked(current_user, lead):
         raise ApiError.forbidden("You do not have access to this lead")
 
     # UAT closure pass §4: nothing blocked converting a disqualified

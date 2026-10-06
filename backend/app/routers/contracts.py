@@ -195,14 +195,26 @@ async def sign_contract(contract_id: uuid.UUID, payload: ContractSign, db: Async
             if client is not None:
                 lead.converted_client_id = client.id
                 await db.commit()
-            if lead.status != LeadStatus.converted:
+
+            # CRM audit Issue 5: only mark the lead converted once a client
+            # actually exists. Previously this advanced the lead to the
+            # TERMINAL `converted` state even when provisioning failed
+            # (client None), leaving a lead with NULL converted_client_id
+            # that project provisioning skips and nothing can ever recover.
+            if lead.converted_client_id and lead.status != LeadStatus.converted:
                 await advance_lead_status(db, lead, LeadStatus.converted)
                 await log_lead_activity(db, lead.id, "converted", f"Contract fully signed — converted to client account {client.company_name if client else lead.converted_client_id}.")
+            elif lead.status != LeadStatus.converted:
+                logger.warning(
+                    "Contract %s fully signed but no client account exists for lead %s — lead stays at %s and can be retried via POST /leads/%s/convert",
+                    contract_id, lead.id, lead.status, lead.id,
+                )
 
-            try:
-                await provision_project_for_accepted_proposal(db, proposal)
-            except Exception as exc:  # noqa: BLE001 — the client account/contract are already committed; a project-creation hiccup must not undo them
-                logger.error(f"Auto project creation failed after contract signature for lead {lead.id}: {exc}")
+            if lead.converted_client_id:
+                try:
+                    await provision_project_for_accepted_proposal(db, proposal)
+                except Exception as exc:  # noqa: BLE001 — the client account/contract are already committed; a project-creation hiccup must not undo them
+                    logger.error(f"Auto project creation failed after contract signature for lead {lead.id}: {exc}")
 
 
     return success_response(data=ContractOut.model_validate(contract), message="Contract signature recorded")

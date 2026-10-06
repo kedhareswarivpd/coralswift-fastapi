@@ -19,6 +19,14 @@ export const contactSchema = z.object({
  company: z.string().trim().optional(),
  department: z.string().trim().min(1),
  subject: z.string().trim().optional(),
+ service_id: z.string().trim().optional(),
+ industry_id: z.string().trim().optional(),
+ expected_budget: z
+  .string()
+  .trim()
+  .optional()
+  .refine((v) => !v || !Number.isNaN(Number(v)) && Number(v) >= 0, 'Enter a valid non-negative budget.'),
+ requirements: z.string().trim().optional(),
  message: z.string().trim().min(1, 'Message is required.'),
 });
 

@@ -58,6 +58,9 @@ class LeadOut(TimestampedRead):
     estimated_value: float | None = None
     notes: str | None = None
     owner_id: uuid.UUID | None = None
+    # Display name of the owner (resolved in the router) — the UI must never
+    # render a raw UUID here (CRM audit Issue 1 / Issue 10).
+    owner_name: str | None = None
     converted_client_id: uuid.UUID | None = None
     service_id: uuid.UUID | None = None
     industry_id: uuid.UUID | None = None
