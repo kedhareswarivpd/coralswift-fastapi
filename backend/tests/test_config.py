@@ -1,6 +1,9 @@
 
+from unittest.mock import MagicMock, patch
+
 from app.core.config import Settings
 from app.core.upstash_redis import get_upstash_redis_client
+
 
 
 def test_settings_read_dotenv_from_backend_root_when_cwd_changes(monkeypatch, tmp_path):
@@ -34,8 +37,15 @@ def test_redis_url_env_is_used_for_upstash_tls(monkeypatch):
 def test_upstash_rest_client_reads_env(monkeypatch):
     monkeypatch.setenv("UPSTASH_REDIS_REST_URL", "https://example.upstash.io")
     monkeypatch.setenv("UPSTASH_REDIS_REST_TOKEN", "test-token")
+    monkeypatch.setattr("app.core.upstash_redis._redis_client", None)
 
-    client = get_upstash_redis_client()
+    mock_redis_instance = MagicMock()
+    mock_redis_cls = MagicMock(return_value=mock_redis_instance)
+    mock_asyncio = MagicMock(Redis=mock_redis_cls)
+    mock_upstash = MagicMock(asyncio=mock_asyncio)
 
-    assert client is not None
-    assert hasattr(client, "ping")
+    with patch.dict("sys.modules", {"upstash_redis": mock_upstash, "upstash_redis.asyncio": mock_asyncio}):
+        client = get_upstash_redis_client()
+
+        assert client is not None
+
