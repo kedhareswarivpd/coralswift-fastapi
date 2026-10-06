@@ -182,12 +182,11 @@ class TestGetOrCreateClientRecord:
 
 
 class TestProvisionClientAccount:
-    """Orchestration: the welcome email must fire only for a genuinely new
-    account, never for a reused existing one — this was the exact behavior
-    the original nested-if implementation encoded implicitly."""
+    """Orchestration: the welcome email must fire whenever a client account is provisioned
+    so credentials and password setup links are sent upon contract signature."""
 
     @pytest.mark.asyncio
-    async def test_sends_welcome_email_only_when_account_is_new(self):
+    async def test_sends_welcome_email_when_account_is_new(self):
         lead = _make_lead()
         new_user = User(id=uuid.uuid4(), name="Jane", email=lead.email, role="client")
         client = Client(id=uuid.uuid4(), user_id=new_user.id)
@@ -204,7 +203,7 @@ class TestProvisionClientAccount:
         mock_record.assert_awaited_once()
 
     @pytest.mark.asyncio
-    async def test_skips_welcome_email_for_reused_account(self):
+    async def test_sends_welcome_email_for_reused_account(self):
         lead = _make_lead()
         existing_user = User(id=uuid.uuid4(), name="Jane", email=lead.email, role="client")
         client = Client(id=uuid.uuid4(), user_id=existing_user.id)
@@ -215,7 +214,7 @@ class TestProvisionClientAccount:
                     result = await provision_client_account(AsyncMock(), lead)
 
         assert result is client
-        mock_welcome.assert_not_called()
+        mock_welcome.assert_awaited_once()
 
     @pytest.mark.asyncio
     async def test_returns_none_and_skips_everything_when_user_cannot_be_resolved(self):
@@ -228,3 +227,4 @@ class TestProvisionClientAccount:
         assert result is None
         mock_welcome.assert_not_called()
         mock_record.assert_not_called()
+
