@@ -102,7 +102,7 @@ describe('apiRequest', () => {
 
   it('attaches X-CSRF-Token (read from the cs_csrf_token cookie) on mutating requests', async () => {
     document.cookie = 'cs_csrf_token=my-csrf-value; path=/;';
-    mockFetch.mockResolvedValueOnce({ ok: true, text: async () => JSON.stringify({}) });
+    mockFetch.mockResolvedValueOnce({ ok: true, json: async () => ({}) });
 
     await apiRequest('/test', { method: 'POST', body: { a: 1 } });
     expect(mockFetch).toHaveBeenCalledWith(
@@ -115,7 +115,7 @@ describe('apiRequest', () => {
 
   it('does not attach X-CSRF-Token on a plain GET', async () => {
     document.cookie = 'cs_csrf_token=my-csrf-value; path=/;';
-    mockFetch.mockResolvedValueOnce({ ok: true, text: async () => JSON.stringify({}) });
+    mockFetch.mockResolvedValueOnce({ ok: true, json: async () => ({}) });
 
     await apiRequest('/test');
     const callArgs = mockFetch.mock.calls[0][1];
