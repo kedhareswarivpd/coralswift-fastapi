@@ -23,7 +23,7 @@ export default {
           'cyan-pale': '#FFF7ED', // pale coral tint for chip/badge backgrounds
           red: '#EF4444',         // required-field asterisk / error emphasis
         },
-        warning: '#F59E0B',
+        warning: '#FD5521',
 
         // Neutral surface scale — light mode is the spec-compliant default
         surface: {

@@ -79,7 +79,7 @@ function OverviewChartTooltip({ active, payload, isCurrency = false }) {
      <span className="font-bold text-brand">
       {isCurrency ? (data.formatted || `$${Number(data.value).toLocaleString()}`) : `${Number(data.value).toLocaleString()} ${data.unit || 'units'}`}
      </span>
-     <span className="rounded-full bg-surface-container px-1.5 py-0.5 text-body-xs font-semibold text-ink-muted dark:bg-dark-surface-container dark:text-dark-ink-muted">
+     <span className="rounded-full bg-surface-container px-1.5 py-0.5 text-label-xs font-semibold text-ink-muted dark:bg-dark-surface-container dark:text-dark-ink-muted">
       {data.percent}%
      </span>
     </p>
@@ -255,13 +255,13 @@ function Overview() {
          <Icon name="business" className="text-xl" />
         </div>
         <div>
-         <h4 className="font-display text-headline-sm font-semibold text-brand-dark dark:text-white">
+         <h4 className="font-display text-title-md font-semibold text-brand-dark dark:text-white">
           Clients by Industry
          </h4>
-         <p className="text-body-xs text-ink-muted dark:text-dark-ink-muted">Client portfolio distribution</p>
+         <p className="text-label-xs text-ink-muted dark:text-dark-ink-muted">Client portfolio distribution</p>
         </div>
        </div>
-       <span className="rounded-full bg-brand/10 px-2.5 py-1 text-body-xs font-bold text-brand">
+       <span className="rounded-full bg-brand/10 px-2.5 py-1 text-label-xs font-bold text-brand">
         {totalClientsCount} Clients
        </span>
       </div>
@@ -308,7 +308,7 @@ function Overview() {
          </div>
          <div className="flex items-center gap-2 shrink-0 font-medium">
           <span className="font-mono text-brand-dark dark:text-white">{item.value}</span>
-          <span className="text-body-xs text-ink-muted/80 w-10 text-right font-mono">({item.percent}%)</span>
+          <span className="text-label-xs text-ink-muted/80 w-10 text-right font-mono">({item.percent}%)</span>
          </div>
         </div>
        ))}
@@ -323,13 +323,13 @@ function Overview() {
          <Icon name="folder_special" className="text-xl" />
         </div>
         <div>
-         <h4 className="font-display text-headline-sm font-semibold text-brand-dark dark:text-white">
+         <h4 className="font-display text-title-md font-semibold text-brand-dark dark:text-white">
           Projects by Status
          </h4>
-         <p className="text-body-xs text-ink-muted dark:text-dark-ink-muted">Delivery lifecycle breakdown</p>
+         <p className="text-label-xs text-ink-muted dark:text-dark-ink-muted">Delivery lifecycle breakdown</p>
         </div>
        </div>
-       <span className="rounded-full bg-brand/10 px-2.5 py-1 text-body-xs font-bold text-brand">
+       <span className="rounded-full bg-brand/10 px-2.5 py-1 text-label-xs font-bold text-brand">
         {totalProjectsCount} Projects
        </span>
       </div>
@@ -359,7 +359,7 @@ function Overview() {
        </ResponsiveContainer>
        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
         <span className="font-stat text-2xl font-bold text-brand-dark dark:text-white">{totalProjectsCount}</span>
-        <span className="text-body-xs font-medium uppercase tracking-wider text-ink-muted dark:text-dark-ink-muted">Projects</span>
+        <span className="text-label-xs font-medium uppercase tracking-wider text-ink-muted dark:text-dark-ink-muted">Projects</span>
        </div>
       </div>
 
@@ -378,7 +378,7 @@ function Overview() {
          </div>
          <div className="flex items-center gap-2 shrink-0 font-medium">
           <span className="font-mono text-brand-dark dark:text-white">{item.value}</span>
-          <span className="text-body-xs text-ink-muted/80 w-10 text-right font-mono">({item.percent}%)</span>
+          <span className="text-label-xs text-ink-muted/80 w-10 text-right font-mono">({item.percent}%)</span>
          </div>
         </div>
        ))}
@@ -393,13 +393,13 @@ function Overview() {
          <Icon name="payments" className="text-xl" />
         </div>
         <div>
-         <h4 className="font-display text-headline-sm font-semibold text-brand-dark dark:text-white">
+         <h4 className="font-display text-title-md font-semibold text-brand-dark dark:text-white">
           Finance & Revenue
          </h4>
-         <p className="text-body-xs text-ink-muted dark:text-dark-ink-muted">Financial stream distribution</p>
+         <p className="text-label-xs text-ink-muted dark:text-dark-ink-muted">Financial stream distribution</p>
         </div>
        </div>
-       <span className="rounded-full bg-brand/10 px-2.5 py-1 text-body-xs font-bold text-brand">
+       <span className="rounded-full bg-brand/10 px-2.5 py-1 text-label-xs font-bold text-brand">
         {formattedTotalRevenue}
        </span>
       </div>
@@ -426,7 +426,7 @@ function Overview() {
        </ResponsiveContainer>
        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
         <span className="font-stat text-2xl font-bold text-brand-dark dark:text-white">{formattedTotalRevenue}</span>
-        <span className="text-body-xs font-medium uppercase tracking-wider text-ink-muted dark:text-dark-ink-muted">Revenue</span>
+        <span className="text-label-xs font-medium uppercase tracking-wider text-ink-muted dark:text-dark-ink-muted">Revenue</span>
        </div>
       </div>
 
@@ -443,7 +443,7 @@ function Overview() {
          </div>
          <div className="flex items-center gap-2 shrink-0 font-medium">
           <span className="font-mono text-brand-dark dark:text-white">{item.formatted}</span>
-          <span className="text-body-xs text-ink-muted/80 w-10 text-right font-mono">({item.percent}%)</span>
+          <span className="text-label-xs text-ink-muted/80 w-10 text-right font-mono">({item.percent}%)</span>
          </div>
         </div>
        ))}
@@ -454,36 +454,36 @@ function Overview() {
 
     {/* Statistical Summary Highlights Banner */}
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
-     <div className="flex items-center gap-3.5 rounded-xl border border-outline-variant bg-white dark:bg-dark-surface p-4 dark:border-dark-outline-variant">
+     <div className="flex items-center gap-3.5 rounded-xl border border-outline-variant bg-surface-container-lowest dark:bg-dark-surface p-4 dark:border-dark-outline-variant">
       <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand/10 text-brand">
        <Icon name="trending_up" className="text-xl" />
       </div>
       <div>
-       <p className="text-body-xs font-bold uppercase tracking-wider text-ink-muted dark:text-dark-ink-muted">Primary Client Sector</p>
+       <p className="text-label-xs font-bold uppercase tracking-wider text-ink-muted dark:text-dark-ink-muted">Primary Client Sector</p>
        <p className="text-body-sm font-semibold text-brand-dark dark:text-white">
         {clientData[0]?.name || 'Technology & Cloud'} ({clientData[0]?.percent || 35}%)
        </p>
       </div>
      </div>
 
-     <div className="flex items-center gap-3.5 rounded-xl border border-outline-variant bg-white dark:bg-dark-surface p-4 dark:border-dark-outline-variant">
+     <div className="flex items-center gap-3.5 rounded-xl border border-outline-variant bg-surface-container-lowest dark:bg-dark-surface p-4 dark:border-dark-outline-variant">
       <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-status-success/15 text-status-success">
        <Icon name="task_alt" className="text-xl" />
       </div>
       <div>
-       <p className="text-body-xs font-bold uppercase tracking-wider text-ink-muted dark:text-dark-ink-muted">Delivery Completion</p>
+       <p className="text-label-xs font-bold uppercase tracking-wider text-ink-muted dark:text-dark-ink-muted">Delivery Completion</p>
        <p className="text-body-sm font-semibold text-brand-dark dark:text-white">
         {projectData[0]?.percent || 70}% Completed Projects
        </p>
       </div>
      </div>
 
-     <div className="flex items-center gap-3.5 rounded-xl border border-outline-variant bg-white dark:bg-dark-surface p-4 dark:border-dark-outline-variant">
+     <div className="flex items-center gap-3.5 rounded-xl border border-outline-variant bg-surface-container-lowest dark:bg-dark-surface p-4 dark:border-dark-outline-variant">
       <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-status-info/15 text-status-info">
        <Icon name="account_balance_wallet" className="text-xl" />
       </div>
       <div>
-       <p className="text-body-xs font-bold uppercase tracking-wider text-ink-muted dark:text-dark-ink-muted">Top Finance Stream</p>
+       <p className="text-label-xs font-bold uppercase tracking-wider text-ink-muted dark:text-dark-ink-muted">Top Finance Stream</p>
        <p className="text-body-sm font-semibold text-brand-dark dark:text-white">
         {revenueData[0]?.name?.split('&')[0]?.trim() || 'Enterprise ERP'} ({revenueData[0]?.percent || 36}%)
        </p>
@@ -924,10 +924,10 @@ function RolesPermissions() {
        key={cat}
        type="button"
        onClick={() => setSelectedCategory(cat)}
-       className={`rounded-full px-3.5 py-1 text-body-xs font-medium transition-all ${
+       className={`rounded-full px-3.5 py-1 text-label-xs font-medium transition-all ${
         selectedCategory === cat
          ? 'bg-brand text-white shadow-sm'
-         : 'bg-surface-container text-ink-muted hover:bg-surface-dim hover:text-brand-dark dark:bg-dark-surface-container dark:text-dark-ink-muted'
+         : 'bg-surface-container text-ink-muted hover:bg-surface-container-high hover:text-brand-dark dark:bg-dark-surface-container dark:text-dark-ink-muted'
        }`}
       >
        {cat}
@@ -940,7 +940,7 @@ function RolesPermissions() {
      {filteredCatalog.map((roleItem) => (
       <div
        key={roleItem.role}
-       className="flex flex-col rounded-xl border border-outline-variant bg-white dark:bg-dark-surface dark:border-dark-outline-variant p-5 shadow-sm transition-shadow hover:shadow-sm"
+       className="flex flex-col rounded-xl border border-outline-variant bg-surface-container-lowest dark:bg-dark-surface dark:border-dark-outline-variant p-5 shadow-xs transition-shadow hover:shadow-sm"
       >
        <div className="flex items-start justify-between gap-3 border-b border-outline-variant/60 dark:border-dark-outline-variant/60 pb-3 mb-3">
         <div className="flex items-center gap-3">
@@ -948,22 +948,22 @@ function RolesPermissions() {
           <Icon name={roleItem.icon} className="text-xl" />
          </div>
          <div>
-          <h4 className="font-display text-headline-sm font-semibold text-brand-dark dark:text-white">
+          <h4 className="font-display text-title-md font-semibold text-brand-dark dark:text-white">
            {roleItem.name}
           </h4>
-          <span className="font-mono text-body-xs text-brand font-medium">
+          <span className="font-mono text-label-xs text-brand font-medium">
            {roleItem.role}
           </span>
          </div>
         </div>
-        <span className="inline-flex items-center rounded-full bg-surface-container px-2.5 py-0.5 text-body-xs font-medium text-ink-muted dark:bg-dark-surface-container dark:text-dark-ink-muted whitespace-nowrap">
+        <span className="inline-flex items-center rounded-full bg-surface-container px-2.5 py-0.5 text-label-xs font-medium text-ink-muted dark:bg-dark-surface-container dark:text-dark-ink-muted whitespace-nowrap">
          {roleItem.category}
         </span>
        </div>
 
        {/* About the Role */}
        <div className="space-y-1 mb-3">
-        <span className="text-body-xs font-bold uppercase tracking-wider text-ink-muted dark:text-dark-ink-muted">
+        <span className="text-label-xs font-bold uppercase tracking-wider text-ink-muted dark:text-dark-ink-muted">
          About this role
         </span>
         <p className="text-body-sm text-brand-dark dark:text-white leading-relaxed">
@@ -973,7 +973,7 @@ function RolesPermissions() {
 
        {/* Permissions which the respective role has */}
        <div className="mt-auto space-y-1.5 pt-2.5 border-t border-outline-variant/40 dark:border-dark-outline-variant/40">
-        <span className="text-body-xs font-bold uppercase tracking-wider text-brand">
+        <span className="text-label-xs font-bold uppercase tracking-wider text-brand">
          Granted Permissions & Capabilities ({roleItem.permissions.length})
         </span>
         <ul className="space-y-1.5 pt-1">
@@ -1025,7 +1025,7 @@ function RolesPermissions() {
 
     {/* Add Role Form with Permissions */}
     {showRoleForm && (
-     <div className="rounded-xl border border-outline-variant bg-white dark:bg-dark-surface p-6 shadow-sm dark:border-dark-outline-variant">
+     <div className="rounded-xl border border-outline-variant bg-surface-container-lowest dark:bg-dark-surface p-6 shadow-sm dark:border-dark-outline-variant">
       <div className="border-b border-outline-variant dark:border-dark-outline-variant pb-4 mb-6">
        <h4 className="text-center font-display text-headline-sm font-semibold text-brand-dark dark:text-white">
         Add Role
@@ -1089,7 +1089,7 @@ function RolesPermissions() {
         <div className="flex items-center justify-between mb-2">
          <label className="block text-body-sm font-medium text-brand-dark dark:text-white">
           Assign Permissions{' '}
-          <span className="ml-1 rounded-full bg-brand/10 px-2 py-0.5 text-body-xs font-semibold text-brand">
+          <span className="ml-1 rounded-full bg-brand/10 px-2 py-0.5 text-label-xs font-semibold text-brand">
            {selectedRolePerms.length} selected
           </span>
          </label>
@@ -1109,7 +1109,7 @@ function RolesPermissions() {
           {Object.entries(permissionsByModule).map(([moduleName, perms]) => (
            <div key={moduleName} className="space-y-2">
             <div className="flex items-center justify-between border-b border-outline-variant/50 pb-1">
-             <span className="text-body-xs font-bold uppercase tracking-wider text-brand">
+             <span className="text-label-xs font-bold uppercase tracking-wider text-brand">
               {moduleName}
              </span>
              <button
@@ -1123,7 +1123,7 @@ function RolesPermissions() {
                 setSelectedRolePerms((prev) => Array.from(new Set([...prev, ...modIds])));
                }
               }}
-              className="text-body-xs font-medium text-ink-muted hover:text-brand"
+              className="text-label-xs font-medium text-ink-muted hover:text-brand"
              >
               {perms.every((p) => selectedRolePerms.includes(p.id)) ? 'Clear' : 'Select all'}
              </button>
@@ -1148,7 +1148,7 @@ function RolesPermissions() {
                 />
                 <div className="min-w-0 flex-1">
                  <p className="text-body-xs font-medium truncate">{p.name}</p>
-                 <p className="text-body-xs text-ink-muted font-mono">{p.action}</p>
+                 <p className="text-label-xs text-ink-muted font-mono">{p.action}</p>
                 </div>
                </label>
               );
@@ -1216,7 +1216,7 @@ function RolesPermissions() {
         {r.permissions && r.permissions.length > 0 && (
          <div className="flex flex-wrap gap-1.5 pt-1">
           {r.permissions.map((p) => (
-           <span key={p.id} className="inline-flex items-center rounded bg-brand/10 dark:bg-brand/20 px-2 py-0.5 text-body-xs font-medium text-brand">
+           <span key={p.id} className="inline-flex items-center rounded bg-brand/10 dark:bg-brand/20 px-2 py-0.5 text-label-xs font-medium text-brand">
             {p.module}.{p.action}
            </span>
           ))}

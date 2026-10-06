@@ -93,7 +93,7 @@ export default function Hero() {
           <span className="block mt-1 sm:mt-2">
             for the{' '}
             <span className="text-[#FF5500]">Global</span>{' '}
-            <span className="bg-gradient-to-r from-[#FF5500] via-[#E11D48] to-[#8B5CF6] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#8B5CF6] via-[#A855F7] to-[#6366F1] bg-clip-text text-transparent">
               Enterprise
             </span>
           </span>

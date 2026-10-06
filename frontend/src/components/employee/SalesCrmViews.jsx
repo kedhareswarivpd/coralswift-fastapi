@@ -122,7 +122,7 @@ function Leads({ leads, onRefresh }) {
      </thead>
      <tbody className="divide-y divide-outline-variant dark:divide-dark-outline-variant">
       {pagedLeads.map((l) => (
-       <tr key={l.id} className="transition-colors hover:bg-accent-cyan-pale dark:hover:bg-white/5">
+       <tr key={l.id} className="transition-colors hover:bg-accent-cyan-pale dark:bg-blue-900/30">
          <td data-label="Company / Contact" className="px-stack-lg py-4">
          <p className="text-body-md font-semibold text-brand-dark dark:text-white">{l.company || '—'}</p>
          <p className="text-body-sm text-ink-muted dark:text-dark-ink-muted">{l.contact_name}</p>
@@ -213,7 +213,7 @@ function ContactSubmissionsView({ onLeadCreated }) {
      </thead>
      <tbody className="divide-y divide-outline-variant dark:divide-dark-outline-variant">
       {submissions.map((s) => (
-       <tr key={s.id} className="transition-colors hover:bg-accent-cyan-pale dark:hover:bg-white/5">
+       <tr key={s.id} className="transition-colors hover:bg-accent-cyan-pale dark:bg-blue-900/30">
         <td data-label="Contact" className="px-stack-lg py-4">
          <p className="text-body-md font-semibold text-brand-dark dark:text-white">{s.name}</p>
          <p className="text-body-sm text-ink-muted dark:text-dark-ink-muted">{s.email}</p>
@@ -428,14 +428,14 @@ function Proposals({ proposals, leads, contracts = [], onRefresh, onNavigateTab 
      </thead>
      <tbody className="divide-y divide-outline-variant dark:divide-dark-outline-variant">
       {pagedProposals.map((p) => (
-       <tr key={p.id} className="transition-colors hover:bg-accent-cyan-pale dark:hover:bg-white/5">
+       <tr key={p.id} className="transition-colors hover:bg-accent-cyan-pale dark:bg-blue-900/30">
         <td data-label="Lead" className="px-stack-lg py-4 text-body-md text-brand-dark dark:text-white">{leadLabel(p.lead_id)}</td>
         <td data-label="Price" className="px-stack-lg py-4 text-body-sm text-ink-muted dark:text-dark-ink-muted">{p.currency} {Number(p.price).toLocaleString()}</td>
         <td data-label="Status" className="px-stack-lg py-4"><StatusBadge variant={PROPOSAL_STATUS_COLOR[p.status]}>{p.status}</StatusBadge></td>
         <td data-label="Sent" className="px-stack-lg py-4 text-body-sm text-ink-muted dark:text-dark-ink-muted">{p.sent_at ? p.sent_at.slice(0, 10) : '—'}</td>
         <td data-label="View" className="px-stack-lg py-4">
          <button type="button" aria-label="View proposal" onClick={() => setViewProposal(p)}
-          className="flex h-8 w-8 items-center justify-center rounded-full text-ink-muted hover:bg-accent-cyan-pale hover:text-brand-dark dark:text-dark-ink-muted dark:hover:bg-brand/20 dark:hover:text-white">
+          className="flex h-8 w-8 items-center justify-center rounded-full text-ink-muted hover:bg-accent-cyan-pale hover:text-brand-dark dark:text-dark-ink-muted dark:hover:bg-blue-900/30 dark:hover:text-white">
           <Icon name="visibility" className="text-lg" />
          </button>
         </td>
@@ -590,7 +590,7 @@ function Contracts({ contracts, proposals, leads, onRefresh }) {
      </thead>
      <tbody className="divide-y divide-outline-variant dark:divide-dark-outline-variant">
       {pagedContracts.map((c) => (
-       <tr key={c.id} className="transition-colors hover:bg-accent-cyan-pale dark:hover:bg-white/5">
+       <tr key={c.id} className="transition-colors hover:bg-accent-cyan-pale dark:bg-blue-900/30">
         <td data-label="Deal" className="px-stack-lg py-4 text-body-md text-brand-dark dark:text-white">{describe(c.proposal_id)}</td>
         <td data-label="Status" className="px-stack-lg py-4"><StatusBadge variant={CONTRACT_STATUS_COLOR[c.status]}>{c.status}</StatusBadge></td>
         <td data-label="Client Signed" className="px-stack-lg py-4 text-body-sm text-ink-muted dark:text-dark-ink-muted">{c.signed_by_client_at ? c.signed_by_client_at.slice(0, 10) : '—'}</td>
@@ -702,7 +702,7 @@ function CrmDashboard({ leads, proposals, contracts }) {
    <div className="grid grid-cols-2 gap-6 lg:grid-cols-4">
     {kpis.map((stat) => (
      <div key={stat.label} className="flex flex-col rounded-xl border border-outline-variant bg-white dark:bg-dark-surface p-6 shadow-sm dark:border-dark-outline-variant">
-      <div className="mb-4 inline-flex size-11 items-center justify-center rounded-xl bg-accent-cyan-pale dark:bg-brand/10">
+      <div className="mb-4 inline-flex size-11 items-center justify-center rounded-xl bg-accent-cyan-pale dark:bg-blue-900/30">
        <Icon name={stat.icon} className="text-2xl text-brand" />
       </div>
       <p className="font-stat text-3xl font-bold text-brand-dark dark:text-white">{stat.value}</p>
@@ -806,7 +806,7 @@ function SalesClients({ clients }) {
      </thead>
      <tbody className="divide-y divide-outline-variant dark:divide-dark-outline-variant">
       {pagedClients.map((c) => (
-       <tr key={c.id} className="transition-colors hover:bg-accent-cyan-pale dark:hover:bg-white/5">
+       <tr key={c.id} className="transition-colors hover:bg-accent-cyan-pale dark:bg-blue-900/30">
         <td data-label="Company" className="px-stack-lg py-4 text-body-md font-semibold text-brand-dark dark:text-white">{c.company_name || '—'}</td>
         <td data-label="Contact" className="px-stack-lg py-4 text-body-sm text-ink-muted dark:text-dark-ink-muted">{c.contact_name || c.company_name || '—'}</td>
         <td data-label="Industry" className="px-stack-lg py-4 text-body-sm capitalize text-ink-muted dark:text-dark-ink-muted">{c.industry?.replace('_', ' ') || '—'}</td>
@@ -985,7 +985,7 @@ function SalesMeetings({ meetings, clients, onRefresh }) {
      <tbody className="divide-y divide-outline-variant dark:divide-dark-outline-variant">
       {pagedMeetings.map((m) => (
        <Fragment key={m.id}>
-       <tr className="transition-colors hover:bg-accent-cyan-pale dark:hover:bg-white/5">
+       <tr className="transition-colors hover:bg-accent-cyan-pale dark:bg-blue-900/30">
         <td data-label="Title" className="px-stack-lg py-4 text-body-md font-semibold text-brand-dark dark:text-white">{m.title}</td>
         <td data-label="Client / Lead" className="px-stack-lg py-4 text-body-sm text-ink-muted dark:text-dark-ink-muted">{m.client_id ? clientName(m.client_id) : '—'}</td>
         <td data-label="Date & Time" className="px-stack-lg py-4 text-body-sm text-ink-muted dark:text-dark-ink-muted">{m.scheduled_at ? new Date(m.scheduled_at).toLocaleString() : '—'}</td>

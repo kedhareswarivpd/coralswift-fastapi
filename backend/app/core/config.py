@@ -96,10 +96,6 @@ class Settings(BaseSettings):
     brevo_api_key: str = ""
     brevo_sender_email: str = "no-reply@coralswifttech.com"
     brevo_sender_name: str = "CoralSwift Technologies"
-    smtp_host: str = "smtp-relay.brevo.com"
-    smtp_port: int = 587
-    smtp_user: str = "coralswifttech26@gmail.com"
-    smtp_pass: str = ""
 
     # Uploads / file storage. "local" (default) writes to local disk exactly
     # as before — nothing changes for a deployment that doesn't set these.

@@ -7,12 +7,9 @@ import { reticle } from '@reticlehq/vite-plugin';
 const API_PROXY_TARGET = process.env.VITE_API_PROXY_TARGET || 'http://localhost:8000';
 const BASE_PATH = process.env.VITE_BASE_PATH || '/';
 
-export default defineConfig(({ mode }) => ({
+export default defineConfig({
   base: BASE_PATH,
-  plugins: [
-    ...(mode === 'development' ? [reticle({ captureNetworkBodies: true })] : []),
-    react(),
-  ],
+  plugins: [reticle({ captureNetworkBodies: true }),react()],
   build: {
     target: 'esnext',
     minify: 'esbuild',
@@ -80,5 +77,4 @@ export default defineConfig(({ mode }) => ({
       'e2e/**',
     ],
   },
-}));
-
+});

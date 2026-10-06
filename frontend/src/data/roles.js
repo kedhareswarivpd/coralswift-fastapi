@@ -110,7 +110,7 @@ export const CORALSWIFT_ROLES_CATALOG = [
       'Log billable and non-billable project hours and submit weekly timesheets',
       'Punch in daily attendance (check-in / check-out)',
       'Submit vacation and sick leave requests to managers',
-      'Employee self-service: download monthly payslips, access employment files, and manage tasks',
+      'Employee self-service: download monthly payslips, access employment files, and enroll in technical courses',
     ],
   },
   {
@@ -127,7 +127,7 @@ export const CORALSWIFT_ROLES_CATALOG = [
       'Perform milestone acceptance testing before client deliverable submission',
       'Transition task states (Ready for Testing, Tested, Verified)',
       'Track daily work hours, submit timesheets, and log attendance',
-      'Employee self-service access to documents, payslips, and timesheets',
+      'Employee self-service access to documents, payslips, and training courses',
     ],
   },
   {
@@ -243,7 +243,7 @@ export const CORALSWIFT_ROLES_CATALOG = [
       'Leave balance inquiry and formal leave application submission',
       'Daily/weekly project timesheet logging and submission',
       'Download monthly salary payslips and tax documents',
-      'Track project tasks, milestone contributions, and performance reviews',
+      'Browse company course catalog and enroll in skill training programs',
     ],
   },
   {

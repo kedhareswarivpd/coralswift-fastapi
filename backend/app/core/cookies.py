@@ -34,14 +34,13 @@ _SECURE_COOKIES = SECURE_COOKIES
 
 
 def set_session_cookies(response: Response, access_token: str, refresh_token: str, csrf_token: str) -> None:
-    samesite_mode = "none" if _SECURE_COOKIES else "lax"
     response.set_cookie(
         ACCESS_TOKEN_COOKIE, access_token, max_age=_ACCESS_COOKIE_MAX_AGE,
-        httponly=True, secure=_SECURE_COOKIES, samesite=samesite_mode, path="/",
+        httponly=True, secure=_SECURE_COOKIES, samesite="lax", path="/",
     )
     response.set_cookie(
         REFRESH_TOKEN_COOKIE, refresh_token, max_age=_REFRESH_COOKIE_MAX_AGE,
-        httponly=True, secure=_SECURE_COOKIES, samesite=samesite_mode, path="/",
+        httponly=True, secure=_SECURE_COOKIES, samesite="lax", path="/",
     )
     # Deliberately NOT httponly: same-origin frontend JS must be able to read
     # this and echo it back as the X-CSRF-Token header (double-submit
@@ -50,14 +49,10 @@ def set_session_cookies(response: Response, access_token: str, refresh_token: st
     # read this origin's cookies, not from a cross-site form/img/fetch.
     response.set_cookie(
         CSRF_COOKIE, csrf_token, max_age=_REFRESH_COOKIE_MAX_AGE,
-        httponly=False, secure=_SECURE_COOKIES, samesite=samesite_mode, path="/",
+        httponly=False, secure=_SECURE_COOKIES, samesite="lax", path="/",
     )
 
 
 def clear_session_cookies(response: Response) -> None:
-    samesite_mode = "none" if _SECURE_COOKIES else "lax"
     for name in (ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE, CSRF_COOKIE):
-        response.delete_cookie(
-            name, path="/", httponly=True if name != CSRF_COOKIE else False,
-            secure=_SECURE_COOKIES, samesite=samesite_mode,
-        )
+        response.delete_cookie(name, path="/")

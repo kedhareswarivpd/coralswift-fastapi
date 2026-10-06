@@ -208,8 +208,8 @@ async def run():
         settings_data = [
             ("site.title", "CoralSwift Technologies", "public"),
             ("site.tagline", "Transforming Businesses Through Intelligent Digital Solutions", "public"),
-            ("contact.email", "info@coralswift.com", "public"),
-            ("contact.phone", "+1 (307) 216-5154", "public"),
+            ("contact.email", "info@coralswifttech.com", "public"),
+            ("contact.phone", "+91-11-0000-0000", "public"),
             ("social.linkedin", "https://linkedin.com/company/coralswifttech", "public"),
         ]
         for key, value, group in settings_data:

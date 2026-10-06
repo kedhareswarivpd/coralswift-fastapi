@@ -206,16 +206,16 @@ function TestQueue() {
 
    <div className="flex flex-wrap items-center justify-between gap-3">
     <div className="flex items-center gap-3">
-     <span className="font-label-caps text-label-caps font-bold uppercase text-brand-dark dark:text-white">Filter:</span>
+     <span className="font-label-caps text-label-caps uppercase text-brand-dark dark:text-white">Filter:</span>
      {['in_review', 'done', 'blocked', 'all'].map((s) => (
       <button key={s} onClick={() => setFilter(s)}
-       className={`rounded-lg border px-3 py-1.5 font-label-caps text-label-caps font-bold uppercase transition-all ${
-        filter === s ? 'border-brand bg-brand text-white shadow-sm' : 'border-outline-variant bg-white dark:bg-dark-surface text-ink hover:border-brand hover:text-brand dark:border-dark-outline-variant dark:text-white'
+       className={`rounded border px-3 py-1.5 font-label-caps text-label-caps uppercase transition-colors ${
+        filter === s ? 'border-brand bg-brand text-white' : 'border-outline-variant text-ink-muted hover:border-brand hover:text-brand dark:border-dark-outline-variant dark:text-dark-ink-muted'
        }`}>{s.replace('_', ' ')}
       </button>
      ))}
     </div>
-    <button onClick={load} className="flex items-center gap-1.5 rounded-lg border border-brand/30 bg-brand/10 px-3 py-1.5 font-label-caps text-body-sm font-bold uppercase text-brand hover:bg-brand hover:text-white dark:border-blue-400/40 dark:bg-blue-900/30 dark:text-cyan-300 dark:hover:bg-brand dark:hover:text-white transition-all">
+    <button onClick={load} className="flex items-center gap-1 font-label-caps text-body-sm uppercase text-brand hover:text-brand-dark dark:text-white">
      <Icon name="refresh" className="text-base" /> Refresh
     </button>
    </div>
@@ -241,7 +241,7 @@ function TestQueue() {
      </thead>
      <tbody className="divide-y divide-outline-variant dark:divide-dark-outline-variant">
       {visible.map((t) => (
-       <tr key={t.id} className="transition-colors hover:bg-accent-cyan-pale dark:hover:bg-white/5">
+       <tr key={t.id} className="transition-colors hover:bg-accent-cyan-pale dark:bg-blue-900/30">
         <td data-label="Task" className="px-stack-lg py-4 text-body-md text-brand-dark dark:text-white">{t.title}</td>
         <td data-label="Priority" className="px-stack-lg py-4"><StatusBadge variant={TASK_PRIORITY_COLOR[t.priority]}>{t.priority}</StatusBadge></td>
         <td data-label="Status" className="px-stack-lg py-4"><StatusBadge variant={TASK_STATUS_COLOR[t.status]}>{t.status?.replace('_', ' ')}</StatusBadge></td>
@@ -373,16 +373,16 @@ function TicketQueue({ userId }) {
 
    <div className="flex flex-wrap items-center justify-between gap-3">
     <div className="flex items-center gap-3">
-     <span className="font-label-caps text-label-caps font-bold uppercase text-brand-dark dark:text-white">Filter:</span>
+     <span className="font-label-caps text-label-caps uppercase text-brand-dark dark:text-white">Filter:</span>
      {['all', 'open', 'in_progress', 'resolved', 'closed'].map((s) => (
       <button key={s} onClick={() => setFilter(s)}
-       className={`rounded-lg border px-3 py-1.5 font-label-caps text-label-caps font-bold uppercase transition-all ${
-        filter === s ? 'border-brand bg-brand text-white shadow-sm' : 'border-outline-variant bg-white dark:bg-dark-surface text-ink hover:border-brand hover:text-brand dark:border-dark-outline-variant dark:text-white'
+       className={`rounded border px-3 py-1.5 font-label-caps text-label-caps uppercase transition-colors ${
+        filter === s ? 'border-brand bg-brand text-white' : 'border-outline-variant text-ink-muted hover:border-brand hover:text-brand dark:border-dark-outline-variant dark:text-dark-ink-muted'
        }`}>{s.replace('_', ' ')}
       </button>
      ))}
     </div>
-    <button onClick={load} className="flex items-center gap-1.5 rounded-lg border border-brand/30 bg-brand/10 px-3 py-1.5 font-label-caps text-body-sm font-bold uppercase text-brand hover:bg-brand hover:text-white dark:border-blue-400/40 dark:bg-blue-900/30 dark:text-cyan-300 dark:hover:bg-brand dark:hover:text-white transition-all">
+    <button onClick={load} className="flex items-center gap-1 font-label-caps text-body-sm uppercase text-brand hover:text-brand-dark dark:text-white">
      <Icon name="refresh" className="text-base" /> Refresh
     </button>
    </div>
@@ -541,7 +541,7 @@ function Invoices() {
      </thead>
      <tbody className="divide-y divide-outline-variant dark:divide-dark-outline-variant">
       {invoices.map((inv) => (
-       <tr key={inv.id} className="transition-colors hover:bg-accent-cyan-pale dark:hover:bg-white/5">
+       <tr key={inv.id} className="transition-colors hover:bg-accent-cyan-pale dark:bg-blue-900/30">
         <td data-label="Invoice" className="px-stack-lg py-4 text-body-md text-brand-dark dark:text-white">{inv.invoice_number}</td>
         <td data-label="Client" className="px-stack-lg py-4 text-body-sm text-ink-muted dark:text-dark-ink-muted">{clientName(inv.client_id)}</td>
         <td data-label="Total" className="px-stack-lg py-4 text-body-sm text-brand-dark dark:text-white">{inv.currency} {Number(inv.total_amount).toLocaleString()}</td>

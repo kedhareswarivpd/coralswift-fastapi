@@ -81,10 +81,9 @@ async def oauth_login(provider: str, request: Request):
         params["prompt"] = "select_account"
 
     resp = RedirectResponse(f"{cfg.authorize_url}?{urlencode(params)}", status_code=302)
-    samesite_mode = "none" if SECURE_COOKIES else "lax"
     resp.set_cookie(
         OAUTH_STATE_COOKIE, state, max_age=_STATE_COOKIE_MAX_AGE,
-        httponly=True, secure=SECURE_COOKIES, samesite=samesite_mode, path="/",
+        httponly=True, secure=SECURE_COOKIES, samesite="lax", path="/",
     )
     return resp
 

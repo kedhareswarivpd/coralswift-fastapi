@@ -156,7 +156,7 @@ export async function buildBrochurePdf() {
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(8);
   doc.setTextColor(...white);
-  doc.text('www.coralswift.com  |  info@coralswift.com', 40, H - 16);
+  doc.text('www.coralswifttech.com  |  hello@coralswifttech.com', 40, H - 16);
   doc.text('Page 1 of 2', W - 40, H - 16, { align: 'right' });
 
   // ── PAGE 2 ──────────────────────────────────────────────
@@ -251,10 +251,9 @@ export async function buildBrochurePdf() {
 
   // Contact details
   const contacts = [
-    ['language', 'www.coralswift.com'],
-    ['email', 'info@coralswift.com'],
-    ['phone', '+1 (307) 216-5154'],
-    ['location_on', '30 N Gould St Ste #62633, Sheridan, WY 82801, United States'],
+    ['language', 'www.coralswifttech.com'],
+    ['email', 'hello@coralswifttech.com'],
+    ['location_on', 'Delhi, IN  |  Dubai, UAE  |  Seattle, US'],
   ];
   contacts.forEach(([, text], i) => {
     doc.setFont('helvetica', 'normal');

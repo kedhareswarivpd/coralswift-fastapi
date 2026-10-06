@@ -1,7 +1,4 @@
-const rawConfiguredUrl = (import.meta.env.VITE_API_URL || '/api/v1').trim().replace(/\/+$/, '');
-const API_URL = rawConfiguredUrl && !rawConfiguredUrl.endsWith('/api/v1')
-  ? `${rawConfiguredUrl}/api/v1`
-  : (rawConfiguredUrl || '/api/v1');
+const API_URL = import.meta.env.VITE_API_URL || '/api/v1';
 
 // Cookie-based auth (CoralSwift self-auth): cf_access_token/cf_refresh_token
 // are httpOnly and never touched by JS. cf_csrf_token is the one readable
@@ -29,38 +26,33 @@ function readCookie(name) {
 function handleUnauthorizedState() {
   if (typeof window === 'undefined') return;
   window.dispatchEvent(new CustomEvent('coralswift:unauthorized'));
+  const path = window.location.pathname || '/';
+  if (!path.startsWith('/login')) {
+    try {
+      window.location.href = '/login';
+    } catch {
+      // jsdom can reject navigation attempts in unit tests; real browsers
+      // still perform the redirect and the auth state is already cleared.
+    }
+  }
 }
 
 async function parseResponseBody(response) {
-  if (!response) return null;
-
-  const contentType = response.headers?.get?.('content-type') || '';
-  const isHtml = contentType.includes('text/html');
-
-  if (typeof response.text === 'function') {
+  if (typeof response?.json === 'function') {
     try {
-      const bodyText = await response.text();
-      if (!bodyText || !bodyText.trim()) return null;
-      const trimmed = bodyText.trim();
-      if (isHtml || trimmed.startsWith('<')) {
-        return trimmed;
-      }
-      try {
-        return JSON.parse(trimmed);
-      } catch {
-        return trimmed;
-      }
+      return await response.json();
     } catch {
-      return null;
+      // Some mocked fetch responses only expose .text() or plain data.
     }
   }
 
-  if (typeof response.json === 'function') {
+  if (typeof response?.text === 'function') {
+    const bodyText = await response.text().catch(() => '');
+    if (!bodyText) return null;
     try {
-      const data = await response.json();
-      return data;
+      return JSON.parse(bodyText);
     } catch {
-      return null;
+      return bodyText;
     }
   }
 
@@ -132,17 +124,22 @@ export async function apiRequest(path, { method = 'GET', body, headers, signal, 
   const explicitlyJson = contentType.includes('application/json') || contentType.includes('+json');
 
   if (!response.ok) {
-    const errorBody = await parseResponseBody(response);
+    let errorBody = null;
+    if (explicitlyJson || typeof response.json === 'function') {
+      errorBody = await parseResponseBody(response);
+    } else {
+      const fallbackText = typeof response.text === 'function' ? await response.text().catch(() => '') : '';
+      errorBody = fallbackText || null;
+    }
 
     if (response.status === 401 && path !== '/auth/me') {
       handleUnauthorizedState();
     }
 
-    const isHtmlText = typeof errorBody === 'string' && (errorBody.trim().startsWith('<!doctype') || errorBody.trim().startsWith('<html'));
     const message =
       errorBody && typeof errorBody === 'object' && errorBody.message
         ? errorBody.message
-        : typeof errorBody === 'string' && errorBody.trim() && !isHtmlText
+        : typeof errorBody === 'string' && errorBody.trim()
           ? errorBody
           : response.statusText || `Request failed with status ${response.status}`;
 
@@ -153,20 +150,28 @@ export async function apiRequest(path, { method = 'GET', body, headers, signal, 
     );
   }
 
-  const parsedBody = await parseResponseBody(response);
+  if (!explicitlyJson && typeof response.json === 'function') {
+    try {
+      return await response.json();
+    } catch {
+      // Fall through to HTML/non-JSON detection below for real responses that
+      // do not actually return JSON despite exposing .json().
+    }
+  }
 
-  if (!explicitlyJson && typeof parsedBody === 'string') {
-    const isHtmlText = parsedBody.trim().startsWith('<!doctype') || parsedBody.trim().startsWith('<html');
+  if (!explicitlyJson) {
+    const bodyText = typeof response.text === 'function' ? await response.text().catch(() => '') : '';
     throw new ApiRequestError(
       `Expected JSON from ${API_URL}${path} but got ${contentType || 'non-JSON'} (HTTP ${response.status}). ` +
-        (isHtmlText
-          ? 'The SPA fallback (index.html) was returned instead of the API — check that VITE_API_URL is configured correctly.'
-          : `Body preview: ${parsedBody.slice(0, 200)}`),
+        (bodyText.trim().startsWith('<!doctype') || bodyText.trim().startsWith('<html')
+          ? 'The SPA fallback (index.html) was returned instead of the API — check that VITE_API_URL is unset/"/api/v1" on the host and that the /api/v1 proxy rewrite is active.'
+          : `Body preview: ${bodyText.slice(0, 200)}`),
       response.status,
       []
     );
   }
 
+  const parsedBody = await parseResponseBody(response);
   return parsedBody;
 }
 

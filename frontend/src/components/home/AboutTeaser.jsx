@@ -11,7 +11,7 @@ export default function AboutTeaser() {
           <SectionHeading
             eyebrow="Who We Are"
             title="Engineering excellence, delivered globally"
-            description="CoralSwift Technologies is a digital transformation company founded in 2020, delivering secure, scalable enterprise software globally from our corporate headquarters in Sheridan, Wyoming."
+            description="CoralSwift Technologies is a digital transformation company founded in 2020, delivering secure, scalable enterprise software from offices spanning India, the UAE, and Singapore."
           />
           <Link
             to="/about"

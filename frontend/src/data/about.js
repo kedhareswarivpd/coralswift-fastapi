@@ -133,9 +133,13 @@ export const leadership = [
 ];
 
 export const globalOffices = [
-  { city: 'Sheridan, WY', description: 'Corporate Office — 30 N Gould St Ste #62633' },
+  { city: 'Bangalore', description: 'HQ & Innovation Lab' },
+  { city: 'Dubai', description: 'MENA Regional Office' },
+  { city: 'Singapore', description: 'SEA Hub' },
+  { city: 'Mumbai', description: 'Delivery Center' },
+  { city: 'Hyderabad', description: 'Cybersecurity CoE' },
+  { city: 'Pune', description: 'AI & Data Science' },
 ];
-
 
 export const certifications = [
   { icon: 'verified', tag: 'ISO 9001', label: 'Quality Management' },

@@ -6,7 +6,7 @@ export default function PortfolioHero() {
     <div className="flex flex-col gap-stack-md">
      <span className="animate-hero-1 font-label-caps text-label-caps uppercase text-accent-cyan">Project Portfolio</span>
      <h1 className="animate-hero-2 font-display text-headline-lg-mobile text-white md:text-headline-lg">
-      Success Delivered: <span className="text-[#FF5500]">430+ Projects</span> <span className="bg-gradient-to-r from-[#FF5500] via-[#E11D48] to-[#8B5CF6] bg-clip-text text-transparent">Globally</span>
+      Success Delivered: 430+ Projects Globally
      </h1>
      <p className="animate-hero-3 max-w-xl font-body text-body-lg text-surface-dim opacity-90">
       We engineer high-performance digital ecosystems for global leaders, transforming complex

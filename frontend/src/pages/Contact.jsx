@@ -5,6 +5,16 @@ import Icon from '../components/ui/Icon.jsx';
 import Reveal from '../components/ui/Reveal.jsx';
 import useDocumentTitle from '../hooks/useDocumentTitle.js';
 
+const OFFICES = [
+ { city: 'New Delhi, India', role: 'Head Office' },
+ { city: 'Bangalore, India', role: 'Innovation Lab' },
+ { city: 'Hyderabad, India', role: 'Cybersecurity CoE' },
+ { city: 'Pune, India', role: 'AI & Data Science' },
+ { city: 'Mumbai, India', role: 'Delivery Center' },
+ { city: 'Dubai, UAE', role: 'MENA Regional Office' },
+ { city: 'Singapore', role: 'SEA Hub' },
+];
+
 const SOCIAL_LINKS = [
  {
   label: 'LinkedIn', href: 'https://www.linkedin.com/',
@@ -40,11 +50,11 @@ export default function Contact() {
       <h3 className="mb-4 font-display text-headline-sm">Direct Contact</h3>
       <div className="mb-3 flex items-center gap-3">
        <Icon name="mail" className="text-accent-cyan" />
-       <a href="mailto:info@coralswift.com" className="text-body-sm transition-colors hover:text-accent-cyan">info@coralswift.com</a>
+       <span className="text-body-sm">info@coralswifttech.com</span>
       </div>
       <div className="mb-4 flex items-center gap-3">
        <Icon name="call" className="text-accent-cyan" />
-       <a href="tel:+13072165154" className="text-body-sm transition-colors hover:text-accent-cyan">+1 (307) 216-5154</a>
+       <span className="text-body-sm">+91-11-0000-0000</span>
       </div>
       <Link to="/faq" className="mb-4 flex items-center gap-3 transition-colors hover:text-accent-cyan">
        <Icon name="support_agent" className="text-accent-cyan" />
@@ -67,17 +77,19 @@ export default function Contact() {
      </Reveal>
 
      <Reveal from="right" delay={200} className="rounded-lg border border-outline-variant bg-white p-stack-lg dark:border-dark-outline-variant dark:bg-dark-surface">
-      <h3 className="mb-4 font-display text-headline-sm text-brand-dark dark:text-dark-brand">Corporate Office</h3>
+      <h3 className="mb-4 font-display text-headline-sm text-brand-dark dark:text-dark-brand">Global Offices</h3>
       <div className="flex flex-col gap-4">
-       <div className="flex items-start gap-3">
-        <Icon name="location_on" className="mt-0.5 text-brand" />
-        <div>
-         <p className="text-body-sm font-semibold text-ink dark:text-dark-ink">Sheridan, Wyoming, United States</p>
-         <p className="mt-1 text-sm text-ink-muted dark:text-dark-ink-muted">30 N Gould St Ste #62633</p>
-         <p className="text-sm text-ink-muted dark:text-dark-ink-muted">Sheridan, WY 82801</p>
-         <p className="text-sm text-ink-muted dark:text-dark-ink-muted">United States</p>
-        </div>
-       </div>
+       {OFFICES.map((office, i) => (
+        <Reveal key={office.city} from="right" delay={300 + i * 80}>
+         <div className="flex items-start gap-3">
+          <Icon name="location_on" className="mt-0.5 text-brand" />
+          <div>
+           <p className="text-body-sm font-semibold text-ink dark:text-dark-ink">{office.city}</p>
+           <p className="text-xs uppercase tracking-wide text-ink-muted dark:text-dark-ink-muted">{office.role}</p>
+          </div>
+         </div>
+        </Reveal>
+       ))}
       </div>
      </Reveal>
     </div>

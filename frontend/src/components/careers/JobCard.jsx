@@ -7,7 +7,7 @@ export default function JobCard({ job }) {
   return (
     <div className="group relative overflow-hidden flex flex-col justify-between rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xs transition-all duration-300 hover:-translate-y-2 hover:border-orange-400/90 hover:shadow-2xl hover:shadow-orange-500/15 dark:border-dark-outline-variant/80 dark:bg-dark-surface sm:p-8">
       {/* Top Border Gradient Accent Line */}
-      <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#FF5500] via-[#E11D48] to-[#8B5CF6] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+      <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-orange-500 via-amber-500 to-rose-500 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
       <div>
         <div className="mb-3 flex flex-wrap items-start justify-between gap-4">

@@ -3,7 +3,6 @@ const VARIANTS = {
  inverse: 'bg-white text-brand hover:bg-accent-cyan-pale',
  outline: 'border border-outline-variant text-brand hover:border-brand',
  'outline-light': 'border border-white/40 text-white hover:bg-white/10',
- gradient: 'bg-gradient-to-r from-[#FF5500] via-[#E11D48] to-[#8B5CF6] text-white shadow-lg shadow-orange-500/25 hover:shadow-orange-500/35 hover:scale-[1.02]',
 };
 
 const SIZES = {

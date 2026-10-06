@@ -20,7 +20,7 @@ export const privacyPolicy = {
     },
     {
       title: '5. Your Rights',
-      content: 'Depending on your jurisdiction, you may have rights including: access to your personal data, correction of inaccurate data, deletion of your data (right to be forgotten), restriction of processing, data portability, and the right to withdraw consent at any time. To exercise these rights, please contact us at info@coralswift.com.',
+      content: 'Depending on your jurisdiction, you may have rights including: access to your personal data, correction of inaccurate data, deletion of your data (right to be forgotten), restriction of processing, data portability, and the right to withdraw consent at any time. To exercise these rights, please contact us at privacy@coralswifttech.com.',
     },
     {
       title: '6. Cookie Policy',
@@ -36,7 +36,7 @@ export const privacyPolicy = {
     },
     {
       title: '9. Contact Us',
-      content: 'If you have questions about this Privacy Policy or our data practices, please contact our Data Protection Officer at info@coralswift.com or write to us at: Corporate Office, 30 N Gould St Ste #62633, Sheridan, WY 82801, United States.',
+      content: 'If you have questions about this Privacy Policy or our data practices, please contact our Data Protection Officer at privacy@coralswifttech.com or write to us at: CoralSwift Technologies, 4th Floor, Innovation Tower, Plot 27, Sector 4, HSR Layout, Bangalore 560102, India.',
     },
   ],
 };
@@ -75,11 +75,11 @@ export const termsOfService = {
     },
     {
       title: '8. Governing Law',
-      content: 'These terms shall be governed by and construed in accordance with the laws of the State of Wyoming, United States, without regard to its conflict of law principles.',
+      content: 'These terms shall be governed by and construed in accordance with the laws of India. Any disputes arising from these terms shall be resolved through binding arbitration in Bangalore, India, in accordance with the Arbitration and Conciliation Act, 1996.',
     },
     {
       title: '9. Contact Information',
-      content: 'For questions about these Terms of Service, please contact us at info@coralswift.com or write to us at: Corporate Office, 30 N Gould St Ste #62633, Sheridan, WY 82801, United States.',
+      content: 'For questions about these Terms of Service, please contact us at legal@coralswifttech.com or at: CoralSwift Technologies, 4th Floor, Innovation Tower, Plot 27, Sector 4, HSR Layout, Bangalore 560102, India.',
     },
   ],
 };
@@ -114,7 +114,7 @@ export const cookiePolicy = {
     },
     {
       title: '7. Contact',
-      content: 'If you have questions about our use of cookies, please contact us at info@coralswift.com.',
+      content: 'If you have questions about our use of cookies, please contact us at privacy@coralswifttech.com.',
     },
   ],
 };

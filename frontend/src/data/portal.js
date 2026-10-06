@@ -35,6 +35,7 @@ export const employeePortalTabs = [
   { id: 'tasks', label: 'Tasks', icon: 'task_alt' },
   { id: 'projects', label: 'Projects', icon: 'folder_open' },
   { id: 'performance', label: 'Performance', icon: 'trending_up' },
+  { id: 'training', label: 'Training', icon: 'school' },
   { id: 'documents', label: 'Documents', icon: 'description' },
 ];
 
@@ -76,7 +77,6 @@ export const rolePortalTabs = {
   hr: [
     { id: 'leave-approvals', label: 'Leave Approvals', icon: 'event_available' },
     { id: 'recruitment', label: 'Recruitment', icon: 'group_add' },
-    { id: 'performance-reviews-mgr', label: 'Performance Reviews (HR)', icon: 'rate_review' },
   ],
 };
 
@@ -100,6 +100,7 @@ export const adminPanelTabs = [
   { id: 'media',          label: 'Media',         icon: 'perm_media' },
   { id: 'notifications',  label: 'Notifications', icon: 'notifications' },
   { id: 'reports',        label: 'Reports',       icon: 'assessment' },
+  { id: 'training',       label: 'Training',      icon: 'school' },
   { id: 'careers',        label: 'Careers',       icon: 'work' },
   { id: 'comments',       label: 'Comments',      icon: 'rate_review' },
   { id: 'newsletter',     label: 'Newsletter',    icon: 'mail' },

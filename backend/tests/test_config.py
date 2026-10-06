@@ -1,6 +1,4 @@
 
-from unittest.mock import AsyncMock
-from unittest.mock import MagicMock
 from app.core.config import Settings
 from app.core.upstash_redis import get_upstash_redis_client
 
@@ -34,8 +32,6 @@ def test_redis_url_env_is_used_for_upstash_tls(monkeypatch):
 
 
 def test_upstash_rest_client_reads_env(monkeypatch):
-    mock_client = MagicMock(ping=AsyncMock())
-    monkeypatch.setattr("app.core.upstash_redis._redis_client", mock_client)
     monkeypatch.setenv("UPSTASH_REDIS_REST_URL", "https://example.upstash.io")
     monkeypatch.setenv("UPSTASH_REDIS_REST_TOKEN", "test-token")
 

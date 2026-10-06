@@ -18,7 +18,8 @@ import {
 import {
  fetchMyProfile, applyLeave as applyLeaveApi, submitTimesheet, fetchMyDocuments,
  checkIn as checkInApi, checkOut as checkOutApi,
- fetchMyPayslips, fetchMyPerformanceReviews,
+ fetchMyPayslips, fetchMyPerformanceReviews, fetchMyTrainingEnrollments,
+ fetchTrainingCatalog, enrollInCourse,
 } from '../api/employees.js';
 import { apiRequest } from '../api/client.js';
 import { fetchProposals, fetchContracts, fetchLeads, fetchMeetings } from '../api/crm.js';
@@ -64,7 +65,6 @@ const Invoices = namedLazy(opsImporter, 'Invoices');
 const hrImporter = () => import('../components/employee/HrViews.jsx');
 const LeaveApprovals = namedLazy(hrImporter, 'LeaveApprovals');
 const Recruitment = namedLazy(hrImporter, 'Recruitment');
-const PerformanceReviewsManagement = namedLazy(hrImporter, 'PerformanceReviewsManagement');
 
 // Self-service lists (leaves/timesheets/payslips/performance/training/documents)
 // are fetched once as a capped array (SELF_SERVICE_LIST_CAP server-side, not
@@ -94,7 +94,7 @@ function Overview({ profile, attendance, leaves, timesheets, payslips }) {
      { label: 'Latest Payslip', value: `$${payslips[0]?.netPay?.toLocaleString() || 0}`, icon: 'payments' },
     ].map((stat) => (
      <div key={stat.label} className="flex flex-col rounded-xl border border-outline-variant bg-white dark:bg-dark-surface p-6 shadow-sm transition-shadow hover:shadow-md dark:border-dark-outline-variant">
-      <div className="mb-4 inline-flex size-11 items-center justify-center rounded-xl bg-accent-cyan-pale dark:bg-brand/10">
+      <div className="mb-4 inline-flex size-11 items-center justify-center rounded-xl bg-accent-cyan-pale dark:bg-blue-900/30">
        <Icon name={stat.icon} className="text-2xl text-brand" />
       </div>
       <p className="font-stat text-3xl font-bold capitalize text-brand-dark dark:text-white">{stat.value}</p>
@@ -181,17 +181,17 @@ function Attendance({ attendance, onChange }) {
    <div className="rounded-xl border border-outline-variant bg-white dark:bg-dark-surface p-6 shadow-sm dark:border-dark-outline-variant">
     <h3 className="mb-6 font-display text-headline-sm text-brand-dark dark:text-white">Today&apos;s Attendance</h3>
     <div className="mb-6 grid gap-gutter sm:grid-cols-3">
-     <div className="rounded-xl bg-accent-cyan-pale p-stack-lg text-center dark:bg-brand/10">
+     <div className="rounded-xl bg-accent-cyan-pale p-stack-lg text-center dark:bg-blue-900/30">
       <Icon name="login" className="mb-2 text-3xl text-brand" />
       <p className="font-label-caps text-label-caps text-brand">Check-In</p>
       <p className="font-display text-headline-sm text-brand">{attendance.checkIn || '--'}</p>
      </div>
-     <div className="rounded-xl bg-accent-cyan-pale p-stack-lg text-center dark:bg-brand/10">
+     <div className="rounded-xl bg-accent-cyan-pale p-stack-lg text-center dark:bg-blue-900/30">
       <Icon name="logout" className="mb-2 text-3xl text-brand" />
       <p className="font-label-caps text-label-caps text-brand">Check-Out</p>
       <p className="font-display text-headline-sm text-brand">{attendance.checkOut || '--'}</p>
      </div>
-     <div className="rounded-xl bg-accent-cyan-pale p-stack-lg text-center dark:bg-brand/10">
+     <div className="rounded-xl bg-accent-cyan-pale p-stack-lg text-center dark:bg-blue-900/30">
       <Icon name="badge" className="mb-2 text-3xl text-brand" />
       <p className="font-label-caps text-label-caps text-brand">Status</p>
       <StatusBadge variant={attendance.status === 'present' ? 'success' : 'warning'} className="mt-1">
@@ -324,7 +324,7 @@ function Leaves({ leaves: initialLeaves }) {
       {pagedLeaves.length === 0 ? (
        <tr><td data-label="Type" colSpan={5} className="px-stack-lg py-8 text-center text-body-sm text-ink-muted dark:text-dark-ink-muted">No leave requests yet.</td></tr>
       ) : pagedLeaves.map((l) => (
-       <tr key={l.id} className="transition-colors hover:bg-accent-cyan-pale dark:hover:bg-white/5">
+       <tr key={l.id} className="transition-colors hover:bg-accent-cyan-pale dark:bg-blue-900/30">
         <td data-label="Type" className="px-stack-lg py-4 text-body-md capitalize text-brand-dark dark:text-white">{l.type}</td>
         <td data-label="From" className="px-stack-lg py-4 text-body-md text-ink-muted dark:text-dark-ink-muted">{l.from}</td>
         <td data-label="To" className="px-stack-lg py-4 text-body-md text-ink-muted dark:text-dark-ink-muted">{l.to}</td>
@@ -415,7 +415,7 @@ function Timesheets({ timesheets: initialTimesheets }) {
      <div className="grid gap-4 sm:grid-cols-3">
       <div>
        <input type="date" value={form.date} onChange={(e) => handleChange('date', e.target.value)}
-        className={`w-full rounded border bg-brand px-4 py-3 text-body-md text-white placeholder-white/60 focus:outline-none ${errors.date ? 'border-status-error focus:border-status-error' : 'border-outline-variant focus:border-brand'}`} />
+        className={`w-full rounded border bg-brand px-4 py-3 text-body-md text-white placeholder-white/60 focus:outline-none ${errors.date ? 'border-status-error focus:border-status-error' : 'border-blue-700 focus:border-brand'}`} />
        {errors.date && <p className="mt-1 text-body-xs text-status-error">{errors.date}</p>}
       </div>
       <input type="text" placeholder="Project name (optional)" value={form.project} onChange={(e) => handleChange('project', e.target.value)}
@@ -446,7 +446,7 @@ function Timesheets({ timesheets: initialTimesheets }) {
      </thead>
      <tbody className="divide-y divide-outline-variant dark:divide-dark-outline-variant">
       {pagedEntries.map((e) => (
-       <tr key={e.id} className="transition-colors hover:bg-accent-cyan-pale dark:hover:bg-white/5">
+       <tr key={e.id} className="transition-colors hover:bg-accent-cyan-pale dark:bg-blue-900/30">
         <td data-label="Date" className="px-stack-lg py-4 text-body-md text-ink-muted dark:text-dark-ink-muted">{e.date}</td>
         <td data-label="Project" className="px-stack-lg py-4 text-body-md text-brand-dark dark:text-white">{e.project}</td>
         <td data-label="Hours" className="px-stack-lg py-4 text-body-md text-brand-dark dark:text-white">{e.hours}h</td>
@@ -480,7 +480,7 @@ function Payslips({ payslips }) {
    <div className="grid grid-cols-2 gap-gutter lg:grid-cols-3">
     {kpis.map((stat) => (
      <div key={stat.label} className="flex flex-col rounded-xl border border-outline-variant bg-white dark:bg-dark-surface p-6 shadow-sm dark:border-dark-outline-variant">
-      <div className="mb-4 inline-flex size-11 items-center justify-center rounded-xl bg-accent-cyan-pale dark:bg-brand/10">
+      <div className="mb-4 inline-flex size-11 items-center justify-center rounded-xl bg-accent-cyan-pale dark:bg-blue-900/30">
        <Icon name={stat.icon} className="text-2xl text-brand" />
       </div>
       <p className="font-stat text-3xl font-bold text-brand-dark dark:text-white">{stat.value}</p>
@@ -508,7 +508,7 @@ function Payslips({ payslips }) {
       {pagedPayslips.length === 0 ? (
        <tr><td data-label="Period" colSpan={6} className="px-stack-lg py-12 text-center text-body-sm text-ink-muted dark:text-dark-ink-muted">No payslips available yet.</td></tr>
       ) : pagedPayslips.map((p) => (
-       <tr key={`${p.month}-${p.year}`} className="transition-colors hover:bg-accent-cyan-pale dark:hover:bg-white/5">
+       <tr key={`${p.month}-${p.year}`} className="transition-colors hover:bg-accent-cyan-pale dark:hover:bg-blue-900/30">
         <td data-label="Period" className="px-stack-lg py-4 font-semibold text-brand-dark dark:text-white">
          <div className="flex items-center gap-2">
           <Icon name="calendar_month" className="text-base text-brand" />
@@ -523,7 +523,7 @@ function Payslips({ payslips }) {
          {p.file_url ? (
           <a
            href={p.file_url} target="_blank" rel="noreferrer" aria-label={`Download ${p.month} ${p.year} payslip`}
-           className="inline-flex items-center gap-1.5 rounded-lg border border-outline-variant bg-white dark:bg-dark-surface px-3 py-1.5 text-body-xs font-semibold text-ink shadow-sm transition hover:border-brand hover:text-brand active:scale-95 dark:border-dark-outline-variant dark:text-white">
+           className="inline-flex items-center gap-1.5 rounded-lg border border-outline-variant bg-white dark:bg-dark-surface px-3 py-1.5 text-body-xs font-semibold text-ink shadow-sm transition hover:border-blue-500 hover:text-brand active:scale-95 dark:border-dark-outline-variant dark:text-white">
            <Icon name="download" className="text-sm" /> Slip
           </a>
          ) : (
@@ -573,7 +573,7 @@ function Tasks({ tasks, page, totalPages, onPageChange, onRefresh }) {
    <div className="grid grid-cols-2 gap-gutter lg:grid-cols-3">
     {kpis.map((stat) => (
      <div key={stat.label} className="flex flex-col rounded-xl border border-outline-variant bg-white dark:bg-dark-surface p-6 shadow-sm dark:border-dark-outline-variant">
-      <div className="mb-4 inline-flex size-11 items-center justify-center rounded-xl bg-accent-cyan-pale dark:bg-brand/10">
+      <div className="mb-4 inline-flex size-11 items-center justify-center rounded-xl bg-accent-cyan-pale dark:bg-blue-900/30">
        <Icon name={stat.icon} className="text-2xl text-brand" />
       </div>
       <p className="font-stat text-3xl font-bold text-brand-dark dark:text-white">{stat.value}</p>
@@ -602,7 +602,7 @@ function Tasks({ tasks, page, totalPages, onPageChange, onRefresh }) {
       {tasks.length === 0 ? (
        <tr><td data-label="Task Deliverable" colSpan={6} className="px-stack-lg py-12 text-center text-body-sm text-ink-muted dark:text-dark-ink-muted">No tasks assigned yet.</td></tr>
       ) : tasks.map((t) => (
-       <tr key={t.id} onClick={() => setSelectedTask(t)} className="cursor-pointer transition-colors hover:bg-accent-cyan-pale dark:hover:bg-white/5">
+       <tr key={t.id} onClick={() => setSelectedTask(t)} className="cursor-pointer transition-colors hover:bg-accent-cyan-pale dark:hover:bg-blue-900/30">
         <td data-label="Task Deliverable" className="px-stack-lg py-4 font-semibold text-brand-dark dark:text-white">{t.title}</td>
         <td data-label="Project" className="px-stack-lg py-4">
          <span className="inline-flex items-center gap-1 rounded-md bg-surface-container px-2 py-0.5 text-body-xs font-semibold text-ink dark:bg-dark-surface-container dark:text-white">
@@ -688,7 +688,7 @@ function Projects({ projects, page, totalPages, onPageChange }) {
    <div className="grid grid-cols-2 gap-gutter lg:grid-cols-3">
     {kpis.map((stat) => (
      <div key={stat.label} className="flex flex-col rounded-xl border border-outline-variant bg-white dark:bg-dark-surface p-6 shadow-sm dark:border-dark-outline-variant">
-      <div className="mb-4 inline-flex size-11 items-center justify-center rounded-xl bg-accent-cyan-pale dark:bg-brand/10">
+      <div className="mb-4 inline-flex size-11 items-center justify-center rounded-xl bg-accent-cyan-pale dark:bg-blue-900/30">
        <Icon name={stat.icon} className="text-2xl text-brand" />
       </div>
       <p className="font-stat text-3xl font-bold text-brand-dark dark:text-white">{stat.value}</p>
@@ -697,7 +697,7 @@ function Projects({ projects, page, totalPages, onPageChange }) {
     ))}
    </div>
    <section>
-    <h3 className="mb-4 font-display text-headline-sm text-brand-dark dark:text-dark-brand">Assigned Projects</h3>
+    <h3 className="mb-4 font-display text-headline-sm text-white">Assigned Projects</h3>
     {projects.length === 0 && <p className="py-8 text-center text-body-sm text-ink-muted dark:text-dark-ink-muted">No projects assigned yet.</p>}
     <div className="grid gap-gutter sm:grid-cols-2 lg:grid-cols-3">
      {projects.map((p) => (
@@ -777,7 +777,7 @@ function Performance({ reviews }) {
    <div className="grid grid-cols-2 gap-gutter lg:grid-cols-3">
     {kpis.map((stat) => (
      <div key={stat.label} className="flex flex-col rounded-xl border border-outline-variant bg-white dark:bg-dark-surface p-6 shadow-sm dark:border-dark-outline-variant">
-      <div className="mb-4 inline-flex size-11 items-center justify-center rounded-xl bg-accent-cyan-pale dark:bg-brand/10">
+      <div className="mb-4 inline-flex size-11 items-center justify-center rounded-xl bg-accent-cyan-pale dark:bg-blue-900/30">
        <Icon name={stat.icon} className="text-2xl text-brand" />
       </div>
       <p className="font-stat text-3xl font-bold text-brand-dark dark:text-white">{stat.value}</p>
@@ -786,7 +786,7 @@ function Performance({ reviews }) {
     ))}
    </div>
    <section>
-    <h3 className="mb-4 font-display text-headline-sm text-brand-dark dark:text-dark-brand">Performance Reviews</h3>
+    <h3 className="mb-4 font-display text-headline-sm text-white">Performance Reviews</h3>
     {reviews.length === 0 && <p className="py-8 text-center text-body-sm text-ink-muted dark:text-dark-ink-muted">No performance reviews yet.</p>}
     <div className="grid gap-gutter sm:grid-cols-2 lg:grid-cols-3">
      {pagedReviews.map((r) => (
@@ -810,6 +810,83 @@ function Performance({ reviews }) {
  );
 }
 
+function Training({ courses, catalog, onEnroll, enrollingId }) {
+ const statusColor = { completed: 'success', in_progress: 'info', pending: 'neutral', enrolled: 'info' };
+ const enrolledIds = new Set(courses.map((c) => c.courseId ?? c.id));
+ const available = (catalog || []).filter((c) => !enrolledIds.has(c.id));
+ const [page, setPage] = useState(1);
+ const totalPages = Math.max(1, Math.ceil(courses.length / CLIENT_PAGE_SIZE));
+ const pagedCourses = courses.slice((page - 1) * CLIENT_PAGE_SIZE, page * CLIENT_PAGE_SIZE);
+ useEffect(() => { if (page > totalPages) setPage(totalPages); }, [totalPages, page]);
+
+ return (
+  <div className="space-y-stack-lg">
+   <section>
+    <h3 className="mb-4 font-display text-headline-sm text-white">Available Courses</h3>
+    {available.length > 0 ? (
+     <div className="grid gap-gutter sm:grid-cols-2 lg:grid-cols-3">
+      {available.map((c) => (
+       <div key={c.id} className="flex flex-col rounded-xl border border-outline-variant bg-white dark:bg-dark-surface p-6 shadow-sm transition-all hover:shadow-md dark:border-dark-outline-variant">
+        <p className="font-display text-body-md font-semibold text-brand-dark dark:text-white">{c.title}</p>
+        <p className="mt-1 font-label-caps text-body-xs uppercase tracking-wide text-brand">{c.category}</p>
+        <p className="mt-2 flex-1 text-body-sm text-ink-muted dark:text-dark-ink-muted">{c.description || 'No description available.'}</p>
+        <div className="mt-4 flex items-center justify-between border-t border-outline-variant/50 pt-3 dark:border-dark-outline-variant/50">
+         <span className="text-body-sm font-medium text-ink-muted dark:text-dark-ink-muted">
+          {c.duration_hours ? `${c.duration_hours} hrs` : 'Self-paced'}
+         </span>
+         <button
+          type="button"
+          onClick={() => onEnroll(c.id)}
+          disabled={enrollingId === c.id}
+          className="inline-flex items-center gap-1.5 rounded-lg bg-brand px-4 py-2 font-label-caps text-label-caps uppercase text-white transition-colors hover:bg-brand-dark disabled:opacity-60"
+         >
+          <Icon name="school" className="text-base leading-none" />
+          {enrollingId === c.id ? 'Enrolling...' : 'Enroll'}
+         </button>
+        </div>
+       </div>
+      ))}
+     </div>
+    ) : (
+     <div className="rounded-xl border border-outline-variant bg-white dark:bg-dark-surface p-8 text-center text-body-sm text-ink-muted shadow-sm dark:border-dark-outline-variant dark:text-dark-ink-muted">
+      You are enrolled in all available courses, or no new courses are listed.
+     </div>
+    )}
+   </section>
+
+   <section>
+    <h3 className="mb-4 font-display text-headline-sm text-white">My Enrollments</h3>
+    <div className="responsive-table overflow-x-auto rounded-xl border border-outline-variant bg-white dark:bg-dark-surface shadow-sm dark:border-dark-outline-variant">
+     <table className="w-full text-left">
+      <thead className="border-b border-outline-variant bg-surface-container font-label-caps text-label-caps uppercase text-ink-muted dark:border-dark-outline-variant dark:bg-dark-surface-container dark:text-dark-ink-muted">
+       <tr>
+        <th className="px-6 py-4">Course</th>
+        <th className="px-6 py-4">Category</th>
+        <th className="px-6 py-4">Status</th>
+        <th className="px-6 py-4">Completed On</th>
+        <th className="px-6 py-4">Score</th>
+       </tr>
+      </thead>
+      <tbody className="divide-y divide-outline-variant dark:divide-dark-outline-variant">
+       {pagedCourses.length === 0 ? (
+        <tr><td data-label="Course" colSpan={5} className="px-6 py-8 text-center text-body-sm text-ink-muted dark:text-dark-ink-muted">No enrollments yet. Browse available courses above and click Enroll!</td></tr>
+       ) : pagedCourses.map((c) => (
+        <tr key={c.id} className="transition-colors hover:bg-surface-container dark:bg-dark-surface-container">
+         <td data-label="Course" className="px-6 py-4 font-medium text-brand-dark dark:text-white">{c.title}</td>
+         <td data-label="Category" className="px-6 py-4 text-body-sm text-ink-muted dark:text-dark-ink-muted">{c.category}</td>
+         <td data-label="Status" className="px-6 py-4"><StatusBadge variant={statusColor[c.status] || 'neutral'}>{c.status?.replace('_', ' ')}</StatusBadge></td>
+         <td data-label="Completed On" className="px-6 py-4 text-body-sm text-ink-muted dark:text-dark-ink-muted">{c.completedOn || '—'}</td>
+         <td data-label="Score" className="px-6 py-4 text-body-sm font-semibold text-brand-dark dark:text-white">{c.score || '—'}</td>
+        </tr>
+       ))}
+      </tbody>
+     </table>
+    </div>
+    <Pagination page={page} totalPages={totalPages} onChange={setPage} />
+   </section>
+  </div>
+ );
+}
 
 function Documents({ docs }) {
  const typeIcon = { contract: 'gavel', id_proof: 'badge', certificate: 'workspace_premium', other: 'description', resume: 'person' };
@@ -830,7 +907,7 @@ function Documents({ docs }) {
    <div className="grid grid-cols-2 gap-gutter lg:grid-cols-3">
     {kpis.map((stat) => (
      <div key={stat.label} className="flex flex-col rounded-xl border border-outline-variant bg-white dark:bg-dark-surface p-6 shadow-sm dark:border-dark-outline-variant">
-      <div className="mb-4 inline-flex size-11 items-center justify-center rounded-xl bg-accent-cyan-pale dark:bg-brand/10">
+      <div className="mb-4 inline-flex size-11 items-center justify-center rounded-xl bg-accent-cyan-pale dark:bg-blue-900/30">
        <Icon name={stat.icon} className="text-2xl text-brand" />
       </div>
       <p className="font-stat text-3xl font-bold text-brand-dark dark:text-white">{stat.value}</p>
@@ -839,12 +916,12 @@ function Documents({ docs }) {
     ))}
    </div>
    <section>
-    <h3 className="mb-4 font-display text-headline-sm text-brand-dark dark:text-dark-brand">My Documents</h3>
+    <h3 className="mb-4 font-display text-headline-sm text-white">My Documents</h3>
     {docs.length === 0 && <p className="py-8 text-center text-body-sm text-ink-muted dark:text-dark-ink-muted">No documents available yet.</p>}
     <div className="grid gap-gutter sm:grid-cols-2 lg:grid-cols-3">
      {pagedDocs.map((d) => (
       <div key={d.id} className="flex flex-col rounded-xl border border-outline-variant bg-white dark:bg-dark-surface p-6 shadow-sm dark:border-dark-outline-variant">
-       <div className="mb-3 inline-flex size-11 items-center justify-center rounded-xl bg-accent-cyan-pale dark:bg-brand/10">
+       <div className="mb-3 inline-flex size-11 items-center justify-center rounded-xl bg-accent-cyan-pale dark:bg-blue-900/30">
         <Icon name={typeIcon[d.type] || 'description'} className="text-2xl text-brand" />
        </div>
        <p className="font-display text-body-md font-semibold text-brand-dark dark:text-white">{d.name}</p>
@@ -945,6 +1022,19 @@ const normalizePerformance = (arr) => (arr || []).map((r) => ({
  achieved: r.goals_achieved ?? r.achieved ?? 0, feedback: r.feedback ?? r.comments ?? '',
 }));
 
+const normalizeTraining = (arr) => (arr || []).map((t) => ({
+ id: t.id, courseId: t.course_id ?? t.courseId ?? t.training?.id,
+ title: t.training?.title ?? t.title,
+ category: t.training?.category ?? t.category ?? '—',
+ status: t.status, completedOn: t.completed_at?.slice(0, 10) ?? t.completedOn ?? null,
+ score: t.score ?? null,
+}));
+
+const normalizeCatalog = (arr) => (arr || []).map((c) => ({
+ id: c.id, title: c.title, category: c.category || 'General',
+ description: c.description, duration_hours: c.duration_hours,
+}));
+
 const normalizeDocs = (arr) => (arr || []).map((d) => ({
  id: d.id, name: d.title ?? d.name, type: d.type,
  uploadedOn: d.created_at?.slice(0, 10) ?? d.uploadedOn, file_url: d.file_url,
@@ -985,6 +1075,9 @@ export default function EmployeePortal() {
  const [projectsPage, setProjectsPage] = useState(1);
  const [projectsTotalPages, setProjectsTotalPages] = useState(1);
  const [performance, setPerformance] = useState([]);
+ const [training, setTraining] = useState([]);
+ const [catalog, setCatalog] = useState([]);
+ const [enrollingId, setEnrollingId] = useState(null);
  const [documents, setDocuments] = useState([]);
  const [leadsData, setLeadsData] = useState([]);
  const [proposalsData, setProposalsData] = useState([]);
@@ -1018,6 +1111,21 @@ export default function EmployeePortal() {
    if (cl.status === 'fulfilled') setClientsData(cl.value?.data || []);
   });
  }, []);
+
+ const { run: runEnroll } = useAsyncAction();
+
+ const handleEnroll = (courseId) => runEnroll(async () => {
+  setEnrollingId(courseId);
+  try {
+   await enrollInCourse(courseId);
+   const res = await fetchMyTrainingEnrollments();
+   setTraining(normalizeTraining(res?.data));
+  } catch {
+   // Non-critical: enrollment list simply won't reflect the failed attempt.
+  } finally {
+   setEnrollingId(null);
+  }
+ });
 
  useEffect(() => {
   if (!user) { setLoading(false); return; }
@@ -1060,10 +1168,14 @@ export default function EmployeePortal() {
    }),
    fetchMyPayslips(),
    fetchMyPerformanceReviews(),
+   fetchMyTrainingEnrollments(),
    fetchMyDocuments(),
-  ]).then(([, psRes, perfRes, docsRes]) => {
+   fetchTrainingCatalog(),
+  ]).then(([, psRes, perfRes, trainRes, docsRes, catRes]) => {
    if (psRes.status === 'fulfilled') setPayslips(normalizePayslips(psRes.value?.data));
    if (perfRes.status === 'fulfilled') setPerformance(normalizePerformance(perfRes.value?.data));
+   if (trainRes.status === 'fulfilled') setTraining(normalizeTraining(trainRes.value?.data));
+   if (catRes.status === 'fulfilled') setCatalog(normalizeCatalog(catRes.value?.data));
    if (docsRes.status === 'fulfilled') setDocuments(normalizeDocs(docsRes.value?.data));
   }).finally(() => { initialLoadDone.current = true; setLoading(false); });
  }, [user]);
@@ -1108,36 +1220,34 @@ export default function EmployeePortal() {
   if (!initializing && user && denied) navigate(profile.role === 'client' ? '/client' : '/login', { replace: true });
  }, [initializing, user, denied, profile.role, navigate]);
 
- if (initializing || !user || denied) return <div className="bg-surface py-section-padding dark:bg-dark-surface"><LoadingSpinner /></div>;
- if (loading) return <div className="bg-surface py-section-padding dark:bg-dark-surface"><LoadingSpinner /></div>;
+ if (initializing || !user || denied) return <div className="bg-white/10 py-section-padding"><LoadingSpinner /></div>;
+ if (loading) return <div className="bg-white/10 py-section-padding"><LoadingSpinner /></div>;
 
   return (
-   <div className="flex h-dvh flex-col bg-surface dark:bg-dark-surface">
-    <div className="sticky top-0 z-20 flex items-center justify-between gap-2 border-b border-outline-variant bg-white px-4 py-3 shadow-sm dark:border-dark-outline-variant dark:bg-dark-surface sm:gap-4 sm:px-6 lg:px-10 xl:px-12">
-     <div className="flex min-w-0 items-center gap-3 sm:gap-4">
-      <img src="/logo-icon.png" alt="CoralSwift Emblem" className="h-9 w-auto shrink-0 object-contain" />
-      <div className="hidden h-7 w-px bg-outline-variant sm:block dark:bg-dark-outline-variant" />
-      <Avatar name={profile.name} size="md" />
+   <div className="flex h-dvh flex-col bg-dark-surface">
+    <div className="sticky top-0 z-20 flex items-center justify-between gap-2 border-b border-brand-dark/30 bg-brand-dark px-4 py-3 sm:gap-4 sm:px-6 lg:px-10 xl:px-12 ">
+     <div className="flex min-w-0 items-center gap-2 sm:gap-4">
+      <Avatar name={profile.name} size="lg" />
       <div className="min-w-0">
-       <p className="mb-0.5 hidden font-label-caps text-body-xs uppercase tracking-widest text-brand sm:block dark:text-amber-400">{portalTitle}</p>
-       <h1 className="max-w-[40vw] truncate font-display text-headline-sm font-bold text-brand-dark sm:max-w-none dark:text-white">{profile.name}</h1>
-       <p className="hidden truncate text-body-sm text-ink-muted sm:block dark:text-dark-ink-muted">{profile.email}{profile.designation ? ` · ${profile.designation}` : ''}{profile.department ? ` · ${profile.department}` : ''}</p>
+       <p className="mb-1 hidden font-label-caps text-body-xs uppercase tracking-widest text-white/60 sm:block">{portalTitle}</p>
+       <h1 className="max-w-[40vw] truncate font-display text-headline-md font-bold text-brand-dark dark:text-white sm:max-w-none">{profile.name}</h1>
+       <p className="hidden truncate text-body-sm text-white/70 sm:block">{profile.email} &middot; {profile.designation} &middot; {profile.department}</p>
       </div>
      </div>
      <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-      <Button variant="primary" size="md" onClick={() => { logout(); navigate('/login', { replace: true }); }} icon={<Icon name="logout" />}>
+      <Button variant="outline-light" size="md" onClick={() => { logout(); navigate('/login', { replace: true }); }} icon={<Icon name="logout" />}>
        Sign Out
       </Button>
      </div>
     </div>
 
    <div className="flex min-h-0 flex-1">
-    <aside className="hidden w-56 shrink-0 overflow-y-auto border-r border-outline-variant bg-white md:block dark:border-dark-outline-variant dark:bg-dark-surface">
-     <nav aria-label="Portal navigation" className="flex flex-col gap-1.5 p-3">
+    <aside className="hidden w-56 shrink-0 overflow-y-auto border-r border-brand-dark/30 bg-brand-dark md:block">
+     <nav aria-label="Portal navigation" className="flex flex-col gap-1 p-3">
       {portalTabs.map((tab) => (
        <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-        className={`flex items-center gap-3 rounded-lg px-4 py-3 text-left font-label-caps text-label-caps uppercase transition-all ${
-         activeTab === tab.id ? 'bg-brand font-bold text-white shadow-sm' : 'font-semibold text-ink-muted hover:bg-brand/10 hover:text-brand dark:text-dark-ink-muted dark:hover:bg-dark-surface-container dark:hover:text-dark-brand'
+        className={`flex items-center gap-3 rounded-lg px-4 py-3 text-left font-label-caps text-label-caps uppercase transition-colors ${
+         activeTab === tab.id ? 'bg-white/20 font-bold text-white' : 'text-white/70 hover:bg-white/10 hover:text-white'
         }`}>
         <Icon name={tab.icon} className="text-lg" />{tab.label}
        </button>
@@ -1146,18 +1256,18 @@ export default function EmployeePortal() {
     </aside>
 
     <div className="flex min-h-0 flex-1 flex-col">
-     <div className="scrollbar-hide mb-stack-lg flex gap-1 overflow-x-auto border-b border-outline-variant bg-white px-4 py-2 sm:px-6 md:hidden lg:px-10 xl:px-12 dark:border-dark-outline-variant dark:bg-dark-surface">
+     <div className="scrollbar-hide mb-stack-lg flex gap-1 overflow-x-auto border-b px-4 py-2 sm:px-6 md:hidden lg:px-10 xl:px-12">
       {portalTabs.map((tab) => (
        <button key={tab.id} onClick={() => setActiveTab(tab.id)}
         className={`flex items-center gap-2 whitespace-nowrap border-b-2 px-4 py-3 font-label-caps text-label-caps uppercase transition-colors ${
-         activeTab === tab.id ? 'border-brand font-bold text-brand' : 'border-transparent font-semibold text-ink-muted hover:border-brand/40 hover:text-ink dark:text-dark-ink-muted dark:hover:text-white'
+         activeTab === tab.id ? 'border-white font-bold text-white' : 'border-transparent text-white/70 hover:border-white/40 hover:text-white'
         }`}>
         <Icon name={tab.icon} className="text-lg" />{tab.label}
        </button>
       ))}
      </div>
 
-     <div className="min-w-0 flex-1 overflow-y-auto bg-surface px-4 py-stack-lg sm:px-6 lg:px-10 xl:px-12 dark:bg-dark-surface">
+     <div className="min-w-0 flex-1 overflow-y-auto px-4 py-stack-lg sm:px-6 lg:px-10 xl:px-12 ">
       {activeTab === 'overview' && <Overview profile={profile} attendance={attendance} leaves={leaves} timesheets={timesheets} payslips={payslips} />}
       <Suspense fallback={<TabFallback />}>
        {activeTab === 'crm-dashboard' && effectiveRole === 'sales' && <CrmDashboard leads={leadsData} proposals={proposalsData} contracts={contractsData} />}
@@ -1179,7 +1289,6 @@ export default function EmployeePortal() {
        {activeTab === 'invoices' && effectiveRole === 'finance' && <Invoices />}
        {activeTab === 'leave-approvals' && effectiveRole === 'hr' && <LeaveApprovals />}
        {activeTab === 'recruitment' && effectiveRole === 'hr' && <Recruitment />}
-       {activeTab === 'performance-reviews-mgr' && effectiveRole === 'hr' && <PerformanceReviewsManagement />}
       </Suspense>
       {activeTab === 'attendance' && <Attendance attendance={attendance} onChange={setAttendance} />}
       {activeTab === 'leaves' && <Leaves leaves={leaves} />}
@@ -1201,6 +1310,7 @@ export default function EmployeePortal() {
       )}
       {activeTab === 'projects' && <Projects projects={projects} page={projectsPage} totalPages={projectsTotalPages} onPageChange={setProjectsPage} />}
       {activeTab === 'performance' && <Performance reviews={performance} />}
+      {activeTab === 'training' && <Training courses={training} catalog={catalog} onEnroll={handleEnroll} enrollingId={enrollingId} />}
       {activeTab === 'documents' && <Documents docs={documents} />}
 
      </div>

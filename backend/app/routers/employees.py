@@ -240,6 +240,16 @@ async def submit_timesheet(payload: TimesheetCreate, db: AsyncSession = Depends(
     return success_response(data=TimesheetOut.model_validate(entry), message="Timesheet entry logged", status_code=201)
 
 
+@router.get("/me/payslips", response_model=dict)
+async def my_payslips(db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
+    employee = await _get_employee_for_user(db, current_user)
+    result = await db.execute(
+        bounded_select(select(Payslip).where(Payslip.employee_id == employee.id).order_by(Payslip.year.desc(), Payslip.month.desc()))
+    )
+    payslips = result.scalars().all()
+    return success_response(data=[PayslipOut.model_validate(p) for p in payslips])
+
+
 PAYSLIP_SUBFOLDER = "payslips"
 
 

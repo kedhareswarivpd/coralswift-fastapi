@@ -73,7 +73,6 @@ app.add_middleware(SlowAPIMiddleware)
 _ALLOWED_ORIGINS = normalize_allowed_origins([
     settings.client_url,
     settings.site_url,
-    "https://coralswift.vercel.app",
     *[o.strip() for o in settings.extra_cors_origins.split(",") if o.strip()],
 ])
 if settings.env.lower() in {"development", "test", "local"}:
@@ -202,7 +201,6 @@ app.add_middleware(RequestContextMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_ALLOWED_ORIGINS,
-    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type", "Accept", "X-Requested-With", "X-CSRF-Token"],

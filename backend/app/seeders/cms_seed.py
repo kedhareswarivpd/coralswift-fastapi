@@ -544,7 +544,7 @@ FAQS = [
     ("What industries does CoralSwift work with?", "We work across 16+ industries including healthcare, finance, retail, manufacturing, logistics and more — see our Industries page for the full list.", "general"),
     ("How long does a typical project take?", "Most engagements run 6-16 weeks depending on scope, following our discovery-to-launch delivery process.", "general"),
     ("Do you offer post-launch support?", "Yes — every engagement includes a handover period, with ongoing Annual Maintenance and 24x7 Support contracts available separately.", "general"),
-    ("Where is CoralSwift based?", "Our corporate office is located at 30 N Gould St Ste #62633, Sheridan, WY 82801, United States. You can reach us at info@coralswift.com or +1 (307) 216-5154.", "company"),
+    ("Where is CoralSwift based?", "Our head office is in Connaught Place, New Delhi, India, with branch offices in Bangalore, Hyderabad, Pune, Mumbai, Dubai and Singapore.", "company"),
     ("Is CoralSwift ISO certified?", "Yes — we hold both ISO 9001:2015 (Quality Management) and ISO/IEC 27001:2013 (Information Security) certifications.", "company"),
     ("Can you work with our existing technology stack?", "Yes — our services are designed to integrate with existing systems rather than requiring a full rip-and-replace.", "services"),
     ("Do you offer fixed-price or time-and-materials engagements?", "Both — we scope each engagement with the client and recommend the pricing model that best fits the project's certainty level.", "services"),
@@ -905,7 +905,8 @@ async def seed_page_contents(db: AsyncSession) -> list[PageContent]:
          "company founded in 2020, working across Digital Transformation, Enterprise Software, Artificial "
          "Intelligence, Cloud Computing, Cyber Security and Business Automation.\n\n"
          "Tagline: Transforming Businesses Through Intelligent Digital Solutions.\n\n"
-         "Head Office: 30 N Gould St Ste #62633, Sheridan, WY 82801, United States.\n\n"
+         "Head Office: Connaught Place, New Delhi, India. Branch Offices: Bangalore, Hyderabad, Pune, Mumbai, "
+         "Dubai, Singapore.\n\n"
          "285+ Employees · 120+ Clients · 18+ Countries · 430+ Projects."),
         ("vision", "Our Vision",
          "To become one of Asia's most trusted Digital Transformation companies by building secure, scalable "
@@ -963,8 +964,8 @@ async def seed_page_contents(db: AsyncSession) -> list[PageContent]:
              "encourage you to review this policy periodically."),
             ("9. Contact Us",
              "If you have questions about this Privacy Policy or our data practices, please contact our Data "
-             "Protection Officer at info@coralswift.com or write to us at: Corporate Office, "
-             "30 N Gould St Ste #62633, Sheridan, WY 82801, United States."),
+             "Protection Officer at privacy@coralswifttech.com or write to us at: CoralSwift Technologies, "
+             "4th Floor, Innovation Tower, Plot 27, Sector 4, HSR Layout, Bangalore 560102, India."),
         ])),
         ("terms-of-service", "Terms of Service", _legal_html([
             ("1. Acceptance of Terms",
@@ -1064,8 +1065,8 @@ async def seed_stats_settings(db: AsyncSession) -> None:
         ("stats.partners", 35), ("stats.countries", 18), ("stats.years", 5),
         ("stats.success_rate", "98%"),
         ("company.founded_year", 2020),
-        ("company.head_office", "30 N Gould St Ste #62633, Sheridan, WY 82801, United States"),
-        ("company.branch_offices", []),
+        ("company.head_office", "Connaught Place, New Delhi, India"),
+        ("company.branch_offices", ["Bangalore", "Hyderabad", "Pune", "Mumbai", "Dubai", "Singapore"]),
     ]
     n = 0
     for key, value in stats:
@@ -1105,7 +1106,12 @@ async def seed_leadership(db: AsyncSession) -> list[Leadership]:
 
 
 OFFICES = [
-    ("Sheridan, WY", "Corporate Office — 30 N Gould St Ste #62633", True, 0),
+    ("Bangalore", "HQ & Innovation Lab", True, 0),
+    ("Dubai", "MENA Regional Office", False, 1),
+    ("Singapore", "SEA Hub", False, 2),
+    ("Mumbai", "Delivery Center", False, 3),
+    ("Hyderabad", "Cybersecurity CoE", False, 4),
+    ("Pune", "AI & Data Science", False, 5),
 ]
 
 
@@ -1124,14 +1130,13 @@ async def seed_offices(db: AsyncSession) -> list[Office]:
 async def seed_company_info(db: AsyncSession) -> None:
     value = {
         "name": "CoralSwift Technologies",
-        "legalName": "CoralSwift Technologies Inc.",
-        "tagline": "Architectural Rigor • Zero-Downtime Delivery • Applied Intelligence",
-        "website": "www.coralswift.com",
-        "email": "info@coralswift.com",
-        "phone": "+1 (307) 216-5154",
+        "legalName": "CoralSwift Technologies Private Limited",
+        "tagline": "Transforming Businesses Through Intelligent Digital Solutions",
+        "website": "www.coralswifttech.com",
+        "email": "hello@coralswifttech.com",
         "founded": 2020,
-        "hq": "30 N Gould St Ste #62633, Sheridan, WY 82801, United States",
-        "offices": ["30 N Gould St Ste #62633, Sheridan, WY 82801, United States"],
+        "hq": "Connaught Place, New Delhi, India",
+        "offices": ["Bangalore", "Hyderabad", "Pune", "Mumbai", "Dubai", "Singapore"],
     }
     setting, created = await _get_or_create(db, Setting, {"key": "company_info"}, {"value": value, "group": "company"})
     if not created:

@@ -16,8 +16,6 @@ class PerformanceReview(Base):
     review_period: Mapped[str] = mapped_column(String(50), nullable=False)
     review_date: Mapped[date] = mapped_column(Date, nullable=False)
     rating: Mapped[int | None] = mapped_column(Integer)
-    goals_set: Mapped[int] = mapped_column(Integer, default=5)
-    goals_achieved: Mapped[int] = mapped_column(Integer, default=5)
     strengths: Mapped[str | None] = mapped_column(Text)
     areas_for_improvement: Mapped[str | None] = mapped_column(Text)
     goals: Mapped[str | None] = mapped_column(Text)

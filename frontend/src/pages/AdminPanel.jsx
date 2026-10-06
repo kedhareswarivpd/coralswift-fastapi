@@ -32,6 +32,7 @@ import {
  createNotification,
  fetchComments, moderateComment, deleteComment,
  fetchNewsletterSubscribers,
+ fetchCourses, createCourse,
  fetchApplications, updateApplicationStatus,
 } from '../api/admin.js';
 import { careersApi } from '../api/cms.js';
@@ -43,7 +44,7 @@ import {
  validateAddRole, validateAddPermission, validateMediaUpload,
  validateSendNotification, validateGenerateReport, validateNewSetting,
 } from '../schemas/admin-misc.schema.js';
-import { validateNewCareer } from '../schemas/admin-content.schema.js';
+import { validateNewCourse, validateNewCareer } from '../schemas/admin-content.schema.js';
 
 import { useRoleGuard } from '../hooks/useRoleGuard.js';
 import ContentManager from '../components/admin/ContentManager.jsx';
@@ -185,7 +186,7 @@ function Dashboard({ kpis: propKpis, statusBreakdown: propBreakdown, setActiveTa
    <div className="grid grid-cols-2 gap-6 lg:grid-cols-4">
     {statCards.map((s) => (
      <div key={s.label} className="flex flex-col rounded-xl border border-outline-variant bg-white p-6 shadow-sm transition-shadow hover:shadow-md dark:border-dark-outline-variant dark:bg-dark-surface">
-      <div className="mb-4 inline-flex size-11 items-center justify-center rounded-xl bg-accent-cyan-pale dark:bg-brand/10">
+      <div className="mb-4 inline-flex size-11 items-center justify-center rounded-xl bg-accent-cyan-pale dark:bg-blue-900/30">
        <Icon name={s.icon} className={`text-2xl ${s.color}`} />
       </div>
       <p className="font-stat text-3xl font-bold text-brand-dark dark:text-dark-brand">{s.value}</p>
@@ -225,7 +226,7 @@ function Dashboard({ kpis: propKpis, statusBreakdown: propBreakdown, setActiveTa
        { icon: 'upload_file', label: 'Upload Resource', desc: 'Add a whitepaper or downloadable asset', tab: 'media' },
        { icon: 'campaign', label: 'Send Notification', desc: 'Broadcast a message to all users', tab: 'notifications' },
       ].map((action) => (
-       <div key={action.label} onClick={() => setActiveTab(action.tab)} className="flex cursor-pointer items-center gap-4 rounded-lg bg-surface-container p-3 transition-colors hover:bg-accent-cyan-pale dark:bg-dark-surface-container dark:hover:bg-brand/10">
+       <div key={action.label} onClick={() => setActiveTab(action.tab)} className="flex cursor-pointer items-center gap-4 rounded-lg bg-surface-container p-3 transition-colors hover:bg-accent-cyan-pale dark:bg-blue-900/30 dark:bg-dark-surface-container dark:hover:bg-blue-900/30">
         <Icon name={action.icon} className="text-2xl text-brand" />
         <div>
          <p className="text-body-md font-semibold text-brand-dark dark:text-dark-brand">{action.label}</p>
@@ -1629,9 +1630,9 @@ function ContactsManagement() {
     {loading ? (
      <div className="p-stack-lg"><SkeletonTable rows={6} columns={10} /></div>
     ) : (
-     <div className="responsive-table overflow-x-auto custom-scrollbar pb-4">
-      <table className="w-full min-w-[1200px] text-left">
-       <thead className="bg-surface-container font-label-caps text-label-caps uppercase text-ink-muted dark:bg-dark-surface-container dark:text-dark-ink-muted whitespace-nowrap">
+     <div className="responsive-table overflow-x-auto">
+      <table className="w-full text-left">
+       <thead className="bg-surface-container font-label-caps text-label-caps uppercase text-ink-muted dark:bg-dark-surface-container dark:text-dark-ink-muted">
         <tr>
          <th className="px-stack-lg py-4">Name</th>
          <th className="px-stack-lg py-4">Email</th>
@@ -1647,7 +1648,7 @@ function ContactsManagement() {
        </thead>
        <tbody className="divide-y divide-outline-variant dark:divide-dark-outline-variant">
         {submissions.map((s) => (
-         <tr key={s.id} className="transition-colors hover:bg-accent-cyan-pale dark:hover:bg-white/5">
+         <tr key={s.id} className="transition-colors hover:bg-accent-cyan-pale dark:bg-blue-900/30 dark:hover:bg-blue-900/30">
           <td data-label="Name" className="px-stack-lg py-4 text-body-md font-semibold text-brand-dark dark:text-dark-brand">{s.name}</td>
           <td data-label="Email" className="px-stack-lg py-4 text-body-sm text-ink-muted dark:text-dark-ink-muted">{s.email}</td>
           <td data-label="Phone" className="px-stack-lg py-4 text-body-sm text-ink-muted dark:text-dark-ink-muted">{s.phone || '—'}</td>
@@ -1670,7 +1671,7 @@ function ContactsManagement() {
              <button
               onClick={() => setConvertTarget(s)}
               aria-label="Convert to Lead"
-              className="rounded p-1 text-ink-muted transition-colors hover:bg-accent-cyan-pale hover:text-brand dark:text-dark-ink-muted dark:hover:bg-brand/10"
+              className="rounded p-1 text-ink-muted transition-colors hover:bg-accent-cyan-pale hover:text-brand dark:bg-blue-900/30 dark:text-dark-ink-muted dark:hover:bg-blue-900/30"
               title="Convert to Lead"
              >
               <Icon name="person_add" />
@@ -1931,6 +1932,117 @@ function SettingsManagement() {
  );
 }
 
+// ── Training Courses ─────────────────────────────────────────────────────────
+// List + create only — the backend (backend/app/routers/training.py) has no
+// update/delete endpoint for courses at all, so this deliberately doesn't
+// offer edit/delete controls the API can't back.
+function NewCourseForm({ onCreated, onCancel }) {
+ const [form, setForm] = useState({ title: '', category: '', duration_hours: '', description: '', is_published: true });
+ const [error, setError] = useState('');
+ const [fieldErrors, setFieldErrors] = useState({});
+ const { run, isPending: submitting } = useAsyncAction();
+ const inputClass = 'border border-outline-variant dark:border-dark-outline-variant rounded px-4 py-3 text-body-md dark:text-dark-ink bg-white dark:bg-dark-surface focus:outline-none focus:border-brand';
+
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError('');
+  const clientErrors = validateNewCourse(form);
+  if (Object.keys(clientErrors).length > 0) {
+   setFieldErrors(clientErrors);
+   setError('Please fix the errors below.');
+   return;
+  }
+  setFieldErrors({});
+  try {
+   await run(async () => {
+    await createCourse({
+     title: form.title,
+     category: form.category || undefined,
+     duration_hours: form.duration_hours ? Number(form.duration_hours) : undefined,
+     description: form.description || undefined,
+     is_published: form.is_published,
+    });
+    onCreated();
+   });
+  } catch (err) {
+   setError(err.message || 'Could not create the course.');
+  }
+ };
+
+ return (
+  <form onSubmit={handleSubmit} className="space-y-4 rounded-lg border border-outline-variant bg-white p-stack-lg dark:border-dark-outline-variant dark:bg-dark-surface">
+   <div className="grid gap-4 sm:grid-cols-3">
+    <div>
+     <input required type="text" placeholder="Title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className={inputClass + ' w-full'} />
+     {fieldErrors.title && <p className="mt-1 flex items-center gap-1 text-body-xs font-semibold text-status-error-text">{fieldErrors.title}</p>}
+    </div>
+    <div>
+     <input type="text" placeholder="Category (e.g. Cloud)" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className={inputClass + ' w-full'} />
+     {fieldErrors.category && <p className="mt-1 flex items-center gap-1 text-body-xs font-semibold text-status-error-text">{fieldErrors.category}</p>}
+    </div>
+    <div>
+     <input type="number" min="0" placeholder="Duration (hours)" value={form.duration_hours} onChange={(e) => setForm({ ...form, duration_hours: e.target.value })} className={inputClass + ' w-full'} />
+     {fieldErrors.duration_hours && <p className="mt-1 flex items-center gap-1 text-body-xs font-semibold text-status-error-text">{fieldErrors.duration_hours}</p>}
+    </div>
+   </div>
+   <textarea placeholder="Description (optional)" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className={`${inputClass} w-full`} rows={2} />
+   <label className="flex items-center gap-2 text-body-sm text-ink-muted dark:text-dark-ink-muted">
+    <input type="checkbox" checked={form.is_published} onChange={(e) => setForm({ ...form, is_published: e.target.checked })} />Published (visible to employees)
+   </label>
+   {error && <p className="flex items-center gap-1 text-body-sm text-status-error-text"><Icon name="error" className="text-base" />{error}</p>}
+   <div className="flex gap-2">
+    <Button type="submit" variant="primary" size="md" disabled={submitting}>{submitting ? 'Creating...' : 'Create Course'}</Button>
+    <Button type="button" variant="outline" size="md" onClick={onCancel}>Cancel</Button>
+   </div>
+  </form>
+ );
+}
+
+function TrainingManagement() {
+ const [courses, setCourses] = useState([]);
+ const [loading, setLoading] = useState(true);
+ const [showNew, setShowNew] = useState(false);
+ const [page, setPage] = useState(1);
+ const [totalPages, setTotalPages] = useState(1);
+
+ const load = useCallback(() => {
+  setLoading(true);
+  fetchCourses({ page, limit: 20 })
+   .then((res) => { setCourses(res?.data || []); setTotalPages(res?.meta?.total_pages || 1); })
+   .catch(() => {})
+   .finally(() => setLoading(false));
+ }, [page]);
+
+ useEffect(() => { load(); }, [load]);
+
+ return (
+  <div className="space-y-stack-lg">
+   <div className="flex justify-end">
+    <Button onClick={() => setShowNew((v) => !v)} variant="primary" size="md" icon={<Icon name="add" />}>New Course</Button>
+   </div>
+   {showNew && <NewCourseForm onCreated={() => { setShowNew(false); load(); }} onCancel={() => setShowNew(false)} />}
+   <div className="responsive-table overflow-hidden rounded-lg border border-outline-variant bg-white dark:border-dark-outline-variant dark:bg-dark-surface">
+    {loading ? <div className="p-stack-lg"><SkeletonTable rows={6} columns={4} /></div> : (
+     <>
+      <PortalTable
+       emptyMessage="No courses yet."
+       rows={courses}
+       columns={[
+        { key: 'title', label: 'Title', className: 'text-body-md text-brand-dark dark:text-dark-brand' },
+        { key: 'category', label: 'Category', render: (v) => <Badge className="text-label-caps">{v || '—'}</Badge> },
+        { key: 'duration_hours', label: 'Duration', className: 'text-body-md text-ink-muted dark:text-white', render: (v) => (v ? `${v}h` : '—') },
+        { key: 'is_published', label: 'Status', render: (v) => <StatusBadge variant={v ? 'success' : 'neutral'}>{v ? 'published' : 'draft'}</StatusBadge> },
+       ]}
+      />
+      <div className="border-t border-outline-variant p-stack-lg dark:border-dark-outline-variant">
+       <Pagination page={page} totalPages={totalPages} onChange={setPage} />
+      </div>
+     </>
+    )}
+   </div>
+  </div>
+ );
+}
 
 // ── Careers: job postings + application review ──────────────────────────────
 function NewCareerForm({ onCreated, onCancel }) {
@@ -2376,7 +2488,7 @@ export default function AdminPanel() {
      </nav>
     </aside>
 
-    <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+    <div className="flex min-h-0 flex-1 flex-col">
      <Tabs
       tabs={adminPanelTabs.map((tab) => ({ key: tab.id, label: tab.label, icon: <Icon name={tab.icon} className="text-lg" /> }))}
       active={activeTab}
@@ -2404,6 +2516,7 @@ export default function AdminPanel() {
       {activeTab === 'media' && <MediaManagement />}
       {activeTab === 'notifications' && <NotificationsManagement />}
       {activeTab === 'reports' && <ReportsManagement />}
+      {activeTab === 'training' && <TrainingManagement />}
       {activeTab === 'careers' && <CareersManagement />}
       {activeTab === 'comments' && <CommentsManagement />}
       {activeTab === 'newsletter' && <NewsletterManagement />}

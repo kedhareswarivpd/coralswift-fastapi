@@ -70,7 +70,7 @@ export default function NotificationBell() {
       {!loading && !notifications.length && <p className="px-4 py-6 text-center text-body-sm text-ink-muted dark:text-dark-ink-muted">No notifications yet.</p>}
       {!loading && notifications.map((n) => (
        <button key={n.id} type="button" onClick={() => handleClickNotification(n)}
-        className={`flex w-full items-start gap-3 border-b border-outline-variant px-4 py-3 text-left last:border-b-0 hover:bg-accent-cyan-pale dark:border-dark-outline-variant dark:hover:bg-brand/20 ${!n.is_read ? 'bg-accent-cyan-pale/50 dark:bg-brand/10' : ''}`}>
+        className={`flex w-full items-start gap-3 border-b border-outline-variant px-4 py-3 text-left last:border-b-0 hover:bg-accent-cyan-pale dark:border-dark-outline-variant dark:hover:bg-blue-900/30 ${!n.is_read ? 'bg-accent-cyan-pale/50 dark:bg-blue-900/20' : ''}`}>
         <Icon name={TYPE_ICON[n.type] || 'info'} className={`mt-0.5 text-lg ${TYPE_COLOR[n.type] || 'text-status-info-text'}`} />
         <div className="min-w-0 flex-1">
          <p className={`text-body-sm ${!n.is_read ? 'font-semibold' : ''} text-brand-dark dark:text-white`}>{n.title}</p>

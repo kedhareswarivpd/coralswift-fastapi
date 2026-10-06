@@ -39,11 +39,8 @@ export default function CareersHero() {
 
           <h1 className="mb-6 font-display text-4xl font-extrabold tracking-tight text-ink dark:text-dark-ink sm:text-5xl lg:text-6xl">
             Build Systems That Power{' '}
-            <span className="block mt-1">
-              <span className="text-[#FF5500]">Global</span>{' '}
-              <span className="bg-gradient-to-r from-[#FF5500] via-[#E11D48] to-[#8B5CF6] bg-clip-text text-transparent">
-                Commerce
-              </span>
+            <span className="bg-gradient-to-r from-orange-500 to-amber-600 bg-clip-text text-transparent">
+              Global Commerce
             </span>
           </h1>
 
@@ -60,7 +57,7 @@ export default function CareersHero() {
               className="group relative overflow-hidden flex flex-col justify-between rounded-3xl border border-outline-variant/70 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-3 hover:border-orange-400/80 hover:shadow-2xl hover:shadow-orange-500/15 dark:border-dark-outline-variant/80 dark:bg-dark-surface sm:p-8"
             >
               {/* Top Border Gradient Accent Line */}
-              <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#FF5500] via-[#E11D48] to-[#8B5CF6] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+              <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-orange-500 via-brand to-amber-500 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
               
               <div>
                 <div className={`mb-6 flex h-14 w-14 items-center justify-center rounded-2xl ${item.colorClass} transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6`}>

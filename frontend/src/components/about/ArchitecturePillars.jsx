@@ -41,7 +41,7 @@ export default function ArchitecturePillars() {
             <Reveal key={pillar.number} from="up" delay={i * 80}>
               <div className="group relative overflow-hidden flex h-full flex-col justify-between rounded-3xl border border-outline-variant/70 bg-white p-6 sm:p-8 shadow-sm transition-all duration-300 hover:-translate-y-3 hover:border-orange-400/80 hover:shadow-2xl hover:shadow-orange-500/15 dark:border-dark-outline-variant/80 dark:bg-dark-surface">
                 {/* Top Border Gradient Accent Line (Visible ONLY on Hover) */}
-                <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#FF5500] via-[#E11D48] to-[#8B5CF6] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-orange-500 via-brand to-amber-500 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
                 <div>
                   <div className="mb-6">
