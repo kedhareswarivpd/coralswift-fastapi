@@ -68,7 +68,7 @@ class Settings(BaseSettings):
     # DB_USE_PGBOUNCER=true, PgBouncer's transaction-mode multiplexing means
     # these can be raised well above what direct-to-Postgres would allow —
     # see backend/performance/pool_matrix_test.py for the measurements this
-    # sizing is based on (CF-BE-009).
+    # sizing is based on.
     db_pool_size: int = 10
     db_max_overflow: int = 10
 
@@ -204,7 +204,7 @@ class Settings(BaseSettings):
         # factor well under 1s, while still being generous for a healthy
         # same-network Redis (sub-ms normally). Also applied to
         # redis_url_override (e.g. Upstash) — a managed Redis being briefly
-        # unreachable is exactly the scenario CF-BE-014 was found under, and
+        # unreachable is a potential failure mode, and
         # nothing about that failure mode is specific to a local container.
         timeout_params = "socket_connect_timeout=0.05&socket_timeout=0.05"
         if self.redis_url_override:

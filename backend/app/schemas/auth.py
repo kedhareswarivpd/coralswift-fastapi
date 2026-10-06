@@ -100,7 +100,7 @@ class MfaChallengeResponse(BaseModel):
 
 
 class MfaVerifyLoginRequest(BaseModel):
-    mfa_token: str | None = None  # falls back to the cf_mfa_pending_token cookie (set by the OAuth callback) if omitted
+    mfa_token: str | None = None  # falls back to the cs_mfa_pending_token cookie (set by the OAuth callback) if omitted
     code: str = Field(min_length=4, max_length=64)
 
 

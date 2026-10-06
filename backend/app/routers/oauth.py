@@ -37,8 +37,8 @@ from app.services.auth_service import create_session, record_successful_login
 
 router = APIRouter(prefix="/auth/oauth", tags=["OAuth"])
 
-OAUTH_STATE_COOKIE = "cf_oauth_state"
-MFA_PENDING_COOKIE = "cf_mfa_pending_token"  # kept identical to routers/auth.py's constant
+OAUTH_STATE_COOKIE = "cs_oauth_state"
+MFA_PENDING_COOKIE = "cs_mfa_pending_token"  # kept identical to routers/auth.py's constant
 _STATE_COOKIE_MAX_AGE = 600  # 10 minutes — plenty for a consent-screen round trip
 _HTTP_TIMEOUT = 10.0
 

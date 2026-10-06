@@ -46,7 +46,7 @@ class CRUDBase(Generic[ModelType]):
         self.relationships = relationships or []
 
     def _with_relationships(self, query):
-        # CF-BE-009: scalar (many-to-one/one-to-one) relationships are folded
+        # Scalar (many-to-one/one-to-one) relationships are folded
         # into the main query via a JOIN (joinedload) instead of a separate
         # round trip (selectinload) — under connection-pool contention, each
         # extra round trip compounds latency (measured: employees list went
@@ -61,7 +61,8 @@ class CRUDBase(Generic[ModelType]):
         return query
 
     async def list(
-        self, db: AsyncSession, page_params: PageParams, filters: dict[str, Any] | None = None
+        self, db: AsyncSession, page_params: PageParams, filters: dict[str, Any] | None = None,
+        extra_conditions: Sequence[Any] | None = None,
     ) -> tuple[Sequence[ModelType], int]:
         query = select(self.model)
         count_query = select(func.count()).select_from(self.model)
@@ -82,6 +83,12 @@ class CRUDBase(Generic[ModelType]):
             ]
             if search_conditions:
                 conditions.append(or_(*search_conditions))
+
+        # Pre-built SQLAlchemy clauses (e.g. an or_() visibility rule the
+        # equality-filter dict above can't express) — optional, so existing
+        # callers are unaffected.
+        for cond in (extra_conditions or []):
+            conditions.append(cond)
 
         for cond in conditions:
             query = query.where(cond)

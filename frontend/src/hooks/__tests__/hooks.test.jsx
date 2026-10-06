@@ -46,7 +46,7 @@ describe('useRoleGuard', () => {
  });
 
  it('denies when role is absent on an authenticated user (deny-by-default; backend is still authoritative)', () => {
-  // Regression test for CF-AUD-019: this test previously asserted the
+  // Regression test: this test previously asserted the
   // opposite (denied === false) and contradicted useRoleGuard.js's own
   // documented behavior ("Missing or null roles are denied — the backend
   // must confirm the role before the portal renders"). The hook's secure

@@ -7,7 +7,7 @@ import useAsyncAction from '../../hooks/useAsyncAction.js';
 import {
  fetchLead, fetchLeadActivities, logLeadCall, markRequirementGathering, disqualifyLead,
  fetchProposals, createProposal, sendProposal, acceptProposal, rejectProposal,
- fetchContracts, createContract, signContract,
+ fetchContracts, createContract, signContract, convertLead,
 } from '../../api/crm.js';
 
 // One-way pipeline — mirrors backend app/services/lead_pipeline.py. Shown as
@@ -246,14 +246,19 @@ export default function LeadFlowPage({ leadId, onBack, onRefresh }) {
       </div>
      )}
 
-     {lead.status === 'proposal_approved' && acceptedProposal && !contract && (
+     {lead.status === 'proposal_approved' && !contract && (
       <div className="rounded-xl border border-outline-variant bg-white p-6 dark:border-dark-outline-variant dark:bg-dark-surface-container">
-       <p className="mb-3 font-label-caps text-label-caps uppercase text-ink-muted dark:text-dark-ink-muted">Next Step — Generate Contract</p>
-       <p className="mb-3 text-body-sm text-ink-muted dark:text-dark-ink-muted">v{acceptedProposal.version} · {acceptedProposal.currency} {Number(acceptedProposal.price).toLocaleString()} — draft the contract for signature. Signing happens manually (offline/DocuSign); record each signature here once it&apos;s done.</p>
-       <Button type="button" variant="primary" size="md" disabled={isPending}
-        onClick={() => doAction(async () => { await createContract(acceptedProposal.id); }, 'Contract drafted.')}>
-        Generate Contract
-       </Button>
+       <div className="flex flex-wrap gap-2">
+        <Button type="button" variant="primary" size="md" disabled={isPending}
+         onClick={() => doAction(async () => { await createContract(acceptedProposal.id); }, 'Contract drafted.')}>
+         Generate Contract
+        </Button>
+        <Button type="button" variant="secondary" size="md" disabled={isPending}
+         onClick={() => doAction(async () => { await convertLead(lead.id); }, 'Lead converted to client.')}>
+         Convert to Client
+        </Button>
+       </div>
+       <p className="mt-3 text-body-sm text-ink-muted dark:text-dark-ink-muted">v{acceptedProposal.version} · {acceptedProposal.currency} {Number(acceptedProposal.price).toLocaleString()} · {acceptedProposal.scope_summary}</p>
       </div>
      )}
 

@@ -155,7 +155,7 @@ app.add_middleware(AuditMiddleware)
 
 
 # ---------- Request ID + structured access log middleware ----------
-# CF-AUD-010: `X-Request-Id` was already declared in CORS's expose_headers
+# Observability: `X-Request-Id` was already declared in CORS's expose_headers
 # but nothing ever generated or set it. This middleware generates (or
 # forwards a caller-supplied) request ID, attaches it to the response, and
 # emits one structured access-log line per request with the fields needed to

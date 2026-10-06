@@ -492,7 +492,7 @@ PARTNERS = [
     ("BluePeak Analytics", PartnerType.business_partner), ("Northbridge Systems", PartnerType.business_partner),
     ("Meridian AI Labs", PartnerType.business_partner), ("Cobalt Networks", PartnerType.business_partner),
     ("Orbit DevOps Co", PartnerType.reseller), ("Lumen Cloud Partners", PartnerType.reseller),
-    ("Apex Reseller Group", PartnerType.reseller), ("Fusion Point Technologies", PartnerType.reseller),
+    ("Apex Reseller Group", PartnerType.reseller), ("CoralPoint Technologies", PartnerType.reseller),
 ]
 
 

@@ -50,10 +50,8 @@ jobs:
           psql -h localhost -U test_user -d coralswift_test -c "CREATE TABLE IF NOT EXISTS auth.users (id uuid PRIMARY KEY DEFAULT gen_random_uuid());"
 
       - name: Apply Alembic migrations to the real CI Postgres
-        # Previously this Postgres service was never actually migrated or
-        # connected to by the app — see status.md CF-BE-REAL-DB-01. This step
-        # is the regression guard for the enum-duplication migration bug
-        # found and fixed in that pass (DuplicateObjectError on a fresh DB).
+        # This step is the regression guard for the enum-duplication migration bug
+        # (DuplicateObjectError on a fresh DB).
         env:
           ENV: test
           DB_HOST: localhost
@@ -79,10 +77,9 @@ jobs:
         run: python -m pytest -v
 
       - name: Run real-Postgres verification (IDOR, tenant isolation, N+1 — not mocked)
-        # tests/conftest.py mocks the SQLAlchemy engine for the whole pytest
-        # session (see CF-AUD-008), so nothing above touches this database.
-        # This script runs standalone, outside that mock, against the
-        # already-migrated schema.
+        # tests/conftest.py mocks the SQLAlchemy engine for the pytest session,
+        # so nothing above touches this database. This script runs standalone,
+        # outside that mock, against the already-migrated schema.
         env:
           ENV: test
           DB_HOST: localhost

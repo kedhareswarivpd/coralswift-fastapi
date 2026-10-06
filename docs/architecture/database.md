@@ -23,8 +23,7 @@ Two pool configurations, selected by `DB_USE_PGBOUNCER`:
   connection to be safely handed between different backend processes behind
   a transaction-mode pooler. Sizing rationale (why `pool_size`/`max_overflow`
   are set the way they are, and the load-test evidence behind it) lives in
-  `backend/performance/pool_matrix_test.py` and is referenced as "CF-BE-009"
-  throughout the codebase's comments.
+  `backend/performance/pool_matrix_test.py`.
 
 `AsyncSessionLocal` is the shared `async_sessionmaker`, with
 **`expire_on_commit=False`** — chosen so an object's attributes remain

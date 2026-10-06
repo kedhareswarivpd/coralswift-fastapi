@@ -13,13 +13,13 @@ a usable credential, since these are high-entropy random values, not
 human-choosable secrets (the reason SHA-256, not Argon2id, is correct
 here — see `app/core/tokens.py`'s module docstring).
 
-- **Access token**: 15-minute TTL, httpOnly cookie `cf_access_token`.
-- **Refresh token**: 30-day TTL, httpOnly cookie `cf_refresh_token`, rotates
+- **Access token**: 15-minute TTL, httpOnly cookie `cs_access_token`.
+- **Refresh token**: 30-day TTL, httpOnly cookie `cs_refresh_token`, rotates
   on every use. **Reuse detection**: presenting an already-rotated-away
   refresh token (matches `previous_refresh_token_hash`, not the current
   hash) immediately revokes the entire session — a theft signal, not a
   late-arriving legitimate request.
-- **CSRF token**: non-httpOnly cookie `cf_csrf_token`, must be echoed as
+- **CSRF token**: non-httpOnly cookie `cs_csrf_token`, must be echoed as
   the `X-CSRF-Token` header on every state-changing request while a
   session cookie is present (double-submit pattern, `core/csrf.py`).
   Login/register are exempt — no session to CSRF-protect yet.

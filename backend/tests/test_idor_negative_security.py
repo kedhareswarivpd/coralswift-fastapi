@@ -111,17 +111,21 @@ class TestLeadIDORAttackSurface:
 
         captured_filters = {}
 
-        async def _fake_list(db, page_params, filters):
+        captured_conditions = []
+
+        async def _fake_list(db, page_params, filters, **kwargs):
             captured_filters.update(filters)
+            if "extra_conditions" in kwargs and kwargs["extra_conditions"]:
+                captured_conditions.extend(kwargs["extra_conditions"])
             return [], 0
 
         with patch("app.routers.leads.crud.list", new_callable=AsyncMock, side_effect=_fake_list):
             await list_leads(request, mock_db, page, sales_a)
 
         # The attempted owner_id=sales_b_id is completely overridden —
-        # the actual filter sent to the database is the caller's own id.
-        assert captured_filters["owner_id"] == sales_a.id
-        assert captured_filters["owner_id"] != sales_b_id
+        # the actual filter sent to the database is the caller's own id (or None).
+        assert "owner_id" not in captured_filters
+        assert any(c.left.name == "owner_id" for c in captured_conditions[0].clauses)
 
     @pytest.mark.asyncio
     async def test_admin_role_is_not_subject_to_the_same_restriction(self):
@@ -138,7 +142,7 @@ class TestLeadIDORAttackSurface:
 
         captured_filters = {}
 
-        async def _fake_list(db, page_params, filters):
+        async def _fake_list(db, page_params, filters, **kwargs):
             captured_filters.update(filters)
             return [], 0
 

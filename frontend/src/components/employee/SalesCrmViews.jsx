@@ -12,7 +12,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import {
  createProposal, sendProposal, acceptProposal, rejectProposal,
  createContract, signContract,
- createLead,
+ createLead, updateLead,
  createMeeting, updateMeeting,
 } from '../../api/crm.js';
 import { validateConvertToLead, validateNewLead, validateNewProposal, validateNewMeeting } from '../../schemas/crm.schema.js';
@@ -27,7 +27,7 @@ const CLIENT_PAGE_SIZE = 10;
 // lazy-loaded chunk keeps that weight out of every other role's download.
 const LEAD_SOURCE_OPTIONS = ['website', 'contact_form', 'referral', 'campaign', 'cold_outreach', 'event', 'other'];
 const LEAD_STATUS_COLOR = { new: 'neutral', contacted: 'info', requirement_gathering: 'info', proposal_created: 'info', proposal_sent: 'warning', proposal_approved: 'success', converted: 'success', disqualified: 'error' };
-const PROPOSAL_STATUS_COLOR = { draft: 'neutral', sent: 'warning', viewed: 'info', accepted: 'success', rejected: 'error' };
+const PROPOSAL_STATUS_COLOR = { draft: 'neutral', submitted_for_review: 'info', pm_approved: 'success', pm_rejected: 'error', sent: 'warning', viewed: 'info', accepted: 'success', rejected: 'error' };
 const CONTRACT_STATUS_COLOR = { pending: 'warning', signed: 'success', void: 'error' };
 
 function Leads({ leads, onRefresh }) {
@@ -65,6 +65,18 @@ function Leads({ leads, onRefresh }) {
     showToast('Lead saved successfully.');
    } catch (err) {
     showToast(err?.message || 'Failed to save lead.');
+   }
+  });
+ };
+
+ const handleClaim = (leadId) => {
+  runSubmit(async () => {
+   try {
+    await updateLead(leadId, {});
+    onRefresh();
+    showToast('Lead claimed successfully.');
+   } catch (err) {
+    showToast(err?.message || 'Failed to claim lead.');
    }
   });
  };
@@ -118,7 +130,7 @@ function Leads({ leads, onRefresh }) {
    <div className="responsive-table overflow-x-auto rounded-lg border border-outline-variant bg-surface-container dark:border-dark-outline-variant dark:bg-dark-surface-container">
     <table className="w-full text-left">
      <thead className="bg-surface-container font-label-caps text-label-caps uppercase text-ink-muted dark:bg-dark-surface-container dark:text-dark-ink-muted">
-      <tr><th className="px-stack-lg py-4">Company / Contact</th><th className="px-stack-lg py-4">Email</th><th className="px-stack-lg py-4">Source</th><th className="px-stack-lg py-4">Est. Value</th><th className="px-stack-lg py-4">Status</th><th className="px-stack-lg py-4">Open</th></tr>
+      <tr><th className="px-stack-lg py-4">Company / Contact</th><th className="px-stack-lg py-4">Email</th><th className="px-stack-lg py-4">Source</th><th className="px-stack-lg py-4">Est. Value</th><th className="px-stack-lg py-4">Status</th><th className="px-stack-lg py-4">Owner</th><th className="px-stack-lg py-4">Open</th></tr>
      </thead>
      <tbody className="divide-y divide-outline-variant dark:divide-dark-outline-variant">
       {pagedLeads.map((l) => (
@@ -133,13 +145,20 @@ function Leads({ leads, onRefresh }) {
         <td data-label="Status" className="px-stack-lg py-4">
          <StatusBadge variant={LEAD_STATUS_COLOR[l.status]}>{l.status?.replace('_', ' ')}</StatusBadge>
         </td>
+        <td data-label="Owner" className="px-stack-lg py-4">
+         {l.owner_name ? (
+          <span className="text-body-sm text-ink-muted dark:text-dark-ink-muted">{l.owner_name}</span>
+         ) : (
+          <button onClick={() => handleClaim(l.id)} disabled={submitting} className="text-brand font-semibold text-body-sm hover:underline disabled:opacity-50">Claim</button>
+         )}
+        </td>
         <td data-label="Open" className="px-stack-lg py-4">
          <RowAction onClick={() => setOpenLeadId(l.id)}>Open</RowAction>
         </td>
        </tr>
       ))}
       {!leads.length && (
-       <tr><td data-label="Company / Contact" colSpan={6} className="px-stack-lg py-8 text-center text-body-sm text-ink-muted dark:text-dark-ink-muted">No leads yet.</td></tr>
+       <tr><td data-label="Company / Contact" colSpan={7} className="px-stack-lg py-8 text-center text-body-sm text-ink-muted dark:text-dark-ink-muted">No leads yet.</td></tr>
       )}
      </tbody>
     </table>
@@ -755,10 +774,17 @@ function CrmDashboard({ leads, proposals, contracts }) {
  );
 }
 
-function SalesClients({ clients }) {
+function SalesClients({ clients, employees = [] }) {
  const [searchTerm, setSearchTerm] = useState('');
  const [industryFilter, setIndustryFilter] = useState('');
  const [page, setPage] = useState(1);
+
+ // Build employee_code -> name lookup (employee_code is the unique key shown in the UI).
+ const empLookup = useMemo(() => {
+  const map = {};
+  employees.forEach((e) => { map[e.employee_code] = e.name || e.employee_code; });
+  return map;
+ }, [employees]);
 
  const industries = [...new Set(clients.map((c) => c.industry).filter(Boolean))];
  const filtered = useMemo(() => clients.filter((c) => {
@@ -810,7 +836,7 @@ function SalesClients({ clients }) {
         <td data-label="Company" className="px-stack-lg py-4 text-body-md font-semibold text-brand-dark dark:text-white">{c.company_name || '—'}</td>
         <td data-label="Contact" className="px-stack-lg py-4 text-body-sm text-ink-muted dark:text-dark-ink-muted">{c.contact_name || c.company_name || '—'}</td>
         <td data-label="Industry" className="px-stack-lg py-4 text-body-sm capitalize text-ink-muted dark:text-dark-ink-muted">{c.industry?.replace('_', ' ') || '—'}</td>
-        <td data-label="Account Manager" className="px-stack-lg py-4 text-body-sm text-ink-muted dark:text-dark-ink-muted">{c.account_manager_id ? c.account_manager_id : 'Unassigned'}</td>
+        <td data-label="Account Manager" className="px-stack-lg py-4 text-body-sm text-ink-muted dark:text-dark-ink-muted">{c.account_manager_id ? (empLookup[c.account_manager_id] ?? 'Unassigned') : 'Unassigned'}</td>
         <td data-label="Status" className="px-stack-lg py-4"><StatusBadge variant={statusColor[c.status] || 'neutral'}>{c.status || 'active'}</StatusBadge></td>
        </tr>
       ))}

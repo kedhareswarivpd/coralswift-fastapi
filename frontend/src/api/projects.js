@@ -19,3 +19,14 @@ export function postProjectUpdate(projectId, updateText, hoursLogged) {
     body: { update_text: updateText, hours_logged: hoursLogged || null },
   });
 }
+
+export function fetchProjectUpdates(projectId) {
+  return apiRequest(`/projects/${projectId}/updates`);
+}
+
+export function toggleProjectUpdateVisibility(projectId, updateId, clientVisible) {
+  return apiRequest(`/projects/${projectId}/updates/${updateId}/visibility`, {
+    method: 'PATCH',
+    body: { client_visible: clientVisible },
+  });
+}

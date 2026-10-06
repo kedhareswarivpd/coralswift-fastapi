@@ -1,8 +1,8 @@
 """Standalone real-Postgres verification script (NOT pytest-collected).
 
 Why this exists: tests/conftest.py unconditionally mocks
-`sqlalchemy.ext.asyncio.create_async_engine` for the entire pytest session
-(see CF-AUD-008), so no pytest-collected test in this repo — including the
+`sqlalchemy.ext.asyncio.create_async_engine` for the entire pytest session,
+so no pytest-collected test in this repo — including the
 ones that set real DB_HOST/DB_PORT env vars — ever actually executes SQL
 against a real database. Even CI's Postgres service (.github/workflows/backend.yml)
 is not exercised by `pytest -v`. This script runs OUTSIDE that mock (it never
@@ -15,9 +15,9 @@ Usage:
 
 Verifies, against real data and real SQL:
   1. list_employees no longer N+1s (query count is bounded, not linear in
-     employee count) — CF-AUD-011 / CF-BE employees N+1 fix.
-  2. Task-status IDOR fix holds against real persisted rows — CF-AUD-005.
-  3. Lead-ownership IDOR fix holds against real persisted rows — CF-AUD-005.
+     employee count) — employees N+1 fix.
+  2. Task-status IDOR fix holds against real persisted rows.
+  3. Lead-ownership IDOR fix holds against real persisted rows.
   4. Client tenant isolation: client A cannot read client B's invoices.
 """
 import asyncio
@@ -186,7 +186,7 @@ async def verify_client_tenant_isolation():
 
 
 async def verify_leaves_timesheets_pagination():
-    """CF-BE-006: employees.py's list_leaves/list_all_timesheets were refactored
+    """Verify employees.py's list_leaves/list_all_timesheets refactored
     to share utils.pagination.paginate_query() instead of hand-rolled
     offset/limit + a separate count query. Prove the refactor still returns
     correct, paginated, filtered results against real Postgres."""

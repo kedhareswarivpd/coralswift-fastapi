@@ -1,5 +1,5 @@
 """Regression tests for the IDOR/authorization gaps closed during the
-CoralSwift Phase-1 remediation (see status.md, CF-AUD-005).
+CoralSwift Phase-1 remediation.
 
 These exercise the router functions directly with a stubbed CRUDBase/db,
 mirroring the style of tests/test_auth.py, since the shared test harness
@@ -23,7 +23,7 @@ def _user(role: str, user_id: uuid.UUID | None = None) -> SimpleNamespace:
 
 
 class TestTaskStatusIDOR:
-    """CF-AUD-005: any authenticated user could previously update any task."""
+    """Task status IDOR: any authenticated user could previously update any task."""
 
     async def test_non_assignee_employee_is_forbidden(self):
         from app.routers import task as task_router
@@ -78,7 +78,7 @@ class TestTaskStatusIDOR:
 
 
 class TestLeadOwnershipIDOR:
-    """CF-AUD-005: a sales rep could previously read any lead by ID."""
+    """Lead ownership IDOR: a sales rep could previously read any lead by ID."""
 
     async def test_sales_rep_cannot_read_others_lead(self):
         from app.routers import leads as leads_router
@@ -103,7 +103,8 @@ class TestLeadOwnershipIDOR:
         )
 
         with patch.object(leads_router.crud, "get", new=AsyncMock(return_value=lead)):
-            result = await leads_router.get_lead(lead.id, db=AsyncMock(), current_user=sales_user)
+            with patch("app.routers.leads._owner_names", new_callable=AsyncMock, return_value={}):
+                result = await leads_router.get_lead(lead.id, db=AsyncMock(), current_user=sales_user)
         assert result["success"] is True
 
     async def test_admin_can_read_any_lead(self):
@@ -117,5 +118,6 @@ class TestLeadOwnershipIDOR:
         )
 
         with patch.object(leads_router.crud, "get", new=AsyncMock(return_value=lead)):
-            result = await leads_router.get_lead(lead.id, db=AsyncMock(), current_user=admin)
+            with patch("app.routers.leads._owner_names", new_callable=AsyncMock, return_value={}):
+                result = await leads_router.get_lead(lead.id, db=AsyncMock(), current_user=admin)
         assert result["success"] is True

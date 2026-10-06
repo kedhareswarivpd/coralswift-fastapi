@@ -80,7 +80,7 @@ function useToast() {
 
 // ── Convert-to-Lead modal ────────────────────────────────────────────────────
 function ConvertToLeadModal({ submission, onClose, onSuccess }) {
- const [estimatedValue, setEstimatedValue] = useState('');
+ const [estimatedValue, setEstimatedValue] = useState(submission.estimated_value ?? '');
  const [notes, setNotes] = useState(submission.message || '');
  const [error, setError] = useState('');
  const [fieldErrors, setFieldErrors] = useState({});
@@ -105,6 +105,8 @@ function ConvertToLeadModal({ submission, onClose, onSuccess }) {
      company: submission.company || null,
      source: 'contact_form',
      contact_submission_id: submission.id,
+     service_id: submission.service_id || null,
+     industry_id: submission.industry_id || null,
      estimated_value: estimatedValue ? Number(estimatedValue) : null,
      notes: notes || null,
     });
@@ -125,6 +127,11 @@ function ConvertToLeadModal({ submission, onClose, onSuccess }) {
     <p className="text-body-sm text-ink-muted dark:text-dark-ink-muted">{submission.email}</p>
     {submission.phone && <p className="text-body-sm text-ink-muted dark:text-dark-ink-muted">{submission.phone}</p>}
     {submission.company && <p className="text-body-sm text-ink-muted dark:text-dark-ink-muted">{submission.company}</p>}
+    {submission.subject && <p className="text-body-sm italic text-ink-muted dark:text-dark-ink-muted">{submission.subject}</p>}
+    {submission.service_id && <p className="text-body-sm text-ink-muted dark:text-dark-ink-muted">Service: {submission.service_id}</p>}
+    {submission.industry_id && <p className="text-body-sm text-ink-muted dark:text-dark-ink-muted">Industry: {submission.industry_id}</p>}
+    {submission.expected_budget && <p className="text-body-sm text-ink-muted dark:text-dark-ink-muted">Expected budget: ${Number(submission.expected_budget).toLocaleString()}</p>}
+    {submission.requirements && <p className="text-body-sm italic text-ink-muted dark:text-dark-ink-muted">Requirements: {submission.requirements}</p>}
    </div>
 
    <form onSubmit={handleConvert} className="space-y-4">
@@ -1667,7 +1674,7 @@ function ContactsManagement() {
           <td data-label="Actions" className="px-stack-lg py-4">
            <div className="flex items-center gap-1">
             {/* Convert to Lead */}
-            {s.status !== 'spam' && (
+            {!s.lead_id && s.status !== 'spam' && (
              <button
               onClick={() => setConvertTarget(s)}
               aria-label="Convert to Lead"

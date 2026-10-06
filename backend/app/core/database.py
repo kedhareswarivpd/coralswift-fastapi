@@ -9,10 +9,10 @@ from app.core.config import settings
 
 # Pin TLS for the managed (Supabase) Postgres connection in non-local
 # environments — asyncpg does not default to requiring SSL, and this is the
-# credential path to production data (CF-AUD-011).
+# credential path to production data.
 _ssl_connect_args = {"ssl": "require"} if settings.env.lower() not in {"development", "test", "local"} else {}
 
-# CF-BE-009 root-cause finding (backend/performance/pool_matrix_test.py):
+# Concurrency and connection pooling:
 # under concurrency exceeding pool_size+max_overflow, requests queue waiting
 # for a connection — a queued request never reaches Postgres, so
 # pg_stat_activity looks "not saturated" from the DB side while the

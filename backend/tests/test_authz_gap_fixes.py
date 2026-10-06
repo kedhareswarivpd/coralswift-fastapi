@@ -73,7 +73,8 @@ class TestLeadUpdateIDOR:
 
         with patch("app.routers.leads.crud.get", new_callable=AsyncMock, return_value=lead):
             with patch("app.routers.leads.crud.update", new_callable=AsyncMock, return_value=lead):
-                result = await update_lead(lead.id, LeadUpdate(notes="hi"), mock_db, owner)
+                with patch("app.routers.leads._owner_names", new_callable=AsyncMock, return_value={owner.id: "Name"}):
+                    result = await update_lead(lead.id, LeadUpdate(notes="hi"), mock_db, owner)
         assert result["message"] == "Lead updated"
 
     @pytest.mark.asyncio
@@ -85,7 +86,8 @@ class TestLeadUpdateIDOR:
 
         with patch("app.routers.leads.crud.get", new_callable=AsyncMock, return_value=lead):
             with patch("app.routers.leads.crud.update", new_callable=AsyncMock, return_value=lead):
-                result = await update_lead(lead.id, LeadUpdate(notes="hi"), mock_db, admin)
+                with patch("app.routers.leads._owner_names", new_callable=AsyncMock, return_value={}):
+                    result = await update_lead(lead.id, LeadUpdate(notes="hi"), mock_db, admin)
         assert result["message"] == "Lead updated"
 
 

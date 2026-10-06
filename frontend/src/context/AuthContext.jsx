@@ -10,7 +10,7 @@ import {
 const AuthContext = createContext(null);
 
 // CoralSwift self-auth: the backend owns identity/session/credentials via
-// httpOnly `cf_access_token`/`cf_refresh_token` cookies (see
+// httpOnly `cs_access_token`/`cs_refresh_token` cookies (see
 // backend/app/core/cookies.py) — this app never sees, stores, or reads
 // either token. Session state is reconstructed purely from GET /auth/me on
 // boot; there is no Supabase Auth, no localStorage/sessionStorage token, and

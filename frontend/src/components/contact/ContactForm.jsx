@@ -4,17 +4,12 @@ import { ApiRequestError } from '../../api/client.js';
 import { validateContactForm } from '../../schemas/contact.schema.js';
 import Icon from '../ui/Icon.jsx';
 
-const initialForm = { name: '', email: '', phone: '', company: '', department: 'general', subject: '', message: '' };
+const initialForm = { name: '', email: '', phone: '', company: '', department: 'general', subject: '', message: '', service_id: '', industry_id: '', expected_budget: '', requirements: '' };
 
 const NAME_ALLOWED_CHARS = /[^A-Za-z\s'.-]/g;
 const PHONE_ALLOWED_CHARS = /[^0-9+]/g;
 
-const DEPARTMENTS = [
- { value: 'general', label: 'General Inquiry' },
- { value: 'sales', label: 'Sales' },
- { value: 'support', label: 'Support' },
- { value: 'hr', label: 'Careers / HR' },
-];
+
 
 export default function ContactForm() {
  const [form, setForm] = useState(initialForm);
@@ -129,17 +124,35 @@ export default function ContactForm() {
     </Field>
    </div>
 
-   <Field label="Department" inputId="field-department">
-    {(fieldProps) => (
-     <select value={form.department} onChange={update('department')} className={inputClass} {...fieldProps}>
-      {DEPARTMENTS.map((d) => (
-       <option key={d.value} value={d.value}>
-        {d.label}
-       </option>
-      ))}
-     </select>
-    )}
-   </Field>
+   {/* Qualification fields (CRM workflow Issue 8) */}
+   <div className="grid gap-stack-md sm:grid-cols-2">
+    <Field label="Service (optional)" error={fieldErrors.service_id} inputId="field-service">
+     {(fieldProps) => (
+      <select value={form.service_id} onChange={update('service_id')} className={inputClass} {...fieldProps}>
+       <option value="">Select service (optional)</option>
+      </select>
+     )}
+    </Field>
+    <Field label="Industry (optional)" error={fieldErrors.industry_id} inputId="field-industry">
+     {(fieldProps) => (
+      <select value={form.industry_id} onChange={update('industry_id')} className={inputClass} {...fieldProps}>
+       <option value="">Select industry (optional)</option>
+      </select>
+     )}
+    </Field>
+   </div>
+   <div className="grid gap-stack-md sm:grid-cols-2">
+    <Field label="Expected budget (optional)" error={fieldErrors.expected_budget} inputId="field-budget">
+     {(fieldProps) => (
+      <input type="number" min="0" value={form.expected_budget} onChange={update('expected_budget')} className={inputClass} placeholder="e.g. 50000" {...fieldProps} />
+     )}
+    </Field>
+    <Field label="Requirements (optional)" error={fieldErrors.requirements} inputId="field-requirements">
+     {(fieldProps) => (
+      <textarea rows={3} value={form.requirements} onChange={update('requirements')} className={inputClass} placeholder="Brief your requirements..." {...fieldProps} />
+     )}
+    </Field>
+   </div>
 
    <Field label="Subject (optional)" error={fieldErrors.subject} inputId="field-subject" errorId="field-error-subject">
     {(fieldProps) => (

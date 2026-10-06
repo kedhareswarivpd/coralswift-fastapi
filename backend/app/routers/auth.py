@@ -80,7 +80,7 @@ router = APIRouter(prefix="/auth", tags=["Auth"])
 EMAIL_VERIFICATION_TOKEN_TTL = timedelta(hours=24)
 PASSWORD_RESET_TOKEN_TTL = timedelta(hours=1)
 MFA_CHALLENGE_TTL = timedelta(minutes=5)
-MFA_PENDING_COOKIE = "cf_mfa_pending_token"
+MFA_PENDING_COOKIE = "cs_mfa_pending_token"
 MFA_BACKUP_CODE_COUNT = 10
 
 
@@ -259,12 +259,15 @@ async def login(request: Request, response: Response, payload: LoginRequest, db:
 async def mfa_verify_login(request: Request, response: Response, payload: MfaVerifyLoginRequest, db: AsyncSession = Depends(get_db)):
     """Completes a login that POST /auth/login paused for MFA. Accepts the
     mfa_token from the request body (password-login flow, which received it
-    in a JSON response) or falls back to the cf_mfa_pending_token cookie (the
+    in a JSON response) or falls back to the cs_mfa_pending_token cookie (the
     OAuth-callback flow, which can only set a cookie on its browser redirect,
     not return JSON)."""
     _require_mfa_enabled()
 
-    mfa_token = payload.mfa_token or request.cookies.get(MFA_PENDING_COOKIE)
+    mfa_token = (
+        payload.mfa_token
+        or request.cookies.get(MFA_PENDING_COOKIE)
+    )
     if not mfa_token:
         raise ApiError.unauthorized("No pending MFA challenge")
 
@@ -318,7 +321,7 @@ async def refresh(request: Request, response: Response, db: AsyncSession = Depen
 @router.post("/logout", response_model=dict)
 async def logout(request: Request, response: Response, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
     """Requires a valid session cookie so a caller can only revoke their own
-    session (CF-AUD-005)."""
+    session."""
     token = request.cookies.get(ACCESS_TOKEN_COOKIE)
     if token:
         session = await get_session_by_access_token(db, token)

@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 # Cap for self-service "my own records" list endpoints (e.g. /employees/me/leaves,
 # /clients/me/invoices) that intentionally skip full page-param pagination since
 # they're already scoped to a single user's own rows. Without *some* limit these
-# are unbounded production queries (CF-BE-005) — an account that accumulates years
+# are unbounded production queries — an account that accumulates years
 # of records would return everything in one response. 500 is far above realistic
 # usage for any of these resources; raise it (or migrate to real pagination) only
 # if a legitimate use case needs more.
@@ -16,7 +16,7 @@ def bounded_select(stmt, cap: int = SELF_SERVICE_LIST_CAP):
     """Wrap a self-service "list my own X" query with `.limit(cap)`.
 
     Exists so a self-service endpoint can't silently forget to bound its
-    query (CF-BE-005 / SonarQube L2) — calling `bounded_select(stmt)` instead
+    query (SonarQube L2) — calling `bounded_select(stmt)` instead
     of a bare `stmt.limit(SELF_SERVICE_LIST_CAP)` makes the intent explicit
     at the call site and gives every self-service list endpoint one obvious
     place to apply the cap consistently. Only use this for queries already
@@ -51,7 +51,7 @@ async def paginate_query(db: AsyncSession, stmt, count_stmt, page: PageParams):
     """Execute a pre-filtered `stmt`/`count_stmt` pair with page/limit applied
     and return `(items, meta)`. Extracted from employees.py/training.py, which
     each hand-rolled this same "run paginated select + matching count select +
-    build meta" tail independently (CF-BE-006) — building the *filtered*
+    build meta" tail independently — building the *filtered*
     `stmt`/`count_stmt` themselves stays per-endpoint since the filter columns
     differ per model; only this identical tail is shared.
     """
@@ -75,7 +75,7 @@ def apply_sort(
     `allowed_fields`, when given, restricts sorting to that allowlist of
     column-name strings — a requested field that exists on `model` but isn't
     in the allowlist is silently skipped, same as a genuinely bogus field
-    name (CF-BE-007). This keeps `sort=` from being usable to probe for the
+    name. This keeps `sort=` from being usable to probe for the
     existence of columns that were never meant to be client-sortable (e.g.
     password_hash, internal-only fields), while leaving the "unknown field
     silently ignored" behavior unchanged for callers that don't pass one.

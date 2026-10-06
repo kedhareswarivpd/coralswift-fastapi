@@ -1,7 +1,7 @@
 const API_URL = import.meta.env.VITE_API_URL || '/api/v1';
 
-// Cookie-based auth (CoralSwift self-auth): cf_access_token/cf_refresh_token
-// are httpOnly and never touched by JS. cf_csrf_token is the one readable
+// Cookie-based auth (CoralSwift self-auth): cs_access_token/cs_refresh_token
+// are httpOnly and never touched by JS. cs_csrf_token is the one readable
 // cookie — its value must be echoed back as X-CSRF-Token on every
 // state-changing request (double-submit CSRF check, see backend
 // app/core/csrf.py). There is no Authorization/Bearer header in this
@@ -69,7 +69,7 @@ function refreshSession() {
     refreshPromise = fetch(`${API_URL}/auth/refresh`, {
       method: 'POST',
       credentials: 'include',
-      headers: { 'X-CSRF-Token': readCookie('cf_csrf_token') || '' },
+      headers: { 'X-CSRF-Token': readCookie('cs_csrf_token') || '' },
     }).finally(() => {
       refreshPromise = null;
     });
@@ -93,7 +93,7 @@ export async function apiRequest(path, { method = 'GET', body, headers, signal, 
       credentials: 'include',
       headers: {
         ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
-        ...(MUTATING_METHODS.has(upperMethod) ? { 'X-CSRF-Token': readCookie('cf_csrf_token') || '' } : {}),
+        ...(MUTATING_METHODS.has(upperMethod) ? { 'X-CSRF-Token': readCookie('cs_csrf_token') || '' } : {}),
         ...headers,
       },
       body: isFormData ? body : body !== undefined ? JSON.stringify(body) : undefined,

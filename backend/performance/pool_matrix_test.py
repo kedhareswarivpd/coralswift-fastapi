@@ -1,5 +1,5 @@
-"""Systematic pool_size × worker-count matrix test for CF-BE-009's remaining
-gap. For each combination: hits GET /api/v1/employees?limit=100 at a fixed
+"""Systematic pool_size × worker-count matrix test for concurrency
+performance. For each combination: hits GET /api/v1/employees?limit=100 at a fixed
 concurrency (25 — the level where the previous benchmark first failed <200ms)
 while sampling pg_stat_activity concurrently, to see whether Postgres
 connections are actually saturated (pool exhaustion) or not (something else

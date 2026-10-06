@@ -1,4 +1,4 @@
-"""Add missing foreign-key indexes (CF-AUD-011 / CF-BE)
+"""Add missing foreign-key indexes
 
 Every FK column below had no index, forcing sequential scans on joins and
 filters (list-by-client, list-by-employee, tenant/authorization lookups,

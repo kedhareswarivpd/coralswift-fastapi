@@ -1,7 +1,7 @@
 {
   "cookies": [
     {
-      "name": "cf_access_token",
+      "name": "cs_access_token",
       "value": "vLyuYNcq0qVzqdLzliIAykNwwLuyWxdTkkdTJxgXRgU",
       "domain": "localhost",
       "path": "/",
@@ -11,7 +11,7 @@
       "sameSite": "Lax"
     },
     {
-      "name": "cf_refresh_token",
+      "name": "cs_refresh_token",
       "value": "CBCnWoiL-JxSOjCJAPw3oVhBhdrzDNRwcxDwSiPG1Hg",
       "domain": "localhost",
       "path": "/",
@@ -21,7 +21,7 @@
       "sameSite": "Lax"
     },
     {
-      "name": "cf_csrf_token",
+      "name": "cs_csrf_token",
       "value": "1MPotLl81s__mnfcT-7uW45Z2pj-G474Q6oLAR0M2Vs",
       "domain": "localhost",
       "path": "/",

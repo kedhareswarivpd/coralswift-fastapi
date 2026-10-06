@@ -27,8 +27,8 @@ describe('apiRequest', () => {
       writable: true,
       configurable: true,
     });
-    // Clear any cf_csrf_token cookie left over from a previous test.
-    document.cookie = 'cf_csrf_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    // Clear any cs_csrf_token cookie left over from a previous test.
+    document.cookie = 'cs_csrf_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
   });
 
   afterEach(() => {
@@ -37,7 +37,7 @@ describe('apiRequest', () => {
       writable: true,
       configurable: true,
     });
-    document.cookie = 'cf_csrf_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    document.cookie = 'cs_csrf_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
   });
 
   it('returns payload on successful request', async () => {
@@ -100,9 +100,9 @@ describe('apiRequest', () => {
     );
   });
 
-  it('attaches X-CSRF-Token (read from the cf_csrf_token cookie) on mutating requests', async () => {
-    document.cookie = 'cf_csrf_token=my-csrf-value; path=/;';
-    mockFetch.mockResolvedValueOnce({ ok: true, json: async () => ({}) });
+  it('attaches X-CSRF-Token (read from the cs_csrf_token cookie) on mutating requests', async () => {
+    document.cookie = 'cs_csrf_token=my-csrf-value; path=/;';
+    mockFetch.mockResolvedValueOnce({ ok: true, text: async () => JSON.stringify({}) });
 
     await apiRequest('/test', { method: 'POST', body: { a: 1 } });
     expect(mockFetch).toHaveBeenCalledWith(
@@ -114,8 +114,8 @@ describe('apiRequest', () => {
   });
 
   it('does not attach X-CSRF-Token on a plain GET', async () => {
-    document.cookie = 'cf_csrf_token=my-csrf-value; path=/;';
-    mockFetch.mockResolvedValueOnce({ ok: true, json: async () => ({}) });
+    document.cookie = 'cs_csrf_token=my-csrf-value; path=/;';
+    mockFetch.mockResolvedValueOnce({ ok: true, text: async () => JSON.stringify({}) });
 
     await apiRequest('/test');
     const callArgs = mockFetch.mock.calls[0][1];
