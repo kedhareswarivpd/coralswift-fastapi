@@ -103,7 +103,8 @@ class TestLeadOwnershipIDOR:
         )
 
         with patch.object(leads_router.crud, "get", new=AsyncMock(return_value=lead)):
-            result = await leads_router.get_lead(lead.id, db=AsyncMock(), current_user=sales_user)
+            with patch("app.routers.leads._owner_names", new_callable=AsyncMock, return_value={}):
+                result = await leads_router.get_lead(lead.id, db=AsyncMock(), current_user=sales_user)
         assert result["success"] is True
 
     async def test_admin_can_read_any_lead(self):
@@ -117,5 +118,6 @@ class TestLeadOwnershipIDOR:
         )
 
         with patch.object(leads_router.crud, "get", new=AsyncMock(return_value=lead)):
-            result = await leads_router.get_lead(lead.id, db=AsyncMock(), current_user=admin)
+            with patch("app.routers.leads._owner_names", new_callable=AsyncMock, return_value={}):
+                result = await leads_router.get_lead(lead.id, db=AsyncMock(), current_user=admin)
         assert result["success"] is True

@@ -36,7 +36,7 @@ async def get_invoice(invoice_id: uuid.UUID, db: AsyncSession = Depends(get_db))
 @router.post("/invoices", response_model=dict, status_code=201)
 async def create_invoice(payload: InvoiceCreate, db: AsyncSession = Depends(get_db)):
     data = payload.model_dump()
-    data["invoice_number"] = data.get("invoice_number") or f"INV-{int(datetime.utcnow().timestamp())}"
+    data["invoice_number"] = data.get("invoice_number") or f"INV-{uuid.uuid4().hex[:8].upper()}"
     data["total_amount"] = float(data["amount"]) + float(data.get("tax") or 0)
     invoice = await invoice_crud.create(db, data)
     return success_response(data=InvoiceOut.model_validate(invoice), message="Invoice created successfully", status_code=201)

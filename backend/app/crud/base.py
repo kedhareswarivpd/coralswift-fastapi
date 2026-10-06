@@ -61,7 +61,8 @@ class CRUDBase(Generic[ModelType]):
         return query
 
     async def list(
-        self, db: AsyncSession, page_params: PageParams, filters: dict[str, Any] | None = None
+        self, db: AsyncSession, page_params: PageParams, filters: dict[str, Any] | None = None,
+        extra_conditions: Sequence[Any] | None = None,
     ) -> tuple[Sequence[ModelType], int]:
         query = select(self.model)
         count_query = select(func.count()).select_from(self.model)
@@ -82,6 +83,12 @@ class CRUDBase(Generic[ModelType]):
             ]
             if search_conditions:
                 conditions.append(or_(*search_conditions))
+
+        # Pre-built SQLAlchemy clauses (e.g. an or_() visibility rule the
+        # equality-filter dict above can't express) — optional, so existing
+        # callers are unaffected.
+        for cond in (extra_conditions or []):
+            conditions.append(cond)
 
         for cond in conditions:
             query = query.where(cond)

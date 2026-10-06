@@ -168,10 +168,11 @@ class TestDisqualifiedLeadCannotBeConverted:
             status=LeadStatus.disqualified, **_stamps(),
         )
         mock_db = AsyncMock()
+        admin = _make_user("admin")
 
         with patch("app.routers.leads.crud.get", new_callable=AsyncMock, return_value=lead):
             with pytest.raises(ApiError) as exc_info:
-                await convert_lead(lead.id, mock_db)
+                await convert_lead(lead.id, mock_db, current_user=admin)
         assert exc_info.value.status_code == 400
         mock_db.execute.assert_not_called()
 

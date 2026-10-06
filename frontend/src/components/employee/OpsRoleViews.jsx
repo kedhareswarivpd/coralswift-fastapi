@@ -12,7 +12,7 @@ import {
  fetchTasks, updateTaskStatus,
  fetchTickets, updateTicket, replyToTicket,
  fetchInvoices, createInvoice, updateInvoice, recordPayment,
- fetchClients,
+ fetchClients, fetchAdminProjects,
 } from '../../api/admin.js';
 
 const TASK_STATUS_COLUMNS = ['todo', 'in_progress', 'in_review', 'done', 'blocked'];
@@ -438,11 +438,12 @@ function TicketQueue({ userId }) {
 function Invoices() {
  const [invoices, setInvoices] = useState([]);
  const [clients, setClients] = useState([]);
+ const [projects, setProjects] = useState([]);
  const [loading, setLoading] = useState(true);
  const [page, setPage] = useState(1);
  const [totalPages, setTotalPages] = useState(1);
  const [showForm, setShowForm] = useState(false);
- const [form, setForm] = useState({ client_id: '', amount: '', tax: '', currency: 'USD', issue_date: '', due_date: '' });
+ const [form, setForm] = useState({ client_id: '', project_id: '', amount: '', tax: '', currency: 'USD', issue_date: '', due_date: '' });
  const [fieldErrors, setFieldErrors] = useState({});
  const [actingId, setActingId] = useState(null);
  const { run: runCreate, isPending: submitting } = useAsyncAction();
@@ -450,9 +451,14 @@ function Invoices() {
 
  const load = useCallback(() => {
   setLoading(true);
-  Promise.allSettled([fetchInvoices({ page, limit: 20 }), fetchClients({ limit: 100 })]).then(([i, c]) => {
+  Promise.allSettled([
+   fetchInvoices({ page, limit: 20 }), 
+   fetchClients({ limit: 100 }),
+   fetchAdminProjects({ limit: 100 })
+  ]).then(([i, c, p]) => {
    if (i.status === 'fulfilled') { setInvoices(i.value?.data || []); setTotalPages(i.value?.meta?.total_pages || 1); }
    if (c.status === 'fulfilled') setClients(c.value?.data || []);
+   if (p.status === 'fulfilled') setProjects(p.value?.data || []);
   }).finally(() => setLoading(false));
  }, [page]);
 
@@ -467,10 +473,15 @@ function Invoices() {
   if (Object.keys(errors).length > 0) return;
   runCreate(async () => {
    await createInvoice({
-    client_id: form.client_id, amount: Number(form.amount), tax: form.tax ? Number(form.tax) : 0,
-    currency: form.currency, issue_date: form.issue_date, due_date: form.due_date,
+    client_id: form.client_id, 
+    project_id: form.project_id || null, 
+    amount: Number(form.amount), 
+    tax: form.tax ? Number(form.tax) : 0,
+    currency: form.currency, 
+    issue_date: form.issue_date, 
+    due_date: form.due_date,
    });
-   setForm({ client_id: '', amount: '', tax: '', currency: 'USD', issue_date: '', due_date: '' });
+   setForm({ client_id: '', project_id: '', amount: '', tax: '', currency: 'USD', issue_date: '', due_date: '' });
    setFieldErrors({});
    setShowForm(false);
    load();
@@ -507,6 +518,12 @@ function Invoices() {
         {clients.map((c) => <option key={c.id} value={c.id}>{c.company_name || c.id}</option>)}
        </select>
        {fieldErrors.client_id && <p className="mt-1 flex items-center gap-1 text-body-xs font-semibold text-status-error-text">{fieldErrors.client_id}</p>}
+      </div>
+      <div>
+       <select value={form.project_id} onChange={(e) => setForm({ ...form, project_id: e.target.value })} className={FORM_INPUT_CLASS}>
+        <option value="">No Project (General)</option>
+        {projects.filter(p => !form.client_id || p.client_id === form.client_id).map((p) => <option key={p.id} value={p.id}>{p.title}</option>)}
+       </select>
       </div>
       <div>
        <input required type="number" min="0" placeholder="Amount" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} className={FORM_INPUT_CLASS} />
