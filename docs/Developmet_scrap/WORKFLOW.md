@@ -25,7 +25,7 @@
 ```
 
 **Deployments:**
-- Frontend: Vercel (`cf-azure-eta.vercel.app`)
+- Frontend: Vercel (`coralswift.vercel.app`)
 - Backend: Render
 - Database: Supabase (PostgreSQL)
 
@@ -621,7 +621,7 @@ alembic upgrade head               # Run migrations
 
 ### Frontend (Vercel)
 ```
-git push → Vercel auto-deploys → cf-azure-eta.vercel.app
+git push → Vercel auto-deploys → coralswift.vercel.app
 ```
 
 ### Backend (Render)

@@ -84,7 +84,7 @@ class TestAuthEndpoints:
     # test_cookie_auth.py, so it isn't duplicated here against the fragile path.
 
     async def test_logout_requires_auth(self, async_client):
-        # Regression test for CF-AUD-005: logout must require the caller's own
+        # Regression test: logout must require the caller's own
         # bearer token, not just any access_token in the body — otherwise an
         # unauthenticated caller could revoke an arbitrary user's session.
         response = await async_client.post(

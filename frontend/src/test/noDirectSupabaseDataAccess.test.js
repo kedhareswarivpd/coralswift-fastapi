@@ -6,15 +6,15 @@ import { fileURLToPath } from 'node:url';
 /**
  * Permanent regression guard, two generations of the same requirement:
  *
- * 1. CF-AUD-002: the browser used to read/write business tables (employees,
+ * 1. Direct DB access prevention: the browser used to read/write business tables (employees,
  *    clients, projects, tasks, invoices, ...) directly via the Supabase anon
  *    key with zero RLS policies (frontend/src/lib/db.js, deleted in the
  *    remediation that originally added this test). All business data must go
  *    through the authorized CoralSwift backend API instead.
  *
  * 2. Supabase Auth removal: the backend has fully migrated off Supabase Auth
- *    onto its own session model (httpOnly cf_access_token/cf_refresh_token
- *    cookies + cf_csrf_token double-submit — see backend/app/core/cookies.py
+ *    onto its own session model (httpOnly cs_access_token/cs_refresh_token
+ *    cookies + cs_csrf_token double-submit — see backend/app/core/cookies.py
  *    and app/services/auth_service.py). frontend/src/lib/supabase.js (the
  *    former `.auth.*` session-management client) was deleted alongside it.
  *    There must be zero `@supabase/supabase-js` imports, zero

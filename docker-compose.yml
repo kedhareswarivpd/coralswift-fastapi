@@ -18,7 +18,7 @@
 #       └── proxies /api/*     -> backend:8000
 #       └── proxies /uploads/* -> backend:8000
 #   backend (FastAPI + gunicorn/uvicorn, :8000) --talks to Postgres (local or Supabase) + redis
-#   redis (:6379) --rate limiting (CF-BE-007) + caching
+#   redis (:6379) --rate limiting + caching
 
 services:
   backend:
@@ -38,7 +38,7 @@ services:
       - ./backend/uploads_private:/usr/src/app/uploads_private
       - ./backend/logs:/usr/src/app/logs
       - ./backend/backups:/usr/src/app/backups
-    # CF-BE-014 root cause: glibc's default DNS resolver options (timeout:5
+    # Outage resilience root cause: glibc's default DNS resolver options (timeout:5
     # attempts:2 — see /etc/resolv.conf) mean that once the `redis` service
     # name stops resolving (e.g. Redis container killed/crashed), every
     # getaddrinfo("redis") call blocks for up to ~10s (2 attempts x 5s) before

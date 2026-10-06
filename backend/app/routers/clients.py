@@ -401,7 +401,7 @@ async def my_payments(db: AsyncSession = Depends(get_db), current_user: User = D
 async def my_meetings(db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
     client = await _get_client_for_user(db, current_user)
     # Eager-load the organizer in the same query instead of one extra
-    # per-meeting lookup (CF-AUD-011 N+1).
+    # per-meeting lookup (N+1 prevention).
     result = await db.execute(
         bounded_select(
             select(Meeting)

@@ -32,7 +32,7 @@ Legend: ✅ wired and rendered · 🟡 API client exists but no UI screen uses i
 ## 1. Auth & role routing
 
 Fully covered in `docs/CONTACT_BACKEND.md` §1–2. Summary: httpOnly cookie
-auth (`cf_access_token`/`cf_refresh_token`), `cf_csrf_token` echoed as
+auth (`cs_access_token`/`cs_refresh_token`), `cs_csrf_token` echoed as
 `X-CSRF-Token` on mutations, `GET /auth/me` on boot, one `/login` page,
 redirect-by-role afterward. **Status: ✅ fully implemented** this session
 (`frontend/src/context/AuthContext.jsx`, `frontend/src/api/client.js`,
@@ -275,7 +275,7 @@ Frontend: `frontend/src/pages/SuperAdminPanel.jsx`.
 2. **~200 lines of dead demo/mock data** (`demoClientProfile`,
    `demoDashboard`, `demoLeads`, `demoTickets`, etc.) in
    `frontend/src/data/portal.js` — confirmed via a repo-wide grep to have
-   zero remaining importers (matches `status.md`'s CF-AUD-015 finding, never
+   zero remaining importers (matches `status.md` findings, never
    previously acted on). **Removed.**
 3. **Site-wide accessibility defect in `components/ui/Icon.jsx`**, found
    while screenshot-verifying the new Admin tabs: the Material Symbols icon

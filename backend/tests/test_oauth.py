@@ -19,7 +19,7 @@ from app.core.errors import ApiError
 from app.core.password import hash_password
 from app.models.oauth_account import OAuthAccount
 from app.models.user import User
-from app.routers.oauth import OAUTH_STATE_COOKIE, oauth_callback, oauth_login
+from app.routers.oauth import MFA_PENDING_COOKIE, OAUTH_STATE_COOKIE, oauth_callback, oauth_login
 
 
 def _mock_request(cookies: dict | None = None) -> MagicMock:
@@ -236,7 +236,7 @@ class TestCallbackAccountCreationAndLinking:
         assert result.status_code == 302
         assert "mfa_required=1" in result.headers["location"]
         assert ACCESS_TOKEN_COOKIE not in " ".join(result.headers.getlist("set-cookie"))
-        assert "cf_mfa_pending_token" in " ".join(result.headers.getlist("set-cookie"))
+        assert MFA_PENDING_COOKIE in " ".join(result.headers.getlist("set-cookie"))
 
     @pytest.mark.asyncio
     async def test_token_exchange_failure_redirects_to_failure_not_500(self):

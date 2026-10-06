@@ -19,14 +19,14 @@ POST /auth/login { email, password }
     │
     └─▶ ELSE (or after successful MFA) →
             session created, cookies set:
-            cf_access_token (15min), cf_refresh_token (30 days), cf_csrf_token
+            cs_access_token (15min), cs_refresh_token (30 days), cs_csrf_token
             → 200 { user }
 ```
 
 ## Refresh (called by the frontend on any 401 from an authenticated endpoint)
 
 ```
-POST /auth/refresh   (reads cf_refresh_token cookie, X-CSRF-Token required)
+POST /auth/refresh   (reads cs_refresh_token cookie, X-CSRF-Token required)
     │
     ├─▶ token matches a live session's CURRENT refresh hash
     │       → rotate: new access+refresh tokens, new cookies, 200

@@ -23,7 +23,11 @@ from fastapi import Request
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from app.core.cookies import ACCESS_TOKEN_COOKIE, CSRF_COOKIE, CSRF_HEADER
+from app.core.cookies import (
+    ACCESS_TOKEN_COOKIE,
+    CSRF_COOKIE,
+    CSRF_HEADER,
+)
 
 _STATE_CHANGING_METHODS = {"POST", "PUT", "PATCH", "DELETE"}
 
@@ -43,7 +47,8 @@ class CSRFMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         if request.url.path.endswith(_ALWAYS_EXEMPT_PATH_SUFFIXES):
             return await call_next(request)
-        if request.method in _STATE_CHANGING_METHODS and request.cookies.get(ACCESS_TOKEN_COOKIE):
+        has_session = bool(request.cookies.get(ACCESS_TOKEN_COOKIE))
+        if request.method in _STATE_CHANGING_METHODS and has_session:
             # Only enforced once a session cookie exists — login/register are
             # unauthenticated POSTs with nothing to hijack yet (no session to
             # forge an action against), so they're naturally exempt here

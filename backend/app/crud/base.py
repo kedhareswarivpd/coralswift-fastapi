@@ -46,7 +46,7 @@ class CRUDBase(Generic[ModelType]):
         self.relationships = relationships or []
 
     def _with_relationships(self, query):
-        # CF-BE-009: scalar (many-to-one/one-to-one) relationships are folded
+        # Scalar (many-to-one/one-to-one) relationships are folded
         # into the main query via a JOIN (joinedload) instead of a separate
         # round trip (selectinload) — under connection-pool contention, each
         # extra round trip compounds latency (measured: employees list went

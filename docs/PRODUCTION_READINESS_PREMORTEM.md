@@ -6,7 +6,7 @@
 
 **Method:** Fresh verification run for this report — backend `pytest` (**1,300 passed**, ~51s), frontend `npm run build` (**success**), `npm run lint` (**0 errors**, 22 warnings), Vitest (**102/103 passed**, 2 suites affected), CI pipeline review (`backend.yml`, `frontend.yml`), Docker/compose review, secrets/hygiene scan of tracked files — combined with the full end-to-end feature audit in `docs/WORKFLOW_REVIEW.md`.
 
-**Exclusion per instruction:** Dummy/seed data quality is **not scored** as a defect (`app/seeders/seed.py` deliberately reads demo accounts from env, no hardcoded passwords — CF-AUD-007). It appears in the checklist only as a "disable before go-live" step.
+**Exclusion per instruction:** Dummy/seed data quality is **not scored** as a defect (`app/seeders/seed.py` deliberately reads demo accounts from env, no hardcoded passwords). It appears in the checklist only as a "disable before go-live" step.
 
 ---
 

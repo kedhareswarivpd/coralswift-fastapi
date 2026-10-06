@@ -87,8 +87,8 @@ identity-layer replacement:
 
 - **Sessions**: opaque, random, database-backed tokens in a new
   `user_sessions` table (`app/services/auth_service.py`) — not JWTs, not
-  Supabase-issued. `POST /auth/login` sets `cf_access_token` +
-  `cf_refresh_token` (httpOnly) + `cf_csrf_token` (JS-readable) cookies;
+  Supabase-issued. `POST /auth/login` sets `cs_access_token` +
+  `cs_refresh_token` (httpOnly) + `cs_csrf_token` (JS-readable) cookies;
   tokens never appear in the response body.
 - **Passwords**: Argon2id (`app/core/password.py`), stored in a new
   `users.password_hash` column this app owns directly.
@@ -215,7 +215,7 @@ environment just by upgrading to this code.
   Live-drill-verified: with `OAUTH_ENABLED=true` and only Google's test
   credentials set, Google's login route redirected correctly (real
   `accounts.google.com` URL, correct `client_id`/`redirect_uri`/`scope`, a
-  `cf_oauth_state` httpOnly cookie set) while GitHub's route still 404'd.
+  `cs_oauth_state` httpOnly cookie set) while GitHub's route still 404'd.
 - Standard authorization-code flow: `/login` redirects to the provider with a
   random `state` in an httpOnly cookie; `/callback` verifies `state` matches
   (CSRF protection — live-drill-verified: a mismatched `state` redirects to
@@ -402,9 +402,9 @@ feature to point to.
 
 ## 8. Carried-forward, still-open items (unchanged by this session's work)
 
-- **CF-BE-009** (full-topology performance gate) — needs real Linux
+- **Concurrency benchmark** (full-topology performance gate) — needs real Linux
   hardware; this session's Docker Desktop/Windows environment is
-  demonstrably not representative (see CF-BE-014's own root cause — a
+  demonstrably not representative (see Redis DNS resolver behavior — a
   Windows/WSL2-specific DNS resolver behavior — as further evidence of that
   platform gap).
 - **CI in real GitHub Actions** — this repository has zero git commits and
@@ -552,7 +552,7 @@ regression: 1125/1125 unit tests, 621/621 RBAC checks.
 | Redis (Upstash staging) | **Code done, NOT live-verified** | `REDIS_URL_OVERRIDE`/`REDIS_TLS` implemented and unit-tested, but only a REST API token was provided, not the TCP connection string `redis-py` needs — staging Redis is not actually connected yet |
 | Supabase Storage bucket "coralswift" public access | **Action required** | Bucket and credentials work (S3 API verified live), but the public object REST endpoint 404s — the bucket's "Public bucket" toggle needs to be confirmed saved-on in the Supabase dashboard |
 | Red-team suite / scale load testing / CI-in-Actions / folder restructuring | **Not started** | Explicitly requested in the master remediation prompt but out of scope for what could be honestly completed and verified this session |
-| CF-BE-009 | Open | Environmental blocker (needs real Linux hardware), not deferred work |
+| Full-topology benchmark | Open | Environmental blocker (needs real Linux hardware), not deferred work |
 | Staff file/report upload ownership (IDOR-adjacent) | **RESOLVED this session** | Role-gated → ownership-gated, live-drill-verified |
 | Meeting "cancel" hard-deleting | **RESOLVED this session** | Now sets `status=cancelled`, live-drill-verified |
 | Training-enrollment concurrency race | **RESOLVED this session** | Real unique DB constraint added, graceful 409 on race |

@@ -588,7 +588,7 @@ async def review_leave(leave_id: uuid.UUID, payload: LeaveStatusUpdate, db: Asyn
 async def list_all_timesheets(request: Request, db: AsyncSession = Depends(get_db), page: PageParams = Depends(page_params), current_user: User = Depends(get_current_user)):
     filters = {k: request.query_params.get(k) for k in ("employee_id", "project_id", "status") if request.query_params.get(k)}
     # Nested selectinload for employee.user avoids a per-row User re-query
-    # below (CF-AUD-011 N+1, same pattern as list_employees/my_meetings).
+    # below (N+1 prevention, same pattern as list_employees/my_meetings).
     stmt = select(Timesheet).options(selectinload(Timesheet.employee).selectinload(Employee.user))
     count_stmt = select(func.count()).select_from(Timesheet)
 
@@ -646,7 +646,7 @@ async def list_employees(request: Request, db: AsyncSession = Depends(get_db), p
     # `crud.list()` above eager-loads `department`/`user` via selectinload
     # (2 bounded queries total), so this loop must read those relationships
     # directly rather than re-querying per row — the previous per-employee
-    # Department/User lookups were an N+1 (CF-AUD-011).
+    # Department/User lookups were an N+1.
     data = []
     for e in items:
         out = EmployeeOut.model_validate(e).model_dump()

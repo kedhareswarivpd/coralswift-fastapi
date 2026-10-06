@@ -24,7 +24,7 @@ for (const theme of ['light', 'dark']) {
       window.scrollTo(0, document.body.scrollHeight);
     });
     await page.waitForTimeout(700);
-    await page.screenshot({ path: `C:/Users/Admin/AppData/Local/Temp/opencode/cf-audit/${s.name}-${theme}-bottom.png` });
+    await page.screenshot({ path: `C:/Users/Admin/AppData/Local/Temp/opencode/cs-audit/${s.name}-${theme}-bottom.png` });
   }
   await ctx.close();
 }

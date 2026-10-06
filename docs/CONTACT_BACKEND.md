@@ -23,9 +23,9 @@ right.** There is no token to store, read, or attach to requests manually.
 
 | Cookie | httpOnly | Set by | Purpose |
 |---|---|---|---|
-| `cf_access_token` | Yes (frontend JS cannot read it) | `/auth/login`, `/auth/refresh` | Sent automatically by the browser on every request; this backend reads it to authenticate. |
-| `cf_refresh_token` | Yes | `/auth/login`, `/auth/refresh` | Used only by `/auth/refresh`; never read by frontend JS. |
-| `cf_csrf_token` | **No** — frontend JS must read this | `/auth/login`, `/auth/refresh` | Must be echoed back as the `X-CSRF-Token` header on every state-changing request. |
+| `cs_access_token` | Yes (frontend JS cannot read it) | `/auth/login`, `/auth/refresh` | Sent automatically by the browser on every request; this backend reads it to authenticate. |
+| `cs_refresh_token` | Yes | `/auth/login`, `/auth/refresh` | Used only by `/auth/refresh`; never read by frontend JS. |
+| `cs_csrf_token` | **No** — frontend JS must read this | `/auth/login`, `/auth/refresh` | Must be echoed back as the `X-CSRF-Token` header on every state-changing request. |
 
 ### Constraint: every `fetch`/`axios` call must send credentials
 
@@ -49,7 +49,7 @@ fetch("/api/v1/clients/me/tickets", {
   credentials: "include",
   headers: {
     "Content-Type": "application/json",
-    "X-CSRF-Token": getCookie("cf_csrf_token"),
+    "X-CSRF-Token": getCookie("cs_csrf_token"),
   },
   body: JSON.stringify({ subject: "...", description: "..." }),
 });
@@ -69,9 +69,9 @@ POST /api/v1/auth/login
 { "email": "user@example.com", "password": "..." }
 
 → 200
-Set-Cookie: cf_access_token=...; HttpOnly; SameSite=Lax; Path=/
-Set-Cookie: cf_refresh_token=...; HttpOnly; SameSite=Lax; Path=/
-Set-Cookie: cf_csrf_token=...; SameSite=Lax; Path=/
+Set-Cookie: cs_access_token=...; HttpOnly; SameSite=Lax; Path=/
+Set-Cookie: cs_refresh_token=...; HttpOnly; SameSite=Lax; Path=/
+Set-Cookie: cs_csrf_token=...; SameSite=Lax; Path=/
 {"success": true, "status_code": 200, "message": "Logged in successfully",
  "data": {"user": {"id": "...", "name": "...", "email": "...", "role": "client", ...}}}
 ```

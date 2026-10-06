@@ -22,7 +22,7 @@ from app.models.user import User
 # Demo account emails/passwords/profile fields are NOT generated here — they are
 # read from scripts/migrations/creds.json, a gitignored, local-only file that is
 # the single source of truth for every seeded login. Edit that file to change a
-# demo password; this module just seeds whatever it contains. See CF-AUD-007.
+# demo password; this module just seeds whatever it contains.
 _CREDS_PATH = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
     "scripts", "migrations", "creds.json",

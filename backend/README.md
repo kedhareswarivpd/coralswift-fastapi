@@ -83,8 +83,8 @@ directly; `app/services/auth_service.py` owns every session/account-security
 decision.
 
 - **Sessions** are opaque, random, database-backed tokens (`user_sessions`
-  table) — not JWTs — set as httpOnly cookies (`cf_access_token` /
-  `cf_refresh_token`) plus a non-httpOnly CSRF cookie (`cf_csrf_token`,
+  table) — not JWTs — set as httpOnly cookies (`cs_access_token` /
+  `cs_refresh_token`) plus a non-httpOnly CSRF cookie (`cs_csrf_token`,
   enforced by `CSRFMiddleware` via the `X-CSRF-Token` header on
   state-changing requests). Tokens never appear in response bodies.
 - **Passwords** are hashed with Argon2id (`app/core/password.py`).
@@ -218,7 +218,7 @@ password: Admin@123
 
 ### Running with Docker
 
-The compose files live at the repo root (`F:\ADP\coralswift\CF-main`), not
+The compose files live at the repo root, not
 under `backend/`, so this stack can bring up `backend` + `frontend` + `redis`
 + a local `postgres` + a local `minio` together.
 
@@ -266,9 +266,9 @@ frontend's README ("Connecting to the Backend") for the full picture.
 ## 6. API Conventions
 
 - Base URL: `/api/v1`
-- Auth: httpOnly `cf_access_token` / `cf_refresh_token` cookies, set by
+- Auth: httpOnly `cs_access_token` / `cs_refresh_token` cookies, set by
   `POST /api/v1/auth/login`. State-changing requests also require the
-  `X-CSRF-Token` header to match the non-httpOnly `cf_csrf_token` cookie
+  `X-CSRF-Token` header to match the non-httpOnly `cs_csrf_token` cookie
   (double-submit CSRF pattern, `CSRFMiddleware`).
 - Responses: `{ success, status_code, message, data, meta? }`
 - Pagination: `?page=1&limit=20&sort=-created_at&search=keyword`

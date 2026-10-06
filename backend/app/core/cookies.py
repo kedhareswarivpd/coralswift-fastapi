@@ -15,9 +15,9 @@ from fastapi import Response
 from app.core.config import settings
 from app.services.auth_service import ACCESS_TOKEN_TTL, REFRESH_TOKEN_TTL
 
-ACCESS_TOKEN_COOKIE = "cf_access_token"
-REFRESH_TOKEN_COOKIE = "cf_refresh_token"
-CSRF_COOKIE = "cf_csrf_token"
+ACCESS_TOKEN_COOKIE = "cs_access_token"
+REFRESH_TOKEN_COOKIE = "cs_refresh_token"
+CSRF_COOKIE = "cs_csrf_token"
 CSRF_HEADER = "X-CSRF-Token"
 
 _ACCESS_COOKIE_MAX_AGE = int(ACCESS_TOKEN_TTL.total_seconds())

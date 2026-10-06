@@ -30,7 +30,7 @@ Redis outage degrades to a fast in-memory-per-worker fallback rather than
 either blocking every request or taking the API down.
 
 This specific configuration exists because of a real, live-drilled
-incident (documented in full in `status.md` as "CF-BE-014"): without
+incident (documented in full in `status.md`): without
 `in_memory_fallback_enabled`, slowapi's synchronous Redis check ran
 directly in the async request path with no thread offload — a hung Redis
 connection blocked that worker's entire event loop, serializing every

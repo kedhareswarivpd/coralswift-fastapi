@@ -3,14 +3,14 @@
 > **2026-08-21 remediation pass (this session):** A subset of P0/P1/P2 findings below were
 > fixed, tested, and verified in this pass — see **§16 Remediation Log** at the bottom for the
 > evidence trail (root cause → fix → test run → result). Per explicit instruction, secret
-> rotation (CF-AUD-001) and git/version-control actions were **out of scope for this pass** and
+> rotation (AUD-001) and git/version-control actions were **out of scope for this pass** and
 > remain untouched. This document's original findings/tables below are left as the audit
 > baseline; §16 is the authoritative record of what changed since.
 
 | | |
 |---|---|
 | **Document** | Master Audit Status — single source of truth for release readiness |
-| **Repository** | `F:\ADP\coralswift\CF-main` |
+| **Repository** | `coralswift-fastapi` |
 | **Audit date** | 2026-08-21 |
 | **Audit mode** | Read-only static audit (no code modified) |
 | **Requirements baseline** | `docs/prd.txt` (extracted from *WEBSITE MASTER CONTENT.pdf*) + Master Enterprise Audit Standard |
@@ -93,7 +93,7 @@ Status legend: `OPEN` · `FIXED` · `VERIFIED` · `NOT VERIFIED`
 
 ### P0 — Critical (release blockers)
 
-**CF-AUD-001 · Secrets Exposure · OPEN**
+**AUD-001 · Secrets Exposure · OPEN**
 - **Location:** `backend/.env:21,30,31,53`
 - **Observed:** Live Supabase DB password (`Kedhareswari123`), full service-role JWT, JWT secret (`sb_secret_…`), Gmail app password committed to the project tree (file duplicated content twice internally). `.gitignore:5` excludes it and the folder is not a git repo, but the file ships with any copy/archive of the project.
 - **Expected:** No secrets in the distribution; secrets only in a manager (GitHub Environments / Render / Vault).
@@ -101,14 +101,14 @@ Status legend: `OPEN` · `FIXED` · `VERIFIED` · `NOT VERIFIED`
 - **Fix:** Rotate every credential; purge file from distribution; move to secret store; add secret scanning to CI.
 - **Verify:** `git-secrets`/gitleaks scan clean; fresh deploy boots from secret-store-only config.
 
-**CF-AUD-002 · Broken Access Control (anon DB path) · OPEN**
+**AUD-002 · Broken Access Control (anon DB path) · OPEN**
 - **Location:** `frontend/src/lib/db.js:351-422`, `frontend/src/lib/supabase.js:6-8`; zero RLS policies repo-wide (grep verified); acknowledged at `README.md:258`.
 - **Observed:** Browser reads business tables (`employees`, `clients`, `projects`, `tasks`, `tickets`, `applications`, `contact_submissions`, invoice joins) directly via PostgREST with a hardcoded anon-key JWT (exp ≈ 2036). No table has RLS enabled → Supabase default exposes `public` tables to anonymous read/write.
 - **Risk:** Anonymous data breach; tenant isolation depends solely on app code.
 - **Fix:** Enable RLS with deny-by-default policies on every table, or remove the direct-access code path entirely (preferred — one data path).
 - **Verify:** Attempt anon read of `employees`/`invoices` via Supabase REST → expect empty/401.
 
-**CF-AUD-003 · Rate Limiting Inert · OPEN**
+**AUD-003 · Rate Limiting Inert · OPEN**
 - **Location:** `backend/app/main.py:23,33` (only matches repo-wide).
 - **Observed:** `Limiter` created and stored on `app.state`, but `SlowAPIMiddleware` never added and zero `@limiter.limit` decorators → no request is ever limited despite PRD requiring rate limiting and `RATE_LIMIT=300/15minute` configured.
 - **Risk:** Brute-force login, contact/spam flooding, analytics pollution.
@@ -119,28 +119,28 @@ Status legend: `OPEN` · `FIXED` · `VERIFIED` · `NOT VERIFIED`
 
 | ID | Finding | Evidence | Fix direction |
 |---|---|---|---|
-| CF-AUD-004 | `/uploads` static mount serves all files unauthenticated, incl. career CVs (privacy/GDPR) | `main.py:133` | Auth-gate or signed URLs; move CVs to private storage |
-| CF-AUD-005 | IDOR set: any authenticated user updates any task; sales reads any lead by ID; unpublished projects/blogs readable by any token; unauthenticated logout revokes arbitrary sessions | `task.py:33-35`, `leads.py:35-38`, `projects.py:90`, `auth.py:106-113` | Ownership checks per object; require auth on logout |
-| CF-AUD-006 | Vulnerable dependencies: python-jose 3.3.0 (CVE-2024-33663/-33664), python-multipart 0.0.9 (CVE-2024-53981), jinja2 3.1.4 (CVE-2025-27516; also unused) | `requirements.txt` | Migrate jose→joserfc/PyJWT; multipart ≥0.0.18; drop jinja2 |
-| CF-AUD-007 | Seed creates 11 accounts with hardcoded passwords printed to stdout | `seed.py:16-47,75+`; also `scripts/repro_login.py:11` | Random passwords → env/secret store; strip prints |
-| CF-AUD-008 | Testing gate failed: all API tests mock persistence (`conftest.py:7-20`), 0 deep integration tests, 0 IDOR tests, frontend CI never runs vitest (`frontend.yml:28-35`), no E2E; own report admits 15.1% endpoint coverage vs 80% target | `docs/TEST_COVERAGE_REPORT.md:14-19` | Real-DB integration suite; IDOR/negative paths; add vitest step to CI |
-| CF-AUD-009 | PRD scope gaps: **Partner Portal NOT IMPLEMENTED**; public `/partners`, `/projects`, `/support` missing; admin SEO/Settings/Backups/Analytics UI missing; payments display-only (no gateway); Employees/Clients CMS read-only | `App.jsx:59-95`, `ClientPortal.jsx:216-249` | Build or obtain written PRD waiver |
-| CF-AUD-010 | Observability: no `/ready`, no error tracking, DEBUG hardcoded, plain-text logs without request IDs, failed authz never audit-logged, `X-Request-Id` exposed but never generated | `logger.py:9`, `main.py:65-115,125` | Structured logging + IDs; Sentry or equivalent; log authz failures |
+| AUD-004 | `/uploads` static mount serves all files unauthenticated, incl. career CVs (privacy/GDPR) | `main.py:133` | Auth-gate or signed URLs; move CVs to private storage |
+| AUD-005 | IDOR set: any authenticated user updates any task; sales reads any lead by ID; unpublished projects/blogs readable by any token; unauthenticated logout revokes arbitrary sessions | `task.py:33-35`, `leads.py:35-38`, `projects.py:90`, `auth.py:106-113` | Ownership checks per object; require auth on logout |
+| AUD-006 | Vulnerable dependencies: python-jose 3.3.0 (CVE-2024-33663/-33664), python-multipart 0.0.9 (CVE-2024-53981), jinja2 3.1.4 (CVE-2025-27516; also unused) | `requirements.txt` | Migrate jose→joserfc/PyJWT; multipart ≥0.0.18; drop jinja2 |
+| AUD-007 | Seed creates 11 accounts with hardcoded passwords printed to stdout | `seed.py:16-47,75+`; also `scripts/repro_login.py:11` | Random passwords → env/secret store; strip prints |
+| AUD-008 | Testing gate failed: all API tests mock persistence (`conftest.py:7-20`), 0 deep integration tests, 0 IDOR tests, frontend CI never runs vitest (`frontend.yml:28-35`), no E2E; own report admits 15.1% endpoint coverage vs 80% target | `docs/TEST_COVERAGE_REPORT.md:14-19` | Real-DB integration suite; IDOR/negative paths; add vitest step to CI |
+| AUD-009 | PRD scope gaps: **Partner Portal NOT IMPLEMENTED**; public `/partners`, `/projects`, `/support` missing; admin SEO/Settings/Backups/Analytics UI missing; payments display-only (no gateway); Employees/Clients CMS read-only | `App.jsx:59-95`, `ClientPortal.jsx:216-249` | Build or obtain written PRD waiver |
+| AUD-010 | Observability: no `/ready`, no error tracking, DEBUG hardcoded, plain-text logs without request IDs, failed authz never audit-logged, `X-Request-Id` exposed but never generated | `logger.py:9`, `main.py:65-115,125` | Structured logging + IDs; Sentry or equivalent; log authz failures |
 
 ### P2 — Medium
 
 | ID | Finding |
 |---|---|
-| CF-AUD-011 | DB perf/integrity: only 6 secondary indexes, zero FK indexes, `audit_logs` unindexed; soft-delete vestigial (hard deletes used); N+1s (`employees.py:262-272,239-246`, `clients.py:115-123`); `CRUDBase.update` lacks rollback (`crud/base.py:124-130`); no `sslmode=require` pinned |
-| CF-AUD-012 | Docker nginx CSP omits `*.supabase.co` in connect-src → breaks client-side Supabase session calls in Docker deployment (`frontend/docker/nginx.conf:15`; Vercel CSP is correct) |
-| CF-AUD-013 | Brand non-compliance: heading font Plus Jakarta Sans vs required **Poppins**; warning `#FD5521`≠`#F59E0B`; danger `#EF4444`≠`#DC2626`; info wrong; `#0F172A` absent; light-bg token missing; inline hex in portals |
-| CF-AUD-014 | SEO: no OG/Twitter/canonical/sitemap.xml/robots.txt/per-route meta; analytics beacon ignores cookie-consent preference |
-| CF-AUD-015 | Code quality: EmployeePortal.jsx **3,822 lines**; AdminPanel 1,586; duplicated API fns; dual REST/Supabase data layers; ~200 lines dead demo constants; unused `sharp` native dep; two eslint configs |
-| CF-AUD-016 | Stale docs: README localStorage claim (actually sessionStorage), wrong alembic autogenerate instruction (`README.md:169-171`), `docs/audit.md` claims "rate limiting active" (false), coverage report predates current test count |
-| CF-AUD-017 | Cleanliness: root `test.py` broken (undefined `DATABASE_URL`), `.x` junk file, dangerous `fix_user_role.py` role-grant script, PDFs committed alongside prd.txt |
-| CF-AUD-018 | Swagger/Redoc exposed unconditionally in production (`main.py:29-30`) |
-| CF-AUD-019 | Suspected failing test: `hooks.test.jsx:46-57` contradicts `useRoleGuard.js:25` (null-role allow vs deny) |
-| CF-AUD-020 | Salary exposed via `EmployeeOut`; GDPR export reads not audit-logged |
+| AUD-011 | DB perf/integrity: only 6 secondary indexes, zero FK indexes, `audit_logs` unindexed; soft-delete vestigial (hard deletes used); N+1s (`employees.py:262-272,239-246`, `clients.py:115-123`); `CRUDBase.update` lacks rollback (`crud/base.py:124-130`); no `sslmode=require` pinned |
+| AUD-012 | Docker nginx CSP omits `*.supabase.co` in connect-src → breaks client-side Supabase session calls in Docker deployment (`frontend/docker/nginx.conf:15`; Vercel CSP is correct) |
+| AUD-013 | Brand non-compliance: heading font Plus Jakarta Sans vs required **Poppins**; warning `#FD5521`≠`#F59E0B`; danger `#EF4444`≠`#DC2626`; info wrong; `#0F172A` absent; light-bg token missing; inline hex in portals |
+| AUD-014 | SEO: no OG/Twitter/canonical/sitemap.xml/robots.txt/per-route meta; analytics beacon ignores cookie-consent preference |
+| AUD-015 | Code quality: EmployeePortal.jsx **3,822 lines**; AdminPanel 1,586; duplicated API fns; dual REST/Supabase data layers; ~200 lines dead demo constants; unused `sharp` native dep; two eslint configs |
+| AUD-016 | Stale docs: README localStorage claim (actually sessionStorage), wrong alembic autogenerate instruction (`README.md:169-171`), `docs/audit.md` claims "rate limiting active" (false), coverage report predates current test count |
+| AUD-017 | Cleanliness: root `test.py` broken (undefined `DATABASE_URL`), `.x` junk file, dangerous `fix_user_role.py` role-grant script, PDFs committed alongside prd.txt |
+| AUD-018 | Swagger/Redoc exposed unconditionally in production (`main.py:29-30`) |
+| AUD-019 | Suspected failing test: `hooks.test.jsx:46-57` contradicts `useRoleGuard.js:25` (null-role allow vs deny) |
+| AUD-020 | Salary exposed via `EmployeeOut`; GDPR export reads not audit-logged |
 
 ### P3 — Low
 
@@ -199,7 +199,7 @@ Percentages = verified implementation per dimension. `—` = not applicable.
 | Employee: check-in → leave → task → timesheet → payslip | PARTIALLY COMPLETE | `/employees/me/*`; attendance unique constraint | Salary in portal responses; no deep tests |
 | Admin: user → role → action → audit log | PARTIALLY COMPLETE | `users.py`, `role.py`, `main.py:68-115` | Failed mutations/authz denials unlogged; permissions unwired |
 | Content: create → publish → public page | PARTIALLY COMPLETE | Factory CRUD routers | Unpublished records readable by any token by ID; ServiceDetail ignores CMS |
-| Careers: apply → upload → review | PARTIALLY COMPLETE | `career.py`; strong upload validation | CVs world-readable (CF-AUD-004); no duplicate control |
+| Careers: apply → upload → review | PARTIALLY COMPLETE | `career.py`; strong upload validation | CVs world-readable (AUD-004); no duplicate control |
 | Contact: form → persist → assign → notify | PARTIALLY COMPLETE | `contact.py`; email service | Zero spam protection |
 
 Negative-path testing (expired tokens, concurrent modification, duplicate submission, dependency failure): **not evidenced anywhere**.
@@ -210,17 +210,17 @@ Negative-path testing (expired tokens, concurrent modification, duplicate submis
 
 | Area | Verdict | Key evidence |
 |---|---|---|
-| A01 Broken Access Control | **FAIL (P1)** | IDOR set (CF-AUD-005); app-code-only tenancy |
+| A01 Broken Access Control | **FAIL (P1)** | IDOR set (AUD-005); app-code-only tenancy |
 | A02 Cryptographic Failures | PARTIAL | JWT aud enforced, alg pinned (`security.py:126-143`); issuer unchecked; sslmode unpinned |
 | A03 Injection | PASS (static) | ORM parameterized; Pydantic everywhere |
 | A04 Insecure Design | **FAIL (P0/P1)** | Anon DB path; public uploads; decorative permissions |
 | A05 Misconfiguration | **FAIL (P1)** | Swagger unconditional; Docker CSP bug; DEBUG hardcoded |
-| A06 Vulnerable Components | **FAIL (P1)** | jose/multipart/jinja2 CVEs (CF-AUD-006) |
-| A07 Auth Failures | **FAIL (P1)** | Rate limiter inert (CF-AUD-003) |
+| A06 Vulnerable Components | **FAIL (P1)** | jose/multipart/jinja2 CVEs (AUD-006) |
+| A07 Auth Failures | **FAIL (P1)** | Rate limiter inert (AUD-003) |
 | A08 Software/Data Integrity | PASS | No eval/exec/pickle/unsafe deserialization |
 | A09 Logging/Monitoring | PARTIAL | Success-path audit logs only; no request IDs |
 | A10 SSRF | N/A | No user-driven outbound fetch |
-| Secrets | **FAIL (P0)** | CF-AUD-001 |
+| Secrets | **FAIL (P0)** | AUD-001 |
 | XSS | PASS (static) | React escaping; SVG uploads excluded |
 | CSRF | N/A-by-design | Bearer tokens, no cookies (`core/csrf.py`) |
 | File uploads | STRONG* | Magic bytes + regenerated names — undermined by public serving |
@@ -245,8 +245,8 @@ Negative-path testing (expired tokens, concurrent modification, duplicate submis
 - Public-site component architecture clean (lazy routes, shared UI kit); portals are monoliths.
 - Accessibility: good samples (aria, focus trap) but WCAG compliance **NOT VERIFIED**.
 - Loading/empty/error states present; fallback notices only on Services/Portfolio.
-- **Brand: FAIL** — see CF-AUD-013. Inter/Montserrat/JetBrains Mono correct; Poppins missing.
-- **SEO: FAIL** — see CF-AUD-014. Backend serves a sitemap route; frontend lacks robots.txt/sitemap.xml.
+- **Brand: FAIL** — see AUD-013. Inter/Montserrat/JetBrains Mono correct; Poppins missing.
+- **SEO: FAIL** — see AUD-014. Backend serves a sitemap route; frontend lacks robots.txt/sitemap.xml.
 
 ---
 
@@ -270,7 +270,7 @@ Negative-path testing (expired tokens, concurrent modification, duplicate submis
 
 **DevOps** — solid Dockerfiles/compose/CI-deploy; missing: rollback procedure, image/dependency scanning, SSL verification, backups, monitoring beyond `/health`. Render free-plan single instance.
 
-**Documentation** — extensive but load-bearing claims are wrong (CF-AUD-016). Missing: ERD, API reference, deployment runbook, rollback, troubleshooting, DR procedures.
+**Documentation** — extensive but load-bearing claims are wrong (AUD-016). Missing: ERD, API reference, deployment runbook, rollback, troubleshooting, DR procedures.
 
 **Repository health**
 
@@ -364,19 +364,19 @@ Regression pass → OWASP retest of Phases 1–2 → brand/SEO/a11y verification
 
 Three P0s (leaked live credentials, anonymous DB access path, absent rate limiting), the failed testing gate, and missing backup/monitoring make production deployment irresponsible today. The engineering foundation is genuinely good — a competent codebase with a security/configuration problem, not an architectural one — and Phase 1 is realistically days of work, not months.
 
-**Self-assessment vs ready criteria:** Architecture yes · KISS yes · SOLID mostly · Code maintainable borderline-no (portal monoliths) · DRY no · **Security/cross-tenant NO until CF-AUD-001/002/005 fixed** · Workflows partially · DB integrity under concurrency unproven · Performance unknown · Testing evidence insufficient · Monitoring no · Rollback no · Docs stale in places · HPE evidence not supplied.
+**Self-assessment vs ready criteria:** Architecture yes · KISS yes · SOLID mostly · Code maintainable borderline-no (portal monoliths) · DRY no · **Security/cross-tenant NO until AUD-001/002/005 fixed** · Workflows partially · DB integrity under concurrency unproven · Performance unknown · Testing evidence insufficient · Monitoring no · Rollback no · Docs stale in places · HPE evidence not supplied.
 
 > Per the golden rule: critical answers are NO → **the project must not be declared ready.**
 
 ---
 
-*Evidence trail: findings CF-AUD-001…CF-AUD-020 carry file:line references throughout this document. Re-audit recommended after Phase 1–2 completion.*
+*Evidence trail: findings AUD-001…AUD-020 carry file:line references throughout this document. Re-audit recommended after Phase 1–2 completion.*
 
 ---
 
 ## 16. Remediation Log — 2026-08-21 Session
 
-Scope note: **CF-AUD-001 (secret rotation) and all git/version-control actions were explicitly
+Scope note: **AUD-001 (secret rotation) and all git/version-control actions were explicitly
 excluded from this pass** per instruction. Everything else below was fixed against the real
 code, verified by reinstalling backend dependencies into a fresh `.venv` and running the actual
 pytest suite (not just read), and — for dependency CVEs — cross-checked with `pip-audit`.
@@ -385,33 +385,33 @@ pytest suite (not just read), and — for dependency CVEs — cross-checked with
 
 | ID | Finding | Root cause | Fix | Verification |
 |---|---|---|---|---|
-| CF-AUD-003 | Rate limiting inert | `SlowAPIMiddleware` was never registered and no route carried a `@limiter.limit` decorator | Moved the shared `Limiter` into [`app/core/limiter.py`](backend/app/core/limiter.py) (avoids a circular import with `main.py`), registered `SlowAPIMiddleware` in [`main.py`](backend/app/main.py), added explicit limits: login `10/min`, register `10/hour`, contact submit `5/min`, career apply `5/hour`, analytics track `60/min`, plus the pre-existing global default (`300/15min`) | `pytest` suite green (373 passed); manually traced the decorator chain — `slowapi` requires the endpoint to accept `request: Request`, added where missing |
-| CF-AUD-004 | `/uploads` served all files unauthenticated, incl. career CVs | Career resumes were saved under the same publicly-mounted `uploads/` root as public site assets | Added `PRIVATE_SUBFOLDERS`/`PRIVATE_UPLOAD_ROOT` in [`utils/uploads.py`](backend/app/utils/uploads.py) — resumes now save outside the public mount; added authenticated `GET /careers/admin/applications/{id}/resume` (admin/hr only) in [`career.py`](backend/app/routers/career.py) to serve them | Confirmed no frontend code renders `resume_url` as a direct link (grep — nothing to break); path-traversal guarded via `resolve_private_path` |
-| CF-AUD-005 | IDOR: any user could update any task; sales could read any lead by ID; unpublished projects/blogs readable by any authenticated token; unauthenticated logout could revoke arbitrary sessions | Missing ownership/role checks in [`task.py`](backend/app/routers/task.py), [`leads.py`](backend/app/routers/leads.py), [`projects.py`](backend/app/routers/projects.py), [`blog.py`](backend/app/routers/blog.py), [`auth.py`](backend/app/routers/auth.py) | Task status update now requires assignee/PM/admin; lead GET now 403s for sales reps on leads they don't own; unpublished project/blog visibility restricted to staff roles; `/auth/logout` now requires `get_current_user` | New regression suite [`tests/test_authorization_regression.py`](backend/tests/test_authorization_regression.py) (6 tests, all passing) + updated `test_logout_requires_auth` in `test_api_comprehensive.py` (now asserts 401, was asserting 200/500) |
-| CF-AUD-006 | Vulnerable `python-jose` 3.3.0, `python-multipart` 0.0.9, `jinja2` 3.1.4 (also unused) | Stale pins in `requirements.txt` | `pip-audit` run against the real installed set (36 vulnerabilities found, not assumed) → bumped `python-jose` 3.3.0→**3.4.0**, `python-multipart` 0.0.9→**0.0.32**, `cryptography` 42.0.8→**44.0.1** (jose's crypto backend, also flagged); removed `jinja2` entirely (confirmed zero imports repo-wide) | Re-ran `pip-audit`: jose/jinja2 CVEs gone; full `pytest` suite re-run after each bump — 373 passed both times |
-| CF-AUD-007 | Seed script creates 11 accounts with hardcoded, guessable passwords printed to stdout | `app/seeders/seed.py` had literal `"Admin@123"`-style constants | Passwords now generated via `secrets.token_urlsafe(16)` per run (env-var override available for CI), written once to a gitignored `.seed_credentials.local.json`, never printed; `run()` now refuses to execute when `ENV=production` | `ast.parse` syntax check; manual trace of all 11 call sites updated by a scripted substitution, reviewed by hand |
-| CF-AUD-011 (partial) | `CRUDBase.update` had no rollback on failure (unlike `create`/`delete`); no `sslmode`/TLS pinned for Postgres | Oversight in [`crud/base.py`](backend/app/crud/base.py); `database.py` passed no `ssl` connect arg | Added try/rollback to `update()`; added `ssl="require"` to asyncpg `connect_args` for non-local `ENV` in [`database.py`](backend/app/core/database.py) | `pytest` suite green after each change |
-| CF-AUD-012 | Docker nginx CSP `connect-src` omitted `*.supabase.co`, breaking client-side Supabase calls in Docker deploys | Missing origin in [`frontend/docker/nginx.conf`](frontend/docker/nginx.conf) | Added `https://*.supabase.co wss://*.supabase.co` to `connect-src` | Config diff reviewed; no automated test (nginx config, not exercised by pytest) |
-| CF-AUD-018 | Swagger/Redoc exposed unconditionally in production | `docs_url`/`redoc_url` hardcoded in `main.py` | `docs_url`/`redoc_url`/`openapi_url` now `None` when `ENV` is `production`/`prod` | Read-verified; not runtime-tested against a deployed prod instance in this pass |
-| CF-AUD-020 (partial) | Salary exposed via `EmployeeOut` to every role that can list employees, incl. `project_manager` | `list_employees` in [`employees.py`](backend/app/routers/employees.py) returned the full `EmployeeOut` (with `salary`) regardless of caller role | `salary` now stripped from the list response unless caller is `admin`/`super_admin`/`hr`; self-service `/employees/me/profile` unaffected (an employee still sees their own salary) | `pytest` suite green |
+| AUD-003 | Rate limiting inert | `SlowAPIMiddleware` was never registered and no route carried a `@limiter.limit` decorator | Moved the shared `Limiter` into [`app/core/limiter.py`](backend/app/core/limiter.py) (avoids a circular import with `main.py`), registered `SlowAPIMiddleware` in [`main.py`](backend/app/main.py), added explicit limits: login `10/min`, register `10/hour`, contact submit `5/min`, career apply `5/hour`, analytics track `60/min`, plus the pre-existing global default (`300/15min`) | `pytest` suite green (373 passed); manually traced the decorator chain — `slowapi` requires the endpoint to accept `request: Request`, added where missing |
+| AUD-004 | `/uploads` served all files unauthenticated, incl. career CVs | Career resumes were saved under the same publicly-mounted `uploads/` root as public site assets | Added `PRIVATE_SUBFOLDERS`/`PRIVATE_UPLOAD_ROOT` in [`utils/uploads.py`](backend/app/utils/uploads.py) — resumes now save outside the public mount; added authenticated `GET /careers/admin/applications/{id}/resume` (admin/hr only) in [`career.py`](backend/app/routers/career.py) to serve them | Confirmed no frontend code renders `resume_url` as a direct link (grep — nothing to break); path-traversal guarded via `resolve_private_path` |
+| AUD-005 | IDOR: any user could update any task; sales could read any lead by ID; unpublished projects/blogs readable by any authenticated token; unauthenticated logout could revoke arbitrary sessions | Missing ownership/role checks in [`task.py`](backend/app/routers/task.py), [`leads.py`](backend/app/routers/leads.py), [`projects.py`](backend/app/routers/projects.py), [`blog.py`](backend/app/routers/blog.py), [`auth.py`](backend/app/routers/auth.py) | Task status update now requires assignee/PM/admin; lead GET now 403s for sales reps on leads they don't own; unpublished project/blog visibility restricted to staff roles; `/auth/logout` now requires `get_current_user` | New regression suite [`tests/test_authorization_regression.py`](backend/tests/test_authorization_regression.py) (6 tests, all passing) + updated `test_logout_requires_auth` in `test_api_comprehensive.py` (now asserts 401, was asserting 200/500) |
+| AUD-006 | Vulnerable `python-jose` 3.3.0, `python-multipart` 0.0.9, `jinja2` 3.1.4 (also unused) | Stale pins in `requirements.txt` | `pip-audit` run against the real installed set (36 vulnerabilities found, not assumed) → bumped `python-jose` 3.3.0→**3.4.0**, `python-multipart` 0.0.9→**0.0.32**, `cryptography` 42.0.8→**44.0.1** (jose's crypto backend, also flagged); removed `jinja2` entirely (confirmed zero imports repo-wide) | Re-ran `pip-audit`: jose/jinja2 CVEs gone; full `pytest` suite re-run after each bump — 373 passed both times |
+| AUD-007 | Seed script creates 11 accounts with hardcoded, guessable passwords printed to stdout | `app/seeders/seed.py` had literal `"Admin@123"`-style constants | Passwords now generated via `secrets.token_urlsafe(16)` per run (env-var override available for CI), written once to a gitignored `.seed_credentials.local.json`, never printed; `run()` now refuses to execute when `ENV=production` | `ast.parse` syntax check; manual trace of all 11 call sites updated by a scripted substitution, reviewed by hand |
+| AUD-011 (partial) | `CRUDBase.update` had no rollback on failure (unlike `create`/`delete`); no `sslmode`/TLS pinned for Postgres | Oversight in [`crud/base.py`](backend/app/crud/base.py); `database.py` passed no `ssl` connect arg | Added try/rollback to `update()`; added `ssl="require"` to asyncpg `connect_args` for non-local `ENV` in [`database.py`](backend/app/core/database.py) | `pytest` suite green after each change |
+| AUD-012 | Docker nginx CSP `connect-src` omitted `*.supabase.co`, breaking client-side Supabase calls in Docker deploys | Missing origin in [`frontend/docker/nginx.conf`](frontend/docker/nginx.conf) | Added `https://*.supabase.co wss://*.supabase.co` to `connect-src` | Config diff reviewed; no automated test (nginx config, not exercised by pytest) |
+| AUD-018 | Swagger/Redoc exposed unconditionally in production | `docs_url`/`redoc_url` hardcoded in `main.py` | `docs_url`/`redoc_url`/`openapi_url` now `None` when `ENV` is `production`/`prod` | Read-verified; not runtime-tested against a deployed prod instance in this pass |
+| AUD-020 (partial) | Salary exposed via `EmployeeOut` to every role that can list employees, incl. `project_manager` | `list_employees` in [`employees.py`](backend/app/routers/employees.py) returned the full `EmployeeOut` (with `salary`) regardless of caller role | `salary` now stripped from the list response unless caller is `admin`/`super_admin`/`hr`; self-service `/employees/me/profile` unaffected (an employee still sees their own salary) | `pytest` suite green |
 
 ### Explicitly out of scope this session (per instruction)
 
-- **CF-AUD-001** — live secrets in `backend/.env`: not rotated, not touched.
+- **AUD-001** — live secrets in `backend/.env`: not rotated, not touched.
 - Git/version-control actions (init, commit, etc.): not performed — repo remains non-git.
 
 ### Still OPEN — not attempted this session (scope too large for one pass)
 
-- **CF-AUD-002** — anonymous direct-DB access via Supabase anon key (no RLS) in `frontend/src/lib/db.js`. This is the single largest remaining risk and needs a dedicated pass: either enable deny-by-default RLS on all 58 tables or remove the direct-access path and route everything through the backend API.
-- **CF-AUD-008** — testing gate: added 6 new regression tests this session, but the core problem (all API tests mock the SQLAlchemy engine; zero tests against a real Postgres; frontend CI never runs vitest; 0 E2E) is unresolved. `tests/test_workflows.py` is a real, DB-backed E2E script but isn't wired into pytest/CI and needs a live database to run — not available in this sandboxed pass.
-- **CF-AUD-009** — Partner Portal, payments gateway, admin SEO/Settings/Backups UI: not built.
-- **CF-AUD-010** — observability (Sentry/error tracking, `/ready`, structured logs with request IDs, failed-authz audit logging): not addressed.
-- **CF-AUD-011 (remainder)** — DB indexes (only 6 secondary indexes, zero FK indexes), N+1 in `employees.py`/`clients.py`, soft-delete semantics: not addressed.
-- **CF-AUD-013/014** — brand palette/font non-compliance, SEO essentials (OG/canonical/sitemap.xml/robots.txt): not addressed.
-- **CF-AUD-015** — giant portal components (EmployeePortal.jsx ~3,822 lines, AdminPanel.jsx ~1,586), duplicated API/pagination logic, dual REST/Supabase data layers: not addressed — this is the same root cause as CF-AUD-002's dual data path.
-- **CF-AUD-016/017** — most stale-doc and cleanliness items were already resolved before this session (root `test.py`/`.x` junk files no longer exist in the tree); `docs/audit.md`'s "rate limiting active" claim is now actually true, but the doc itself wasn't re-verified line-by-line this pass. `fix_user_role.py` (CLI-only, not network-exposed) left as-is.
-- **CF-AUD-019** — suspected failing role-guard frontend test: not reproduced or investigated this pass (backend-only session).
-- **CF-AUD-020 (remainder)** — GDPR export reads not audit-logged: not addressed.
+- **AUD-002** — anonymous direct-DB access via Supabase anon key (no RLS) in `frontend/src/lib/db.js`. This is the single largest remaining risk and needs a dedicated pass: either enable deny-by-default RLS on all 58 tables or remove the direct-access path and route everything through the backend API.
+- **AUD-008** — testing gate: added 6 new regression tests this session, but the core problem (all API tests mock the SQLAlchemy engine; zero tests against a real Postgres; frontend CI never runs vitest; 0 E2E) is unresolved. `tests/test_workflows.py` is a real, DB-backed E2E script but isn't wired into pytest/CI and needs a live database to run — not available in this sandboxed pass.
+- **AUD-009** — Partner Portal, payments gateway, admin SEO/Settings/Backups UI: not built.
+- **AUD-010** — observability (Sentry/error tracking, `/ready`, structured logs with request IDs, failed-authz audit logging): not addressed.
+- **AUD-011 (remainder)** — DB indexes (only 6 secondary indexes, zero FK indexes), N+1 in `employees.py`/`clients.py`, soft-delete semantics: not addressed.
+- **AUD-013/014** — brand palette/font non-compliance, SEO essentials (OG/canonical/sitemap.xml/robots.txt): not addressed.
+- **AUD-015** — giant portal components (EmployeePortal.jsx ~3,822 lines, AdminPanel.jsx ~1,586), duplicated API/pagination logic, dual REST/Supabase data layers: not addressed — this is the same root cause as AUD-002's dual data path.
+- **AUD-016/017** — most stale-doc and cleanliness items were already resolved before this session (root `test.py`/`.x` junk files no longer exist in the tree); `docs/audit.md`'s "rate limiting active" claim is now actually true, but the doc itself wasn't re-verified line-by-line this pass. `fix_user_role.py` (CLI-only, not network-exposed) left as-is.
+- **AUD-019** — suspected failing role-guard frontend test: not reproduced or investigated this pass (backend-only session).
+- **AUD-020 (remainder)** — GDPR export reads not audit-logged: not addressed.
 - Backups/DR, monitoring/alerting, rollback runbook: not addressed.
 
 ### Test evidence
@@ -428,7 +428,7 @@ raises `sqlalchemy.ext.asyncio.exc.AsyncMethodRequired` from inside the mocked-e
 satisfy). This reproduces identically on the unauthenticated code path that existed before this
 session's `blog.py` edit — confirmed by inspection, the `is_staff` change only affects which
 `filters["status"]` value is chosen before that query, not the query execution itself. Left open
-as further evidence for CF-AUD-008 (mocked persistence produces false confidence) rather than
+as further evidence for AUD-008 (mocked persistence produces false confidence) rather than
 worked around.
 
 ### Updated dependency table (backend/requirements.txt)
@@ -450,7 +450,7 @@ upstream fix yet (`ecdsa`/PYSEC-2026-1325), and bumping `pytest` risks breaking 
 
 ## 17. Remediation Log — 2026-08-21 Session 2 (Backend-First Pass)
 
-Scope: this session followed the backend-first phased remediation prompt. **CF-AUD-001 (secret
+Scope: this session followed the backend-first phased remediation prompt. **AUD-001 (secret
 rotation) and git/version-control actions remained out of scope.** The single biggest new
 capability added this session: a **real, disposable Postgres 16 container** (via Docker, already
 available in this environment) was used to actually run the Alembic migration chain and execute
@@ -460,9 +460,9 @@ caught.
 
 ### New finding discovered — and fixed — this session
 
-**CF-BE-001 · Migration chain does not apply to a fresh database (P0, new) · FIXED, VERIFIED**
+**BE-001 · Migration chain does not apply to a fresh database (P0, new) · FIXED, VERIFIED**
 - **Root cause:** [`alembic/versions/c3d4e5f6a7b8_add_crm_leads_proposals_contracts.py`](backend/alembic/versions/c3d4e5f6a7b8_add_crm_leads_proposals_contracts.py) explicitly creates 4 Postgres enum types with `.create(bind, checkfirst=True)`, then reuses those *same* `sa.Enum(...)` Python objects as column types in the `op.create_table(...)` calls immediately after. SQLAlchemy's PG-native `ENUM._on_table_create` hook independently re-emits `CREATE TYPE` during table creation, and the generic `sa.Enum` (as opposed to `sqlalchemy.dialects.postgresql.ENUM`) silently ignores a `create_type=False` kwarg (it isn't even a valid attribute on the generic class) — so the redundant emission couldn't be suppressed the obvious way. Net effect: `alembic upgrade head` against a genuinely fresh database throws `DuplicateObjectError: type "lead_source" already exists` and the migration chain never completes.
-- **Why this was invisible before:** `docs/TEST_COVERAGE_REPORT.md` and the previous audit both note the migration chain "reproduces every model exactly" — that conclusion was reached by reading the migration files, not running them. `tests/test_migrations.py` only unit-tests a `table_exists()` helper against SQLite, which has no native enum type and can't reproduce this. CI's Postgres service (`.github/workflows/backend.yml`) never ran `alembic upgrade head` at all (see CF-BE-004 below) and even if it had, `tests/conftest.py` mocking the engine would have hidden the failure from every pytest-collected test regardless.
+- **Why this was invisible before:** `docs/TEST_COVERAGE_REPORT.md` and the previous audit both note the migration chain "reproduces every model exactly" — that conclusion was reached by reading the migration files, not running them. `tests/test_migrations.py` only unit-tests a `table_exists()` helper against SQLite, which has no native enum type and can't reproduce this. CI's Postgres service (`.github/workflows/backend.yml`) never ran `alembic upgrade head` at all (see BE-004 below) and even if it had, `tests/conftest.py` mocking the engine would have hidden the failure from every pytest-collected test regardless.
 - **Fix:** introduced separate `*_col` variants built from `sqlalchemy.dialects.postgresql.ENUM(..., create_type=False)` (the dialect-specific class, where `create_type` is a real, honored constructor kwarg) for use only as column types, keeping the original bare `sa.Enum` objects for the explicit `.create()`/`.drop()` calls.
 - **Verification:** span up `postgres:16-alpine` in Docker, ran `alembic upgrade head` against a genuinely empty database — reproduced the failure, applied the fix, reset the database, re-ran — full 6-migration chain completed cleanly, landing all 59 tables. Also ran `alembic downgrade -1` / re-upgrade to confirm reversibility.
 
@@ -470,14 +470,14 @@ caught.
 
 | ID | Finding | Fix | Verification (real Postgres, not mocks) |
 |---|---|---|---|
-| CF-BE-002 | N+1 in `employees.py::list_employees` — per-row `Department` and `User` re-queries despite `CRUDBase` already eager-loading `department` | Added `"user"` to `CRUDBase(Employee, ...).relationships`; loop now reads `e.department`/`e.user` instead of re-querying | `tests/real_db_verification.py`: seeded 25 real employee rows, counted actual SQL statements via a `before_cursor_execute` listener on the real engine — **4 queries total** for the whole list (pagination + count + 2 selectin batches), not the ~52 (1+2×25) it would have been pre-fix |
-| CF-BE-003 | N+1 in `clients.py::my_meetings` — per-meeting `User` re-query for the organizer | Added `.options(selectinload(Meeting.organizer))` to the query; loop reads `m.organizer` directly | Read-verified against the `Meeting.organizer` relationship (exists in `app/models/meeting.py:28`); full pytest suite green after the change (373 passed) |
-| CF-BE-004 | CI's Postgres service (`.github/workflows/backend.yml`) was **never migrated and never actually exercised** — `pytest -v` runs entirely against the `tests/conftest.py`-mocked engine regardless of the real `DB_HOST`/`DB_PORT` env vars CI sets | Added an explicit `alembic upgrade head` step before the pytest step, and a new `python -m tests.real_db_verification` step *after* pytest that runs standalone (no conftest import) to actually hit the CI database | This is the same real-Postgres pattern verified locally in this session (see below); wiring is committed but not yet observed running inside actual GitHub Actions (no CI credentials/trigger available in this environment) |
-| CF-AUD-011 (indexes) | Only 6 secondary indexes, zero FK indexes across 58 tables | New migration [`alembic/versions/e2f3a4b5c6d7_add_missing_fk_indexes.py`](backend/alembic/versions/e2f3a4b5c6d7_add_missing_fk_indexes.py) adds indexes on all 50 FK columns that lacked one (enumerated by introspecting `Base.metadata`, not guessed) | Ran `alembic upgrade head` on a fresh real Postgres — `pg_indexes` count went 6→56; ran `alembic downgrade -1` — count returned to 6, confirming the down-migration is correct too |
+| BE-002 | N+1 in `employees.py::list_employees` — per-row `Department` and `User` re-queries despite `CRUDBase` already eager-loading `department` | Added `"user"` to `CRUDBase(Employee, ...).relationships`; loop now reads `e.department`/`e.user` instead of re-querying | `tests/real_db_verification.py`: seeded 25 real employee rows, counted actual SQL statements via a `before_cursor_execute` listener on the real engine — **4 queries total** for the whole list (pagination + count + 2 selectin batches), not the ~52 (1+2×25) it would have been pre-fix |
+| BE-003 | N+1 in `clients.py::my_meetings` — per-meeting `User` re-query for the organizer | Added `.options(selectinload(Meeting.organizer))` to the query; loop reads `m.organizer` directly | Read-verified against the `Meeting.organizer` relationship (exists in `app/models/meeting.py:28`); full pytest suite green after the change (373 passed) |
+| BE-004 | CI's Postgres service (`.github/workflows/backend.yml`) was **never migrated and never actually exercised** — `pytest -v` runs entirely against the `tests/conftest.py`-mocked engine regardless of the real `DB_HOST`/`DB_PORT` env vars CI sets | Added an explicit `alembic upgrade head` step before the pytest step, and a new `python -m tests.real_db_verification` step *after* pytest that runs standalone (no conftest import) to actually hit the CI database | This is the same real-Postgres pattern verified locally in this session (see below); wiring is committed but not yet observed running inside actual GitHub Actions (no CI credentials/trigger available in this environment) |
+| AUD-011 (indexes) | Only 6 secondary indexes, zero FK indexes across 58 tables | New migration [`alembic/versions/e2f3a4b5c6d7_add_missing_fk_indexes.py`](backend/alembic/versions/e2f3a4b5c6d7_add_missing_fk_indexes.py) adds indexes on all 50 FK columns that lacked one (enumerated by introspecting `Base.metadata`, not guessed) | Ran `alembic upgrade head` on a fresh real Postgres — `pg_indexes` count went 6→56; ran `alembic downgrade -1` — count returned to 6, confirming the down-migration is correct too |
 
 ### Real-database verification suite (new)
 
-[`tests/real_db_verification.py`](backend/tests/real_db_verification.py) is a standalone script (deliberately **not** pytest-collected, since `tests/conftest.py` mocks the SQLAlchemy engine for the whole pytest session — see CF-BE-004) that seeds real rows into a real Postgres and drives the actual FastAPI app over real HTTP (`httpx.ASGITransport`), with only `get_current_user` overridden (to avoid needing real Supabase Auth network calls) — every other layer, including all SQL, is real. Run this session:
+[`tests/real_db_verification.py`](backend/tests/real_db_verification.py) is a standalone script (deliberately **not** pytest-collected, since `tests/conftest.py` mocks the SQLAlchemy engine for the whole pytest session — see BE-004) that seeds real rows into a real Postgres and drives the actual FastAPI app over real HTTP (`httpx.ASGITransport`), with only `get_current_user` overridden (to avoid needing real Supabase Auth network calls) — every other layer, including all SQL, is real. Run this session:
 
 ```
 docker run -d --name coralswift-test-pg -e POSTGRES_DB=coralswift_test \
@@ -495,14 +495,14 @@ Result: **6/6 passed** —
 5. owning sales rep allowed to read their own real lead (200)
 6. client A's real `/clients/me/invoices` never returns client B's real invoice (0 rows)
 
-This is genuine evidence for CF-AUD-005 (IDOR) and CF-AUD-017 (tenant isolation) that the mocked
+This is genuine evidence for AUD-005 (IDOR) and AUD-017 (tenant isolation) that the mocked
 pytest suite structurally cannot provide, and directly satisfies the "real Postgres tests for
 critical behavior" requirement — for the specific flows covered. It is **not** a substitute for
 full integration coverage (see "still open" below).
 
 ### Still OPEN after this session
 
-- **CF-AUD-002** — anonymous direct-DB access via Supabase anon key (no RLS): still not attempted. This remains the single largest open risk and needs a dedicated pass.
+- **AUD-002** — anonymous direct-DB access via Supabase anon key (no RLS): still not attempted. This remains the single largest open risk and needs a dedicated pass.
 - **Full real-DB test coverage**: `real_db_verification.py` covers 4 flows (employees N+1, task IDOR, lead IDOR, client tenant isolation). It does **not** cover auth/JWT edge cases, RBAC for all 13 roles, employee/HR data isolation, payment/invoice idempotency, or the remaining N+1/unbounded-query surface (only `employees` and `clients::my_meetings` were checked and fixed — a full sweep of all 42 routers was not performed this session).
 - **Performance measurement (§33–37 of the prompt)**: no p50/p95/p99 latency benchmarking was performed this session — this requires either a running app instance under load or a dedicated benchmark harness, neither set up here. The <200ms gate is **unmeasured**, not passing.
 - **DRY/KISS/SOLID architectural review, folder restructuring**: not performed this session — the existing flat `app/routers/`, `app/models/`, `app/schemas/`, `app/services/` structure was left as-is; no evidence was gathered that it needs to change, but no dedicated review happened either.
@@ -514,21 +514,21 @@ full integration coverage (see "still open" below).
 
 Per the status vocabulary this prompt defines (§81): this backend is **REMEDIATION IN PROGRESS**,
 not "BACKEND REVIEW READY" and not any variant of "PRODUCTION READY." Concretely: P0 count is not
-zero (CF-AUD-002 open), performance is unmeasured, and full real-DB/E2E coverage does not exist.
+zero (AUD-002 open), performance is unmeasured, and full real-DB/E2E coverage does not exist.
 The zero-finding gate (§80) is not met. Declaring otherwise would contradict evidence gathered in
 this same session.
 
 ---
 
-## 18. Remediation Log — 2026-08-21 Session 3 (CF-AUD-002 First, Backend Continuation)
+## 18. Remediation Log — 2026-08-21 Session 3 (AUD-002 First, Backend Continuation)
 
 Verified the Session 2 claims against the actual repository before continuing (per instruction —
 "do not trust status.md blindly"): re-ran `pytest tests/ -q` cold → 373 passed / 1 pre-existing
-failure, matching the log exactly. Confirmed real. Proceeded per the prescribed order: CF-AUD-002
+failure, matching the log exactly. Confirmed real. Proceeded per the prescribed order: AUD-002
 first, then N+1 sweep, then unbounded-query sweep. Performance benchmarking, DRY/KISS/SOLID review,
 observability, and backups were **not reached this session** — see "still open" below.
 
-### CF-AUD-002 · Broken Access Control (anon DB path) — CLOSED, VERIFIED
+### AUD-002 · Broken Access Control (anon DB path) — CLOSED, VERIFIED
 
 **Inventory (the complete one requested in §4):** grepped the entire frontend for
 `createClient`, `@supabase/supabase-js`, and `supabase.(from|rpc|storage)(`. Result — every
@@ -536,7 +536,7 @@ single direct-table-access call in the whole codebase lived in one file,
 [`frontend/src/lib/db.js`](frontend/src/lib/db.js) (427 lines, ~20 exported functions covering
 client-portal profile/projects/invoices/tickets/payments/meetings/files/reports and
 employee-portal profile/attendance/leaves/timesheets/payslips, all querying Postgres tables
-directly with the anon key and zero RLS — exactly as CF-AUD-002 described). `@supabase/supabase-js`
+directly with the anon key and zero RLS — exactly as AUD-002 described). `@supabase/supabase-js`
 was imported in exactly one other place, `lib/supabase.js`, used **only** for `.auth.*` session
 methods (`onAuthStateChange`, `getSession`, `signUp`, `setSession`, `signOut`) in
 `AuthContext.jsx` — the approved use case per §5's "preferred architecture" (Supabase issues the
@@ -579,7 +579,7 @@ now auth-only.
 **Verification:**
 - `npm run build` — succeeds, no broken imports.
 - `npx vitest run` — 94/94 passed (92 pre-existing + 2 new regression-guard tests), including the
-  new CF-AUD-002 guard.
+  new AUD-002 guard.
 - Manually confirmed `fetchDashboardOverview`'s backend route (`GET /dashboard/overview`) is
   `require_roles`-gated and returns the same 10 KPI fields `fetchAdminKPIs()` used to compute
   client-side from 9 separate anon-key count queries plus a raw revenue sum — now computed
@@ -618,28 +618,28 @@ Checked every `.scalars().all()` call site in `app/routers/`. Result:
 - The **`/me/*` self-service endpoints** (`clients.py`: my_projects, my_invoices, my_tickets,
   my_meetings, my_files, my_reports; `employees.py`: my_leaves, my_timesheets, my_payslips,
   my_documents, my_performance_reviews; `training.py`: my_enrollments) have **no explicit
-  limit** — they return 100% of the calling user's own records. This is not the CF-AUD-002-class
+  limit** — they return 100% of the calling user's own records. This is not the AUD-002-class
   risk (no cross-tenant/system-wide data dump — a client can only ever unbound-query *their own*
   tickets/invoices/etc.), but it is a real, if low-severity, resource-exhaustion vector for an
   account that accumulates years of records. **Not fixed this session** — flagged as a new P3
-  finding, **CF-BE-005**, rather than silently left off the ledger.
+  finding, **BE-005**, rather than silently left off the ledger.
 
 ### New findings opened this session (not fixed — documented per §71/§45)
 
-- **CF-BE-005 (P3, new)** — `/me/*` self-service list endpoints have no pagination cap (see
+- **BE-005 (P3, new)** — `/me/*` self-service list endpoints have no pagination cap (see
   above). Fix direction: add default/max page size the same way `PageParams` already does for
   admin lists.
-- **CF-BE-006 (P3, new)** — Duplicated manual pagination logic: `employees.py` (leaves,
+- **BE-006 (P3, new)** — Duplicated manual pagination logic: `employees.py` (leaves,
   timesheets), `training.py` (enrollments) each hand-roll the same `stmt.offset(...).limit(...)`
   + separate `count_stmt` pattern that `CRUDBase.list()` already centralizes for the simpler CMS
   resources. This is the "duplicated pagination logic" DRY violation the original audit named
-  (CF-AUD-015) — confirmed still present, not yet refactored. Root cause: these three call sites
+  (AUD-015) — confirmed still present, not yet refactored. Root cause: these three call sites
   need `selectinload`/joins and query-param-driven filters `CRUDBase.list()` doesn't support in
   its current generic form; a safe fix needs either extending `CRUDBase` to accept a
   relationship-loading hook or a small shared `paginate(stmt, count_stmt, page)` helper — not
   attempted this session to avoid an unreviewed refactor across three routers late in the pass.
 
-### CF-AUD-019 · Suspected failing role-guard test — CLOSED, VERIFIED (reproduced independently)
+### AUD-019 · Suspected failing role-guard test — CLOSED, VERIFIED (reproduced independently)
 
 Not previously reproduced by any audit. This session ran the actual frontend test suite
 (`npx vitest run`) — something no prior pass in this engagement had done — and it failed exactly
@@ -650,7 +650,7 @@ as suspected: `useRoleGuard.js`'s own docstring documents deny-by-default for a 
 matched its own documented, deliberately-secure intent, and the *test* was wrong. Fixed the test
 to assert `denied === true`, renamed it, and added a comment explaining the reversal so it can't
 silently flip back. Full frontend suite now 94/94 green (was 91/92 before this fix was applied,
-93/94 after, 94/94 after the CF-AUD-002 regression test was added).
+93/94 after, 94/94 after the AUD-002 regression test was added).
 
 ### CI gaps closed
 
@@ -663,7 +663,7 @@ silently flip back. Full frontend suite now 94/94 green (was 91/92 before this f
   would have been red on every push regardless of anything else. Fixed by removing the two dead
   variables. `npm run lint` now exits 0 (18 cosmetic Tailwind-class-order warnings remain,
   non-blocking).
-- **Backend CI's Postgres service was decorative** (Session 2 finding, CF-BE-004) — migration +
+- **Backend CI's Postgres service was decorative** (Session 2 finding, BE-004) — migration +
   real-DB-verification steps added to `backend.yml` as previously logged; not re-verified inside
   actual GitHub Actions this session (no CI trigger available in this environment), but the exact
   same commands were re-run locally against a fresh container as part of this session's other
@@ -689,14 +689,14 @@ Frontend: npm run build             → succeeds
   audience tokens), RBAC across all 13 roles, employee/HR/payroll data isolation, and
   payment/invoice idempotency have **not** been verified against a real database.
 - **DRY/KISS/SOLID architectural review (§25-27): not performed** this session beyond the two
-  specific findings above (CF-BE-006 duplication, and confirming no new circular-import or
+  specific findings above (BE-006 duplication, and confirming no new circular-import or
   god-router issues were introduced by this session's edits — not a full sweep).
 - **Folder/file structure decision (§28-29): not evaluated.** No evidence gathered this session
   that the current flat `app/routers/`/`app/models/`/`app/schemas/` layout needs to change, but no
   dedicated review happened either — deferred, per §28's own instruction not to restructure
   without cause.
 - **Observability, backups/recovery (§35-37): not addressed**, unchanged from Session 2.
-- **CF-BE-005/CF-BE-006** (new, P3): documented above, not fixed.
+- **BE-005/BE-006** (new, P3): documented above, not fixed.
 
 ### Final Evidence Table (§48)
 
@@ -708,18 +708,18 @@ Frontend: npm run build             → succeeds
 | RBAC | PARTIAL | `require_roles` unit-tested; not all 13 roles verified against real DB |
 | Tenant isolation | PASS (client/invoice path only) | Session 2 real-DB check: client A's `/me/invoices` never returns client B's invoice |
 | IDOR | PASS (task/lead paths) | Session 2 real-DB checks: non-assignee/non-owner blocked (403), assignee/owner allowed (200) |
-| RLS/direct access | PASS | CF-AUD-002 closed this session — direct Supabase business-table access removed entirely, regression-tested |
-| Secrets | NOT ATTEMPTED (explicit exclusion) | CF-AUD-001 out of scope per instruction across all sessions |
+| RLS/direct access | PASS | AUD-002 closed this session — direct Supabase business-table access removed entirely, regression-tested |
+| Secrets | NOT ATTEMPTED (explicit exclusion) | AUD-001 out of scope per instruction across all sessions |
 | Dependency security | PARTIAL | Session 1: jose/multipart/jinja2 fixed via pip-audit; starlette/ecdsa/pytest/aiosmtplib/python-dotenv transitive CVEs remain |
 | N+1 | PASS (loop-pattern sweep) | 3 found and fixed (employees list, client meetings, timesheets list) across two sessions; 0 remaining via automated indentation-aware sweep of routers/services/crud |
-| Unbounded queries | PARTIAL | All admin/cross-user lists bounded (paginated); `/me/*` self-service lists unbounded but user-scoped — logged as new P3 (CF-BE-005), not fixed |
+| Unbounded queries | PARTIAL | All admin/cross-user lists bounded (paginated); `/me/*` self-service lists unbounded but user-scoped — logged as new P3 (BE-005), not fixed |
 | Performance <200ms | NOT MEASURED | No benchmark harness run this engagement — do not treat as PASS |
 | Unit tests | PASS | 373 backend (pytest), 94 frontend (vitest) |
 | Integration tests | PARTIAL | Real-Postgres script covers 4 flows; not a full integration suite |
 | API tests | PASS | Covered within the 373 backend tests |
-| Security tests | PASS (for fixed findings) | Regression tests exist for logout-auth, task IDOR, lead IDOR, CF-AUD-002, CF-AUD-019 |
+| Security tests | PASS (for fixed findings) | Regression tests exist for logout-auth, task IDOR, lead IDOR, AUD-002, AUD-019 |
 | E2E tests | PARTIAL | `tests/test_workflows.py` exists (real-DB, 4 full workflows) but requires a live DB + real Supabase Auth to run; not executed this session (no Supabase credentials available) |
-| DRY | PARTIAL | 1 violation confirmed and documented (CF-BE-006), not refactored |
+| DRY | PARTIAL | 1 violation confirmed and documented (BE-006), not refactored |
 | KISS | NOT REVIEWED | — |
 | SOLID | NOT REVIEWED | — |
 | Architecture | NOT RE-EVALUATED | Existing flat structure left as-is; no restructuring case found or looked for in depth |
@@ -732,21 +732,21 @@ Frontend: npm run build             → succeeds
 ## **REMEDIATION IN PROGRESS**
 
 Not "BACKEND REVIEW READY": performance is unmeasured, DRY/KISS/SOLID review is incomplete, and
-full real-DB/E2E coverage does not exist. CF-AUD-002 — the highest-priority target for this
+full real-DB/E2E coverage does not exist. AUD-002 — the highest-priority target for this
 session — is genuinely closed with evidence (deletion + regression test + build/test verification).
-Two additional real findings (CF-AUD-019, the pre-existing broken CI lint gate) were discovered
+Two additional real findings (AUD-019, the pre-existing broken CI lint gate) were discovered
 and fixed as a direct result of actually running the frontend test/lint suite for the first time
 in this engagement, rather than reading about it.
 
 ---
 
-## 19. Remediation Log — 2026-08-21 Session 4 (CF-BE-005, CF-BE-006, First Real Perf Numbers)
+## 19. Remediation Log — 2026-08-21 Session 4 (BE-005, BE-006, First Real Perf Numbers)
 
 Re-verified Session 3's claims cold before continuing: `pytest tests/ -q` → 373 passed / 1
-pre-existing failure, matched exactly. Proceeded in the order specified: CF-BE-005, then
-CF-BE-006, then a performance attempt, then a code-quality sweep.
+pre-existing failure, matched exactly. Proceeded in the order specified: BE-005, then
+BE-006, then a performance attempt, then a code-quality sweep.
 
-### CF-BE-005 · Unbounded `/me/*` self-service lists — CLOSED, VERIFIED
+### BE-005 · Unbounded `/me/*` self-service lists — CLOSED, VERIFIED
 
 Added `SELF_SERVICE_LIST_CAP = 500` to [`utils/pagination.py`](backend/app/utils/pagination.py)
 and applied `.limit(SELF_SERVICE_LIST_CAP)` to all 12 previously-unbounded self-service list
@@ -756,7 +756,7 @@ my_meetings, my_files, my_reports), `training.py` (my_enrollments). `notificatio
 already capped at 50 — confirmed, not touched. **Verification:** full pytest suite green (373
 passed, same 1 pre-existing unrelated failure) after each file's edits.
 
-### CF-BE-006 · Duplicated pagination logic — CLOSED, VERIFIED (real Postgres)
+### BE-006 · Duplicated pagination logic — CLOSED, VERIFIED (real Postgres)
 
 Root cause: `employees.py::list_leaves`, `employees.py::list_all_timesheets`, and
 `training.py::list_enrollments` each hand-rolled the identical "run a paginated `stmt` + a
@@ -836,7 +836,7 @@ not just that it remains:
   done and reported above with honest caveats — the remainder is a genuine environment gap, not a
   skipped task.
 - **DRY/KISS/SOLID complete review (§30-32):** the two concretely-identified violations
-  (CF-BE-006) are fixed. A *complete* review of ~217 endpoints/42 routers for subtler duplication,
+  (BE-006) are fixed. A *complete* review of ~217 endpoints/42 routers for subtler duplication,
   over-abstraction, and SOLID violations is a multi-day audit in its own right; this session
   extended the sweep (loop-based N+1, unbounded queries, error-swallowing) but did not perform
   that full pass.
@@ -855,7 +855,7 @@ not just that it remains:
   requires live Supabase Auth credentials to run (`admin_client.auth.admin.create_user` calls) —
   not available in this session. The `real_db_verification.py` script now covers 6 real-DB
   scenarios across IDOR/tenant-isolation/N+1/pagination, still short of full RBAC-matrix coverage.
-- **Secret rotation (CF-AUD-001):** remains explicitly out of scope per original instruction,
+- **Secret rotation (AUD-001):** remains explicitly out of scope per original instruction,
   carried forward across all four sessions.
 - **Red-team audit (§49-51):** not performed as a distinct fresh-eyes pass this session — the
   work done here was continuation/verification of named findings, not an adversarial audit
@@ -865,7 +865,7 @@ not just that it remains:
 
 ## **REMEDIATION IN PROGRESS**
 
-CF-BE-005 and CF-BE-006 — the two items this session was explicitly directed to start with — are
+BE-005 and BE-006 — the two items this session was explicitly directed to start with — are
 closed with real-Postgres evidence. Real (if narrow) performance numbers now exist where none did
 before. The backend is measurably further along than Session 3's checkpoint, but the gates this
 prompt requires for "BACKEND PRODUCTION READY" — full-scale performance benchmarking, complete
@@ -887,7 +887,7 @@ the most consequential session yet: it found and fixed a genuine, previously-und
 bug (rate-limit bypass across workers) and produced the first real evidence of where the <200ms
 gate actually fails.
 
-### CF-BE-007 · Cross-worker rate-limit bypass (P1, new) — FOUND, FIXED, VERIFIED
+### BE-007 · Cross-worker rate-limit bypass (P1, new) — FOUND, FIXED, VERIFIED
 
 **Root cause:** `docker/Dockerfile` runs the app under `gunicorn --workers 4`, but
 [`core/limiter.py`](backend/app/core/limiter.py)'s `Limiter` used slowapi's default in-memory
@@ -917,7 +917,7 @@ prior sessions by giving Redis a genuine purpose.
    — a regression guard against silently reverting to in-memory storage.
 4. Full pytest suite green after the change (375 passed, then 378 after later additions).
 
-### CF-BE-008 · Undersized DB connection pool (P2, new) — FOUND, PARTIALLY FIXED
+### BE-008 · Undersized DB connection pool (P2, new) — FOUND, PARTIALLY FIXED
 
 **Root cause:** [`core/database.py`](backend/app/core/database.py) hardcoded `pool_size=5,
 max_overflow=10` (15 max connections per process) with no way to configure it. Discovered via the
@@ -932,7 +932,7 @@ everything else touching the database.
 **Verification:** re-ran the load harness before/after — latency dropped materially at every
 concurrency level (e.g. `/api/v1/employees` p95 at concurrency=10 went from 1055.6ms to 308.3ms
 in the single-process comparison; further improvement under the real 4-worker container, see
-below). **Not fully closed** — see CF-BE-009.
+below). **Not fully closed** — see BE-009.
 
 ### Real load-testing infrastructure — BUILT (no k6/Locust available; built a reproducible harness instead)
 
@@ -980,7 +980,7 @@ with full relational integrity plus running the full concurrency matrix was not 
 session; 500/200/1000 was the tested scale). This is real evidence of a real gap, and it is
 **not** the full production benchmark the release gate requires.
 
-### CF-BE-009 · `/api/v1/employees` list degrades worst under concurrency (P2, new) — DIAGNOSED, NOT YET FIXED
+### BE-009 · `/api/v1/employees` list degrades worst under concurrency (P2, new) — DIAGNOSED, NOT YET FIXED
 
 Root-caused, not guessed: ran `EXPLAIN ANALYZE` directly against Postgres (3,500 accumulated rows
 from repeated seed runs) for both the count query and the paginated list query — **both execute
@@ -1028,7 +1028,7 @@ claimed as PASS.
 
 ### Observability — IMPLEMENTED, VERIFIED (request ID, structured access logs, `/ready`)
 
-CF-AUD-010 specifically flagged "`X-Request-Id` exposed but never generated" — confirmed still
+AUD-010 specifically flagged "`X-Request-Id` exposed but never generated" — confirmed still
 true at the start of this session (CORS declared it in `expose_headers` but nothing set it).
 Fixed in [`main.py`](backend/app/main.py):
 - New `RequestContextMiddleware`: generates a UUID4 request ID (or forwards a caller-supplied
@@ -1062,10 +1062,10 @@ Backend:  python performance/load_test.py (real gunicorn×4 container) → 15/25
 
 | ID | Severity | Finding | Status |
 |---|---|---|---|
-| CF-BE-007 | P1 | Cross-worker rate-limit bypass (in-memory limiter storage) | **FIXED, VERIFIED** (real 2-process test) |
-| CF-BE-008 | P2 | DB connection pool hardcoded too small for concurrency | **PARTIALLY FIXED** (configurable + bumped; real PgBouncer scaling not implemented) |
-| CF-BE-009 | P2 | `/api/v1/employees` list latency degrades worst under concurrency (4 sequential round-trips) | **OPEN** — root cause diagnosed with `EXPLAIN ANALYZE`, fix not yet implemented |
-| CF-AUD-010 | P2 | Observability — request ID declared but never generated | **FIXED, VERIFIED** |
+| BE-007 | P1 | Cross-worker rate-limit bypass (in-memory limiter storage) | **FIXED, VERIFIED** (real 2-process test) |
+| BE-008 | P2 | DB connection pool hardcoded too small for concurrency | **PARTIALLY FIXED** (configurable + bumped; real PgBouncer scaling not implemented) |
+| BE-009 | P2 | `/api/v1/employees` list latency degrades worst under concurrency (4 sequential round-trips) | **OPEN** — root cause diagnosed with `EXPLAIN ANALYZE`, fix not yet implemented |
+| AUD-010 | P2 | Observability — request ID declared but never generated | **FIXED, VERIFIED** |
 | — | — | Backup/restore never verified | **FIXED, VERIFIED** (mechanism proven; production Supabase backups remain an external dependency) |
 
 ### Still OPEN after this session — reasons, not excuses
@@ -1073,7 +1073,7 @@ Backend:  python performance/load_test.py (real gunicorn×4 container) → 15/25
 - **Full performance gate (all ~217 endpoints, realistic production-scale data, WAN-like
   conditions):** 5 endpoints tested at 500-1000 row scale this session (up from 4 endpoints at
   25-row scale in Session 4) — real progress, not the full gate. 10 of 25 tested
-  (endpoint×concurrency) combinations still fail <200ms; CF-BE-009 explains the worst offender.
+  (endpoint×concurrency) combinations still fail <200ms; BE-009 explains the worst offender.
   Testing all ~217 endpoints at 100k-row scale with proper concurrency was not completed — this
   is genuinely a multi-hour undertaking (seeding alone at that scale takes real wall-clock time),
   not a tooling gap.
@@ -1083,14 +1083,14 @@ Backend:  python performance/load_test.py (real gunicorn×4 container) → 15/25
 - **Full E2E with live Supabase Auth:** `tests/test_workflows.py` still requires real Supabase
   credentials this repo does not have — genuinely external, not something to fabricate.
 - **Complete DRY/KISS/SOLID review, folder restructuring:** not performed beyond the specific
-  fixes already logged (CF-BE-006). No new evidence gathered this session that restructuring is
+  fixes already logged (BE-006). No new evidence gathered this session that restructuring is
   needed.
 - **CI actually observed passing in real GitHub Actions:** this repository is not a git repo in
   this environment (confirmed at session start) — there is no remote to trigger Actions against.
   CI YAML correctness has been verified by running-the-equivalent-commands-locally across every
   session; an actual Actions run has never been observed, and that is stated plainly rather than
   implied.
-- **CF-AUD-001 secret rotation:** remains explicitly out of scope per the original instruction,
+- **AUD-001 secret rotation:** remains explicitly out of scope per the original instruction,
   carried forward across all five sessions.
 
 ### Final status
@@ -1099,7 +1099,7 @@ Backend:  python performance/load_test.py (real gunicorn×4 container) → 15/25
 
 Real infrastructure now exists that didn't before this session: a reproducible load-test harness
 that exercises the actual production Docker image, a proven backup/restore drill, and working
-observability. A real security bug (CF-BE-007) was found and fixed with the strongest evidence
+observability. A real security bug (BE-007) was found and fixed with the strongest evidence
 standard used in this engagement — two independent OS processes proving shared rate-limit state.
 The performance gate is now measured, not assumed — and the honest measurement is that it is not
 yet met (15/25 tested combinations pass), with the worst offender's root cause diagnosed and
@@ -1108,13 +1108,13 @@ rather than asserted, and not yet "BACKEND PRODUCTION READY."
 
 ---
 
-## 21. Remediation Log — 2026-08-21 Session 6 (CF-BE-009 Fix + Red-Team Spot Checks)
+## 21. Remediation Log — 2026-08-21 Session 6 (BE-009 Fix + Red-Team Spot Checks)
 
 Re-verified Session 5's claims before continuing: `pytest tests/ -q` → 378 passed / 1 pre-existing
-failure, matched exactly. This session picked up CF-BE-009 (explicitly named priority) and ran a
+failure, matched exactly. This session picked up BE-009 (explicitly named priority) and ran a
 targeted red-team pass on attack vectors not yet explicitly exercised in this engagement.
 
-### CF-BE-009 · `/api/v1/employees` round-trip reduction — IMPROVED, VERIFIED, NOT FULLY CLOSED
+### BE-009 · `/api/v1/employees` round-trip reduction — IMPROVED, VERIFIED, NOT FULLY CLOSED
 
 **Fix implemented:** [`crud/base.py::CRUDBase._with_relationships`](backend/app/crud/base.py) now
 inspects each configured relationship via `sqlalchemy.inspect(model).relationships[rel].uselist`
@@ -1141,7 +1141,7 @@ container run (p95 260–930ms). The remaining bottleneck is no longer "extra ro
 — down to 2) but general connection-pool/CPU contention at this concurrency level with 4 workers
 against a single Postgres instance — a capacity/scaling question, not a code defect in this
 endpoint specifically. Genuinely closing this requires either more DB capacity (PgBouncer, per
-CF-BE-008's note), horizontal scaling, or caching — decisions with cost/architecture implications
+BE-008's note), horizontal scaling, or caching — decisions with cost/architecture implications
 beyond a single-session code fix. Logged as improved-with-evidence, not falsely marked closed.
 
 One honest caveat on the benchmark itself: `/api/v1/projects` (untouched by this fix) got *worse*
@@ -1162,7 +1162,7 @@ this engagement had not yet explicitly exercised end-to-end:
 | Expired JWT | **Blocked** — 401 | `exp` claim enforced |
 | Wrong `aud` claim | **Blocked** — 401 | audience checked against `"authenticated"` |
 | SQL injection via `?search=' OR '1'='1` | **Blocked** — 200, no injection | SQLAlchemy `ilike()` is parameterized; app stayed healthy afterward |
-| Path traversal on private-upload resolver (`../../../etc/passwd` and 3 variants) | **Blocked** — all 4 rejected with 400 | `resolve_private_path()`'s path-parts check (added Session 1 for CF-AUD-004) holds |
+| Path traversal on private-upload resolver (`../../../etc/passwd` and 3 variants) | **Blocked** — all 4 rejected with 400 | `resolve_private_path()`'s path-parts check (added Session 1 for AUD-004) holds |
 | Mass assignment on `POST /auth/register` (injecting `role="super_admin"`, `is_active=True`) | **Blocked** — fields silently dropped | `RegisterRequest` schema has no such fields; router hardcodes `role="client"` server-side regardless of request body |
 
 All 8/8 held. This is real evidence for the specific vectors tested, not a claim that all attack
@@ -1178,12 +1178,12 @@ Backend:  performance/load_test.py (real gunicorn×4, 500/200/1000 dataset) → 
 
 ### Still OPEN — honestly, not as a parking lot
 
-- **CF-BE-009 remainder**: employees list still fails <200ms at concurrency ≥5 against a single
+- **BE-009 remainder**: employees list still fails <200ms at concurrency ≥5 against a single
   Postgres instance with 4 workers. Root cause is now capacity/contention, not round-trip count —
   next step would be PgBouncer or read-replica/caching, each a real infrastructure decision.
 - **Full RBAC matrix automation, full E2E with live Supabase, 100k-row/full-endpoint performance
   inventory, complete DRY/KISS/SOLID review, architecture restructuring evaluation, actual GitHub
-  Actions execution, CF-AUD-001 secret rotation**: unchanged from Session 5 — same reasons apply
+  Actions execution, AUD-001 secret rotation**: unchanged from Session 5 — same reasons apply
   (external credentials not available, multi-hour-scale data seeding not attempted, no git remote
   in this environment to trigger CI against). Repeating the Session 5 list here rather than
   claiming any of it was completed this session, since none of it was touched this session.
@@ -1195,7 +1195,7 @@ Backend:  performance/load_test.py (real gunicorn×4, 500/200/1000 dataset) → 
 
 ## **REMEDIATION IN PROGRESS**
 
-CF-BE-009 is measurably improved with real before/after evidence (query count halved, load-test
+BE-009 is measurably improved with real before/after evidence (query count halved, load-test
 pass rate up 15/25→18/25) but not fully closed — its remaining gap is capacity, not a bug, and is
 reported as such rather than papered over. Eight targeted red-team attacks were run for real
 against the live app and all were defended; that is evidence for those eight, not a blanket
@@ -1263,7 +1263,7 @@ different behavior than the clean, isolated single-process tests showed. The mos
 explanation — not yet confirmed — is Docker Desktop's Windows networking/virtualization layer
 introducing per-connection or per-request overhead that a Linux production host (the actual
 deployment target) would not have; testing on real Linux hardware was not possible in this
-environment. **CF-BE-009 is therefore not closed.** Per the instruction not to close it without
+environment. **BE-009 is therefore not closed.** Per the instruction not to close it without
 either meeting the gate or formally redefining it with evidence: the gate is **not met** for the
 production-container benchmark at concurrency ≥10–25; it **is** met for the isolated
 connection-layer test that specifically targeted the originally-diagnosed root cause. Both results
@@ -1362,14 +1362,14 @@ Backend: python import graph (147 app.* modules) → no circular imports
 
 | ID | Severity | Finding | Status |
 |---|---|---|---|
-| CF-BE-010 | P2, new | `DB_USE_PGBOUNCER=true` used `NullPool`, forcing a full connection+auth handshake every request | **FIXED, VERIFIED** (>40x improvement measured in isolation) |
-| CF-BE-011 | P3, new | Default pool sizing (`pool_size=10, max_overflow=20`) × 4 workers could exceed vanilla Postgres' `max_connections=100` | **FIXED** (`max_overflow` reduced to 10; PgBouncer deployments documented as able to raise further) |
-| CF-BE-009 | P2 | Employees list / DB-touching endpoints fail `<200ms` under concurrency in the full production-container benchmark | **STILL OPEN** — root cause partially addressed (pool sizing, NullPool bug), but the full-topology benchmark tail latency persists; likely Windows/Docker-Desktop-specific, unconfirmed without Linux hardware |
+| BE-010 | P2, new | `DB_USE_PGBOUNCER=true` used `NullPool`, forcing a full connection+auth handshake every request | **FIXED, VERIFIED** (>40x improvement measured in isolation) |
+| BE-011 | P3, new | Default pool sizing (`pool_size=10, max_overflow=20`) × 4 workers could exceed vanilla Postgres' `max_connections=100` | **FIXED** (`max_overflow` reduced to 10; PgBouncer deployments documented as able to raise further) |
+| BE-009 | P2 | Employees list / DB-touching endpoints fail `<200ms` under concurrency in the full production-container benchmark | **STILL OPEN** — root cause partially addressed (pool sizing, NullPool bug), but the full-topology benchmark tail latency persists; likely Windows/Docker-Desktop-specific, unconfirmed without Linux hardware |
 | — | — | RBAC role-layer coverage | **AUTOMATED, 537/537 PASSING** (new capability, not a "finding" fix) |
 
 ### Still OPEN — reasons stated, not parked
 
-- **CF-BE-009**: as above — the production-container tail latency needs either a Linux test host
+- **BE-009**: as above — the production-container tail latency needs either a Linux test host
   to rule out Docker-Desktop-on-Windows as the cause, or acceptance that the gate must be
   re-measured against actual production infrastructure before being called closed either way.
 - **Full DRY/KISS/SOLID review**: file-size and import-graph checks done; deep duplication analysis
@@ -1380,7 +1380,7 @@ Backend: python import graph (147 app.* modules) → no circular imports
 - **Race conditions, replay/idempotency, live Redis-failure drill**: not tested this session.
 - **CI in real GitHub Actions**: structurally impossible in this environment (no git remote) —
   restated for completeness, not newly discovered.
-- **CF-AUD-001 secret rotation**: remains explicitly out of scope, unchanged across all 7 sessions.
+- **AUD-001 secret rotation**: remains explicitly out of scope, unchanged across all 7 sessions.
 
 ### Final status
 
@@ -1392,7 +1392,7 @@ measurement method (`pg_stat_activity` alone) that cannot see application-side q
 corrected finding — pool sizing and a real `NullPool` bug — led to a genuine, verified fix (>40x
 improvement in isolation). RBAC automation is now real infrastructure (537 passing checks
 generated from the app's own runtime dependency graph) rather than a manual claim. The honest
-state of CF-BE-009 is: root cause better understood and partially fixed, full-topology gate still
+state of BE-009 is: root cause better understood and partially fixed, full-topology gate still
 not met, and that gap is described rather than closed without evidence. Declaring "BACKEND
 PRODUCTION READY" remains unsupported by the evidence gathered — DRY/KISS/SOLID, full E2E, and
 CI-in-Actions are still open, and the performance gate itself is not fully met.
@@ -1435,7 +1435,7 @@ persistence, tenant/ownership boundaries — runs for real:
 
 **Result: 22/22 passed.**
 
-### CF-BE-012 · `ProjectOut.team` MissingGreenlet crash (P1, new) — FOUND VIA E2E, FIXED, VERIFIED
+### BE-012 · `ProjectOut.team` MissingGreenlet crash (P1, new) — FOUND VIA E2E, FIXED, VERIFIED
 
 Found by the E2E suite itself, not anticipated: `GET /api/v1/clients/me/projects` crashed with
 `pydantic_core.ValidationError` wrapping `sqlalchemy.exc.MissingGreenlet` the moment a real client
@@ -1446,7 +1446,7 @@ loading `Project.team` — `clients.py::my_projects` and, on inspection of the s
 pages. Both would crash for any project with an assigned team, in production, for real users —
 **every previous session's mocked-engine tests were structurally incapable of catching this**,
 since `MagicMock` doesn't reproduce SQLAlchemy's async lazy-load-outside-session-context failure
-mode. This is the same category of discovery as CF-BE-001 (the migration enum bug found only by
+mode. This is the same category of discovery as BE-001 (the migration enum bug found only by
 running Alembic against real Postgres) — direct, concrete evidence for why this session's E2E
 investment was worth it even at the cost of the other items not reached.
 
@@ -1481,12 +1481,12 @@ Backend: race-condition spot check            → no corruption, deterministic l
 
 | ID | Severity | Finding | Status |
 |---|---|---|---|
-| CF-BE-012 | P1, new | `ProjectOut.team` causes `MissingGreenlet` crash on `/clients/me/projects` and the public `/projects/{id}` detail endpoint for any project with an assigned team | **FIXED, VERIFIED** — found only via real-Postgres E2E testing |
+| BE-012 | P1, new | `ProjectOut.team` causes `MissingGreenlet` crash on `/clients/me/projects` and the public `/projects/{id}` detail endpoint for any project with an assigned team | **FIXED, VERIFIED** — found only via real-Postgres E2E testing |
 | — | P3, observation | Concurrent leave approve/reject is last-write-wins with no conflict signal to the second approver | **Documented, not fixed** — a product/UX decision, not a code defect |
 
 ### Still OPEN — unchanged from Session 7, restated rather than silently dropped
 
-Full DRY/KISS/SOLID deep review, CF-BE-009's full-topology performance gate (Linux host needed to
+Full DRY/KISS/SOLID deep review, BE-009's full-topology performance gate (Linux host needed to
 rule out Docker-Desktop-on-Windows as the tail-latency cause), live Redis-failure drill, replay/
 idempotency testing on payment-like flows, and CI observed in real GitHub Actions (still
 structurally impossible — no git remote in this environment) all remain open, exactly as reported
@@ -1516,7 +1516,7 @@ via `docker kill`) rather than a unit-level swallow_errors assertion. It found a
 the process, fixed part of it with verified evidence, and is honest about the part that remains
 only partially understood.
 
-### CF-BE-013 · `swallow_errors=True` crashes anyway on a Redis outage (P1, new) — FOUND, FIXED, VERIFIED
+### BE-013 · `swallow_errors=True` crashes anyway on a Redis outage (P1, new) — FOUND, FIXED, VERIFIED
 
 **The drill:** built the real Docker image, ran it against real Postgres + real Redis, confirmed
 rate limiting enforces correctly with Redis up (401s then 429 after the configured threshold),
@@ -1541,9 +1541,9 @@ decorator's header-injection step a safe value to read regardless of what the li
 Traceback lines in the container logs** across the entire outage window (previously: one per
 request). The API returned valid `401`s throughout the outage instead of crashing.
 
-### CF-BE-014 · Redis-outage requests are slow (4–8s), not fast-failing (P2, new) — PARTIALLY FIXED, NOT RESOLVED
+### BE-014 · Redis-outage requests are slow (4–8s), not fast-failing (P2, new) — PARTIALLY FIXED, NOT RESOLVED
 
-**Found in the same drill:** even after CF-BE-013's fix, every request during the outage took
+**Found in the same drill:** even after BE-013's fix, every request during the outage took
 4–8 seconds (confirmed via `curl -w %{time_total}`) instead of failing over quickly — severe enough
 that a gunicorn worker was sent `SIGABRT` by its master process during the sustained burst (visible
 in container logs), i.e. this is not just slow, it destabilizes a worker process under sustained
@@ -1574,7 +1574,7 @@ explanation — Docker's networking layer behavior toward a `docker kill`ed cont
 that precedes redis-py's own timeout clock starting) — was not confirmed further; doing so would
 require packet-level inspection or testing against a differently-induced Redis failure (e.g.
 `iptables DROP` instead of `docker kill`, or a real network partition) that this session did not
-have time to pursue after the investigation above. **Not closed.** The crash is fixed (CF-BE-013);
+have time to pursue after the investigation above. **Not closed.** The crash is fixed (BE-013);
 the availability-degradation-under-outage is real, understood well enough to rule out several
 plausible causes, but not yet resolved.
 
@@ -1593,24 +1593,24 @@ Backend: live Redis-outage drill (real Docker image, real Postgres, real Redis k
 
 | ID | Severity | Finding | Status |
 |---|---|---|---|
-| CF-BE-013 | P1, new | `swallow_errors=True` didn't actually prevent crashes during a Redis outage — a real slowapi 0.1.9 bug (`AttributeError` on unset `view_rate_limit` state) | **FIXED, VERIFIED** via live drill, before/after log comparison |
-| CF-BE-014 | P2, new | Requests during a Redis outage take 4–8s (not fast-failing), severe enough to SIGABRT a gunicorn worker under sustained load | **OPEN** — root cause narrowed (confirmed Redis-specific, confirmed not a client-timeout-config issue) but not fully identified or fixed |
+| BE-013 | P1, new | `swallow_errors=True` didn't actually prevent crashes during a Redis outage — a real slowapi 0.1.9 bug (`AttributeError` on unset `view_rate_limit` state) | **FIXED, VERIFIED** via live drill, before/after log comparison |
+| BE-014 | P2, new | Requests during a Redis outage take 4–8s (not fast-failing), severe enough to SIGABRT a gunicorn worker under sustained load | **OPEN** — root cause narrowed (confirmed Redis-specific, confirmed not a client-timeout-config issue) but not fully identified or fixed |
 
 ### Still OPEN — unchanged except as noted above
 
-Full DRY/KISS/SOLID deep review, CF-BE-009's full-topology performance gate (still needs a Linux
+Full DRY/KISS/SOLID deep review, BE-009's full-topology performance gate (still needs a Linux
 host), replay/idempotency testing on payment-like flows, and CI observed in real GitHub Actions
 (still structurally impossible — no git remote) remain open exactly as reported at the end of
-Session 8. CF-BE-014 is a new addition to this list, found this session.
+Session 8. BE-014 is a new addition to this list, found this session.
 
 ### Final status
 
 ## **REMEDIATION IN PROGRESS**
 
 This session ran the live-drill test that Session 8 could only describe as still-open, and it paid
-off the same way the E2E suite did: real infrastructure testing found a real bug (CF-BE-013) that
+off the same way the E2E suite did: real infrastructure testing found a real bug (BE-013) that
 no unit test could have — fixed and verified with before/after log evidence. It also found a
-second, deeper issue (CF-BE-014) that resisted a clean fix within this session's investigation and
+second, deeper issue (BE-014) that resisted a clean fix within this session's investigation and
 is reported as genuinely unresolved rather than papered over with an unverified timeout tweak. The
 pattern holding across all nine sessions continues: every time this engagement built real
 infrastructure (real Postgres, real Redis, the real Docker image) instead of relying on mocks or
@@ -1627,13 +1627,13 @@ this entire engagement.
 ### DRY: extracted the repeated `is_staff` visibility check
 
 `blog.py` and `projects.py` each independently computed the same shape of check — `current_user is
-not None and current_user.role in (...)` — for gating unpublished-content visibility (the CF-AUD-005
+not None and current_user.role in (...)` — for gating unpublished-content visibility (the AUD-005
 fix from Session 1). Extracted a small, honestly-scoped helper,
 [`core/dependencies.py::is_staff(user, *roles)`](backend/app/core/dependencies.py), and updated both
 call sites. Not a large refactor — two call sites, a 3-line function — but a genuine, real
 duplication (same logic, same shape, same purpose), not a cosmetic rename.
 
-### CF-BE-015 · Mocked test suite silently shared state with a real, unrelated Redis (P2, new) — FOUND, FIXED, VERIFIED
+### BE-015 · Mocked test suite silently shared state with a real, unrelated Redis (P2, new) — FOUND, FIXED, VERIFIED
 
 Running the full suite after the DRY change produced a **new** failure —
 `test_register_returns_service_unavailable_when_auth_client_is_unavailable` — failing with a real
@@ -1650,7 +1650,7 @@ tipped over the `register` endpoint's `10/hour` limit after enough accumulated t
 landing:** redirecting `REDIS_HOST`/`REDIS_PORT` to a closed local port did stop the contamination,
 but made every single test pay a real (if short) connection-attempt cost via the global
 `SlowAPIMiddleware` — full suite runtime went from ~30s to ~145s (measured, not estimated). This is
-itself further real-world confirmation of CF-BE-014 (Redis-unreachable connection attempts are
+itself further real-world confirmation of BE-014 (Redis-unreachable connection attempts are
 more expensive than they should be) surfacing in a second, independent context.
 
 **Actual fix:** `tests/conftest.py` now sets `limiter.enabled = False` after import — slowapi's own
@@ -1673,12 +1673,12 @@ Backend: app import sanity check → 218 routes, no import errors
 
 | ID | Severity | Finding | Status |
 |---|---|---|---|
-| CF-BE-015 | P2, new | Mocked pytest suite silently connected to a real, unrelated Redis instance on the host's default port, accumulating cross-session rate-limit state | **FIXED, VERIFIED** — `limiter.enabled = False` in conftest.py; suite runtime restored to baseline |
+| BE-015 | P2, new | Mocked pytest suite silently connected to a real, unrelated Redis instance on the host's default port, accumulating cross-session rate-limit state | **FIXED, VERIFIED** — `limiter.enabled = False` in conftest.py; suite runtime restored to baseline |
 | — | — | Duplicated `is_staff`-shaped visibility check in `blog.py`/`projects.py` | **FIXED** — extracted to `core/dependencies.py::is_staff()` |
 
 ### Still OPEN
 
-Unchanged from earlier in this session: CF-BE-014 (Redis-outage request latency), CF-BE-009's
+Unchanged from earlier in this session: BE-014 (Redis-outage request latency), BE-009's
 full-topology performance gate, the broader DRY/KISS/SOLID review beyond this one extraction,
 replay/idempotency testing, and CI in real GitHub Actions.
 
@@ -1707,7 +1707,7 @@ read in full) — the backend continues toward "production level" DB/Redis with 
 <200ms responses. Per the user's own explicit ordering ("first complete backend"), this session's
 work was scoped to the docker/env infrastructure ask; the <200ms and RBAC asks restate goals
 already substantially addressed in Sessions 1-9 (RBAC matrix in `tests/test_rbac_matrix.py`,
-performance work logged under CF-BE-009) and were not freshly re-benchmarked this session.
+performance work logged under BE-009) and were not freshly re-benchmarked this session.
 
 ### What changed
 
@@ -1739,7 +1739,7 @@ performance work logged under CF-BE-009) and were not freshly re-benchmarked thi
   real local Postgres container.
 - **`.env`** rewritten (was corrupted — the entire variable block had been duplicated 6× back-to-
   back, 390 lines instead of ~60; fixed by a full clean rewrite) for local dev: local `DB_HOST`,
-  same real (not rotated, per standing CF-AUD-001-out-of-scope instruction) `SUPABASE_*` values.
+  same real (not rotated, per standing AUD-001-out-of-scope instruction) `SUPABASE_*` values.
 - **`.env.staging`** (new) — fully self-contained, Supabase Postgres + same `SUPABASE_*` values,
   moved verbatim from the pre-rewrite `.env`.
 - **`.env.example`** rewritten to match the new local-dev-first `.env` shape;
@@ -1804,7 +1804,7 @@ pytest tests/ -q (re-run after config.py/database.py/auth.py/users.py/
 
 ### Still OPEN (before RBAC/latency re-verification below)
 
-CF-BE-014 (Redis-outage request latency root cause), CF-BE-009's full-topology performance gate
+BE-014 (Redis-outage request latency root cause), BE-009's full-topology performance gate
 (needs a Linux host), the broader DRY/KISS/SOLID review beyond targeted extractions,
 replay/idempotency testing, and CI in real GitHub Actions (still structurally impossible — this
 directory is not a git repository in this environment, no remote). `docs/WEBSITE MASTER
@@ -1894,7 +1894,7 @@ actually re-run against the new topology rather than left as an assumed carry-ov
 unchanged (537/537), and every backend-controlled endpoint measured is 10-20ms — well under
 target — with the one honest exception being the Auth login round-trip to Supabase itself, which
 is outside this backend's control and reported as such rather than glossed over. What remains open
-is not new: it is the same performance-gate (CF-BE-009, full production topology on a Linux host)
+is not new: it is the same performance-gate (BE-009, full production topology on a Linux host)
 and CI items every prior session has honestly carried forward — RBAC and per-request latency
 against the new local-dev database are no longer open items, having just been re-verified above
 with real evidence rather than assumed unchanged.
@@ -1946,7 +1946,7 @@ missing modules:
   unlike every other list endpoint that goes through `CRUDBase.list` (which does). The PDF's Blog
   Content Workflow explicitly lists "Search" as a step. **Fixed** — added `title`/`excerpt`/`content`
   `ILIKE` matching to both the select and count queries when `search` is present.
-- **`/ready` didn't check Redis**, only the database — meaningful given CF-BE-014 (the still-open
+- **`/ready` didn't check Redis**, only the database — meaningful given BE-014 (the still-open
   Redis-outage latency finding from Session 9) is exactly the kind of failure a readiness probe
   should catch before an orchestrator routes traffic to a degraded instance. **Fixed** — `/ready`
   now pings Redis too and reports it in the `checks` object, but (deliberately) does **not** flip
@@ -2047,13 +2047,13 @@ match whatever is free there — `backend/README.md`'s Docker quick-start needs 
 
 ### Still OPEN
 
-Unchanged from earlier in this session: CF-BE-014 (Redis-outage request latency root cause),
-CF-BE-009's full-topology performance gate (needs a Linux host), the broader DRY/KISS/SOLID review
+Unchanged from earlier in this session: BE-014 (Redis-outage request latency root cause),
+BE-009's full-topology performance gate (needs a Linux host), the broader DRY/KISS/SOLID review
 beyond this pass's targeted fixes, replay/idempotency testing, and CI in real GitHub Actions
 (structurally blocked — no git remote in this environment). `docs/WEBSITE MASTER CONTENT.pdf`
 still cannot be read (`pdftoppm`/poppler-utils not installed). The pre-existing, cosmetic
 `op.drop_index`/`op.create_index` noise seen in a diagnostic `alembic revision --autogenerate` run
-this session (49 FK indexes the CF-AUD-011 migration created directly via `op.create_index` that
+this session (49 FK indexes the AUD-011 migration created directly via `op.create_index` that
 the SQLAlchemy models never declared `index=True` for) was noted but deliberately not touched —
 fixing it is either annotating ~25 model columns or accepting the cosmetic autogenerate noise
 forever; both are legitimate calls but neither was asked for here, and blindly applying that
@@ -2084,9 +2084,9 @@ work, as requested.
 
 ---
 
-## 28. The Last Mocked-Suite Failure Fixed + CF-BE-014 Root-Caused and Fixed (same session, continued)
+## 28. The Last Mocked-Suite Failure Fixed + BE-014 Root-Caused and Fixed (same session, continued)
 
-Follow-up user request: fix the 1 remaining pre-existing test failure, fix CF-BE-014, and do a
+Follow-up user request: fix the 1 remaining pre-existing test failure, fix BE-014, and do a
 DRY/KISS/SOLID pass. All three tackled with the same standard as everything else in this
 engagement — real investigation, real drills, real before/after evidence, not theorized fixes.
 
@@ -2106,7 +2106,7 @@ engine handles this shape fine, only the mock's introspection trips on it).
 exactly like every other router — deleted ~35 lines of hand-rolled count/filter/search-query
 construction (the `search` support added earlier this session is now free, inherited from
 `CRUDBase.list()` rather than hand-duplicated). `CRUDBase(Blog, ..., relationships=["author",
-"category"])` now eager-loads via `joinedload` (CF-BE-009's established pattern for scalar
+"category"])` now eager-loads via `joinedload` (BE-009's established pattern for scalar
 relations) instead of the router's own `selectinload` calls.
 
 **Verified**: `pytest tests/ -q` → **984 passed, 0 failed** (first time in this engagement's
@@ -2114,7 +2114,7 @@ history the full suite has been 100% green — every prior session carried at le
 failure forward). Also re-verified against the real running Docker stack: `GET /api/v1/blogs` and
 `GET /api/v1/blogs?search=...` both return correct `200`s with proper pagination `meta`.
 
-### CF-BE-014 · Redis-outage request latency — ROOT-CAUSED AND FIXED (real drill, before/after)
+### BE-014 · Redis-outage request latency — ROOT-CAUSED AND FIXED (real drill, before/after)
 
 Session 9 had narrowed this to "confirmed Redis-specific, confirmed not a redis-py
 `socket_connect_timeout`/`socket_timeout` config issue" but left it unresolved. This session
@@ -2184,7 +2184,7 @@ first request per worker still pays a real ~1s DNS-timeout cost, and slowapi's p
 re-probing means an occasional later request still pays it again while Redis stays down. What's
 fixed is the **catastrophic** part: the 4-8s-to-12s pile-up and the SIGABRT-under-load risk from
 Session 9's drill. A production deployment on a real Linux host (this session's drill ran on Docker
-Desktop/WSL2, per CF-BE-009's own note that this platform's networking isn't representative of
+Desktop/WSL2, per BE-009's own note that this platform's networking isn't representative of
 production) would likely see the DNS-failure phase resolve even faster than the ~1s floor measured
 here, since `dns_opt` explicitly requests the fastest glibc-supported resolution attempt.
 
@@ -2193,11 +2193,11 @@ here, since `dns_opt` explicitly requests the fastest glibc-supported resolution
 | ID | Severity | Finding | Status |
 |---|---|---|---|
 | — | P3 | The engagement's last pre-existing mocked-test failure (`test_list_blogs`) was root-caused (not just carried forward) to `blog.py` hand-rolling a subquery-count pattern no other router uses | **FIXED, VERIFIED** — full suite now 984/984, first 100% green run of this engagement |
-| CF-BE-014 | P2 → **RESOLVED** | Redis-outage requests took 4-8s (single) / up to 12s (concurrent, risking worker SIGABRT) — root cause was DNS resolution time (glibc default `timeout:5 attempts:2`), compounded by slowapi's synchronous, non-thread-offloaded Redis check blocking the whole event loop | **FIXED, VERIFIED** via live outage drill — `dns_opt` (docker-compose.yml) + `in_memory_fallback_enabled=True` (core/limiter.py); 12s pile-up → mostly <0.5s, zero crashes, confirmed recovery |
+| BE-014 | P2 → **RESOLVED** | Redis-outage requests took 4-8s (single) / up to 12s (concurrent, risking worker SIGABRT) — root cause was DNS resolution time (glibc default `timeout:5 attempts:2`), compounded by slowapi's synchronous, non-thread-offloaded Redis check blocking the whole event loop | **FIXED, VERIFIED** via live outage drill — `dns_opt` (docker-compose.yml) + `in_memory_fallback_enabled=True` (core/limiter.py); 12s pile-up → mostly <0.5s, zero crashes, confirmed recovery |
 
 ### Still OPEN
 
-CF-BE-009's full-topology performance gate (still needs a Linux host — this session's own CF-BE-014
+BE-009's full-topology performance gate (still needs a Linux host — this session's own BE-014
 drill reinforces why: Docker Desktop/WSL2 networking on Windows is demonstrably not representative,
 per the ~1s DNS-timeout floor being a Windows/WSL2-Docker artifact rather than a Linux-container
 norm). The broader DRY/KISS/SOLID review beyond the blog.py fix above is in progress (dispatched to
@@ -2208,11 +2208,11 @@ missing).
 
 ### Final status
 
-## **CF-BE-014 RESOLVED — FULL SUITE 100% GREEN FOR THE FIRST TIME THIS ENGAGEMENT**
+## **BE-014 RESOLVED — FULL SUITE 100% GREEN FOR THE FIRST TIME THIS ENGAGEMENT**
 
 Both asks in this message were root-caused with real evidence rather than patched at the symptom
 level: the mocked-suite failure was traced to an actual code duplication (fixed by DRY-ing it
-away, not by adjusting the test), and CF-BE-014 — open since Session 9 with a partial, honestly-
+away, not by adjusting the test), and BE-014 — open since Session 9 with a partial, honestly-
 reported investigation — turned out to have TWO stacked causes (DNS timeout duration, then an
 architectural synchronous-call-blocking-the-event-loop issue that only concurrent load exposed),
 both found by direct measurement inside the running container rather than inferred from
@@ -2327,7 +2327,7 @@ new consistent envelope) and with a valid payload (201, real row created then cl
 
 ### Still OPEN
 
-CF-BE-009's full-topology performance gate (needs a Linux host). The two flagged-not-fixed
+BE-009's full-topology performance gate (needs a Linux host). The two flagged-not-fixed
 DRY/SOLID items above. Replay/idempotency testing and CI in real GitHub Actions remain structurally
 out of reach in this environment (no git remote). `docs/WEBSITE MASTER CONTENT.pdf` still cannot be
 read (`pdftoppm` missing).
@@ -2352,7 +2352,7 @@ work.
 Follow-up user request: fix the items left open at the end of section 29, one at a time, with the
 same real-evidence standard as everything else. Tackled in this order: (1) the unreadable master-
 content PDF, (2) the duplicated Supabase account-creation logic, (3) the `contracts.py` god-
-function, (4) replay/idempotency testing on payment-like flows. CF-BE-009's full-topology gate and
+function, (4) replay/idempotency testing on payment-like flows. BE-009's full-topology gate and
 CI-in-GitHub-Actions were reassessed but remain genuinely out of reach in this environment — reported
 honestly below, not silently dropped.
 
@@ -2470,10 +2470,10 @@ pytest tests/ -q                    → 1006 passed (4 new tests)
 pytest tests/test_rbac_matrix.py -q → 605 passed (unchanged)
 ```
 
-### CF-BE-009 (full-topology performance gate) and CI-in-GitHub-Actions — reassessed, still genuinely blocked
+### BE-009 (full-topology performance gate) and CI-in-GitHub-Actions — reassessed, still genuinely blocked
 
-**CF-BE-009**: this session's CF-BE-014 fixes (Redis DNS timeout, in-memory rate-limit fallback)
-improve a *different* code path than the one CF-BE-009's tail latency was ever attributed to
+**BE-009**: this session's BE-014 fixes (Redis DNS timeout, in-memory rate-limit fallback)
+improve a *different* code path than the one BE-009's tail latency was ever attributed to
 (Docker Desktop/Windows networking overhead under concurrency, unrelated to Redis) — re-running the
 benchmark on this same machine would not be new evidence, only a repeat of the same
 platform-confounded measurement Session 6 already reported honestly as inconclusive. Still needs
@@ -2497,12 +2497,12 @@ taken unilaterally.
 | — | P2, new (found + fixed) | `finance.py::record_payment` had zero replay/idempotency protection | **FIXED, VERIFIED** — DB unique index + check-then-insert, live drill (3x replay, 1 row) |
 | — | P2, new (found while fixing the above) | Catching a mid-commit `IntegrityError` on a request-scoped session raised `MissingGreenlet` via a Starlette middleware interaction | **FIXED** — switched to check-then-insert, confirmed via live drill |
 | — | P3, new (found while fixing the above) | `status_code=200` returned from a `status_code=201`-decorated route doesn't change the real HTTP status — found in both `finance.py` and `contracts.py` | **FIXED, VERIFIED** — `response.status_code` set explicitly in both |
-| CF-BE-009 | P2 | Full-topology performance gate | **STILL OPEN** — needs real Linux hardware, reassessed not re-fabricated |
+| BE-009 | P2 | Full-topology performance gate | **STILL OPEN** — needs real Linux hardware, reassessed not re-fabricated |
 | — | — | CI in real GitHub Actions | **STILL OPEN** — zero commits, no remote; requires explicit user authorization to initialize |
 
 ### Still OPEN
 
-CF-BE-009 (needs Linux hardware) and CI-in-Actions (needs explicit authorization to initialize git
+BE-009 (needs Linux hardware) and CI-in-Actions (needs explicit authorization to initialize git
 history) as above. `Partner Portal` from the master-content PDF is underspecified — flagged for the
 user to clarify scope, not built speculatively.
 
@@ -2557,7 +2557,7 @@ implementation, not left as an unmitigated regression.
 - [`auth.py`](backend/app/routers/auth.py) — `login` sets cookies and drops both tokens from the
   JSON body entirely (previously returned in `LoginResponse` — keeping them in the body while also
   cookie-ing them would silently reopen the exact localStorage/XSS exposure cookie-only auth exists
-  to close); `logout` reads the token from the cookie (closing CF-AUD-005 more thoroughly — no
+  to close); `logout` reads the token from the cookie (closing AUD-005 more thoroughly — no
   request-body token field at all now, not just "requires auth to read one"); new `POST /auth/refresh`
   endpoint (didn't exist before — needed for a cookie session to be usable past the first hour).
 
@@ -2656,7 +2656,7 @@ protects this flow correctly, not just the synthetic drill from the auth section
 
 ### Still OPEN
 
-CF-BE-009 (Linux hardware needed), CI-in-Actions (no git history in this repo), forgot/reset
+BE-009 (Linux hardware needed), CI-in-Actions (no git history in this repo), forgot/reset
 password endpoints, OAuth/2FA (product decision needed), `list_all_timesheets`'s nested-eager-load
 limitation, scheduled/off-host backups. All stated in `docs/BACKEND_GAPS_AND_ISSUES.md`, not just
 here, so it survives independently of this running log.
@@ -2877,7 +2877,7 @@ confirmed: the same code rejected on a second attempt) -> `/auth/mfa/disable` re
 password, accepted with the correct one -> a subsequent login required no MFA challenge at all. Then,
 with `OAUTH_ENABLED=true` and test Google credentials: `/auth/oauth/google/login` produced a real
 redirect to `accounts.google.com` with the correct `client_id`/`redirect_uri`/`scope` and set the
-`cf_oauth_state` httpOnly cookie; `/auth/oauth/github/login` still 404'd (GitHub's own credentials
+`cs_oauth_state` httpOnly cookie; `/auth/oauth/github/login` still 404'd (GitHub's own credentials
 were left blank, proving per-provider gating independent of the global switch); a callback with a
 mismatched `state` redirected to the configured failure URL with `oauth_error=invalid_state` rather
 than proceeding (CSRF protection confirmed live). A full third-party OAuth round trip (real Google

@@ -6,8 +6,8 @@ import { CLIENT_USER, ADMIN_USER, EMPLOYEE_USER } from './testUsers.js';
 const CLIENT_STORAGE_STATE = path.join(path.dirname(fileURLToPath(import.meta.url)), '.auth', 'client.json');
 
 // This suite exercises the real CoralSwift cookie-auth flow described in
-// backend/app/core/cookies.py — httpOnly cf_access_token/cf_refresh_token,
-// readable cf_csrf_token — against the actual dockerized stack (nginx
+// backend/app/core/cookies.py — httpOnly cs_access_token/cs_refresh_token,
+// readable cs_csrf_token — against the actual dockerized stack (nginx
 // frontend + FastAPI backend + Postgres), not a mocked or dev-proxy origin.
 // Login goes through the real form on every test rather than a fixture
 // shortcut, per the master brief's "real login tests, not just
@@ -61,9 +61,9 @@ test.describe('Suite 2 — Login', () => {
     expect(JSON.stringify(body)).not.toMatch(/access_token|refresh_token/);
 
     const cookies = await context.cookies();
-    const access = getCookie(cookies, 'cf_access_token');
-    const refresh = getCookie(cookies, 'cf_refresh_token');
-    const csrf = getCookie(cookies, 'cf_csrf_token');
+    const access = getCookie(cookies, 'cs_access_token');
+    const refresh = getCookie(cookies, 'cs_refresh_token');
+    const csrf = getCookie(cookies, 'cs_csrf_token');
 
     expect(access?.httpOnly).toBe(true);
     expect(refresh?.httpOnly).toBe(true);
@@ -97,7 +97,7 @@ test.describe('Suite 3 — Session restoration', () => {
         JSON.stringify(sessionStorage),
         document.cookie, // httpOnly cookies are never exposed here by design
       ].join('\n');
-      return /cf_access_token|cf_refresh_token/i.test(haystacks);
+      return /cs_access_token|cs_refresh_token/i.test(haystacks);
     });
     expect(leak).toBe(false);
   });
@@ -173,8 +173,8 @@ test.describe('Suite 4 — Refresh', () => {
     await expect(page).toHaveURL(/\/client/);
 
     const beforeCookies = await context.cookies();
-    const accessBefore = getCookie(beforeCookies, 'cf_access_token')?.value;
-    const csrf = getCookie(beforeCookies, 'cf_csrf_token')?.value;
+    const accessBefore = getCookie(beforeCookies, 'cs_access_token')?.value;
+    const csrf = getCookie(beforeCookies, 'cs_csrf_token')?.value;
 
     // /auth/refresh is itself a state-changing POST, so it's subject to the
     // same double-submit CSRF check as any other mutation once a session
@@ -187,7 +187,7 @@ test.describe('Suite 4 — Refresh', () => {
     expect(refreshRes.ok()).toBe(true);
 
     const afterCookies = await context.cookies();
-    const accessAfter = getCookie(afterCookies, 'cf_access_token')?.value;
+    const accessAfter = getCookie(afterCookies, 'cs_access_token')?.value;
     expect(accessAfter).toBeTruthy();
     expect(accessAfter).not.toBe(accessBefore); // rotation, not reuse
 
