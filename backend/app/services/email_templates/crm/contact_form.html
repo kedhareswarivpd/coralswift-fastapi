@@ -1,0 +1,45 @@
+<!-- Variables: visitor_name, visitor_email, subject, message -->
+<!-- NOTE: This email is sent TO internal admin/sales team, not to the visitor -->
+
+<h1 style="margin:0 0 8px;font-size:24px;font-weight:700;color:#0B0F19;line-height:32px;">
+  New Contact Form Submission 📬
+</h1>
+
+<p style="margin:0 0 16px;font-size:15px;color:#334155;line-height:24px;">
+  A visitor has submitted an inquiry via the CoralSwift website contact form.
+  Please follow up promptly.
+</p>
+
+<!-- Visitor info card -->
+<table cellpadding="0" cellspacing="0" border="0" width="100%"
+       style="background-color:#FFEDD5;border-radius:8px;border:1px solid #FFE3D1;margin:20px 0;overflow:hidden;">
+  <tr>
+    <td style="padding:8px 16px;font-size:13px;color:#334155;font-weight:600;
+               white-space:nowrap;border-right:2px solid #FFE3D1;">Name</td>
+    <td style="padding:8px 16px;font-size:14px;color:#0B0F19;">{{visitor_name}}</td>
+  </tr>
+  <tr>
+    <td style="padding:8px 16px;font-size:13px;color:#334155;font-weight:600;
+               white-space:nowrap;border-right:2px solid #FFE3D1;">Email</td>
+    <td style="padding:8px 16px;font-size:14px;color:#0B0F19;">
+      <a href="mailto:{{visitor_email}}" style="color:#FF5500;">{{visitor_email}}</a>
+    </td>
+  </tr>
+  <tr>
+    <td style="padding:8px 16px;font-size:13px;color:#334155;font-weight:600;
+               white-space:nowrap;border-right:2px solid #FFE3D1;">Subject</td>
+    <td style="padding:8px 16px;font-size:14px;color:#0B0F19;">{{subject}}</td>
+  </tr>
+</table>
+
+<!-- Message body -->
+<div style="background-color:#F8FAFC;border-radius:8px;border:1px solid #FFE3D1;padding:16px;margin:16px 0;">
+  <p style="margin:0 0 8px;font-size:12px;color:#94A3B8;text-transform:uppercase;
+             font-weight:600;letter-spacing:0.05em;">Message</p>
+  <p style="margin:0;font-size:15px;color:#0B0F19;line-height:24px;white-space:pre-wrap;">{{message}}</p>
+</div>
+
+<p style="margin:16px 0 0;font-size:15px;color:#334155;line-height:24px;">
+  Reply directly:
+  <a href="mailto:{{visitor_email}}" style="color:#FF5500;font-weight:600;">{{visitor_email}}</a>
+</p>

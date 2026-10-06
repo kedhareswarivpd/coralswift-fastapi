@@ -57,7 +57,14 @@ async def send_welcome_email(name: str, email: str) -> None:
     await send_email(
         email,
         f"Welcome to {settings.app_name}",
-        f"<p>Hi {_esc(name)},</p><p>Your account has been created successfully.</p>",
+        render(
+            "auth/welcome.html",
+            {
+                "name":       safe_name,
+                "app_name":   app_name,
+                "site_url":   settings.site_url,
+            },
+        ),
     )
 
 
