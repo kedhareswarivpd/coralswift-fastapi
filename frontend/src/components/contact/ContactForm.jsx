@@ -9,12 +9,7 @@ const initialForm = { name: '', email: '', phone: '', company: '', department: '
 const NAME_ALLOWED_CHARS = /[^A-Za-z\s'.-]/g;
 const PHONE_ALLOWED_CHARS = /[^0-9+]/g;
 
-const DEPARTMENTS = [
- { value: 'general', label: 'General Inquiry' },
- { value: 'sales', label: 'Sales' },
- { value: 'support', label: 'Support' },
- { value: 'hr', label: 'Careers / HR' },
-];
+
 
 export default function ContactForm() {
  const [form, setForm] = useState(initialForm);
