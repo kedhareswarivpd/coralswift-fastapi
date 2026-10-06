@@ -34,23 +34,31 @@ function handleUnauthorizedState() {
 async function parseResponseBody(response) {
   if (!response) return null;
 
+  const contentType = response.headers?.get?.('content-type') || '';
+  const isHtml = contentType.includes('text/html');
+
   if (typeof response.text === 'function') {
     try {
       const bodyText = await response.text();
       if (!bodyText || !bodyText.trim()) return null;
+      const trimmed = bodyText.trim();
+      if (isHtml || trimmed.startsWith('<')) {
+        return trimmed;
+      }
       try {
-        return JSON.parse(bodyText);
+        return JSON.parse(trimmed);
       } catch {
-        return bodyText;
+        return trimmed;
       }
     } catch {
-      // If reading text fails or stream was already consumed, try fallback
+      return null;
     }
   }
 
   if (typeof response.json === 'function') {
     try {
-      return await response.json();
+      const data = await response.json();
+      return data;
     } catch {
       return null;
     }
